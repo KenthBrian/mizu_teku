@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AquaKids - Learn About Water Hygiene!</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="logo-text">MizuTeku</span>
+            </div>
+
+            <!-- Hamburger Menu Button -->
+            <div class="hamburger" id="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+
+            <div class="nav-right">
+                <ul class="nav-menu" id="nav-menu">
+                    <li><a href="#home" data-en="Home" data-tl="Tahanan">Home</a></li>
+                    <li><a href="#clean-water" data-en="Why" data-tl="Bakit">Why</a></li>
+                    <li><a href="#handwashing" data-en="Handwashing" data-tl="Paghuhugas ng Kamay">Handwashing</a></li>
+                    <li><a href="#games" data-en="Games" data-tl="Mga Laro">Games</a></li>
+                    <li><a href="#resources" data-en="Resources" data-tl="Mga Liham">Resources</a></li>
+                    <li><a href="#about_us" data-en="About Us" data-tl="Tungkol sa Amin">About Us</a></li>
+                </ul>
+                <div class="language-switcher">
+                    <button id="lang-en" class="lang-btn active">EN</button>
+                    <button id="lang-tl" class="lang-btn">TL</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Home Section -->
+    <section id="home" class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title" data-en="Wash, Splash, Stay Healthy!" data-tl="Hugasan, Wisikan, Manatiling Malusog!">Wash, Splash, Stay Healthy!</h1>
+            <p class="hero-subtitle" data-en="Learn about water hygiene with Aqua and Soapy!" data-tl="Matuto tungkol sa kalinisan ng tubig kasama sina Aqua at Soapy!">Learn about water hygiene with Aqua and Soapy!</p>
+            <a href="#clean-water"><button class="cta-button" data-en="Start Learning" data-tl="Simulang Matuto">Start Learning</button></a>
+        </div>
+
+        <!-- Quick Facts Slider -->
+        <div class="facts-slider">
+            <div class="fact-card active">
+                <div class="fact-icon">🦠</div>
+                <p data-en="Washing hands can prevent 1 in 3 stomach illnesses!" data-tl="Ang paghuhugas ng kamay ay makakapigil ng 1 sa 3 sakit sa tiyan!">Washing hands can prevent 1 in 3 stomach illnesses!</p>
+            </div>
+            <div class="fact-card">
+                <div class="fact-icon">💧</div>
+                <p data-en="Clean water saves millions of lives every year!" data-tl="Ang malinis na tubig ay nakakapagligtas ng milyun-milyong buhay bawat taon!">Clean water saves millions of lives every year!</p>
+            </div>
+            <div class="fact-card">
+                <div class="fact-icon">🧼</div>
+                <p data-en="20 seconds of handwashing kills most germs!" data-tl="20 segundong paghuhugas ng kamay ay pumapatay ng karamihan ng mikrobyo!">20 seconds of handwashing kills most germs!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Section -->
+    <section id="clean-water" class="section">
+        <div class="container">
+            <h2 data-en="Why Clean Water and Handwashing Matters" data-tl="Bakit Mahalaga ang Malinis na Tubig">Why Clean Water and Handwashing Matters</h2>
+            <div class="infographic">
+                <div class="info-item">
+                    <div class="info-icon"><img src="attached_assets/images/hospital.png" /></div>
+                    <h3 data-en="Prevents Disease" data-tl="Nagiging hadlang sa Sakit">Prevents Disease</h3>
+                    <p data-en="Clean water keeps harmful germs away from our bodies" data-tl="Ang malinis na tubig ay nagpapalayo ng masasamang mikrobyo sa aming katawan">Clean water keeps harmful germs away from our bodies</p>
+                    <button class="info-button" onclick="showHomeTips('disease')" data-en="→" data-tl="→">→</button>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon"><img src="attached_assets/images/strong.png" /></div>
+                    <h3 data-en="Keeps Us Strong" data-tl="Nagiging malakas tayo">Keeps Us Strong</h3>
+                    <p data-en="Our bodies need clean water to stay healthy and strong" data-tl="Kailangan ng aming katawan ang malinis na tubig para manatiling malusog at malakas">Our bodies need clean water to stay healthy and strong</p>
+                    <button class="info-button" onclick="showHomeTips('strong')" data-en="→" data-tl="→">→</button>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon"><img src="attached_assets/images/world.png" /></div>
+                    <h3 data-en="Helps Communities" data-tl="Tumutulong sa mga Komunidad">Helps Communities</h3>
+                    <p data-en="Clean water helps entire communities stay healthy" data-tl="Ang malinis na tubig ay tumutulong sa mga komunidad na manatiling malusog">Clean water helps entire communities stay healthy</p>
+                    <button class="info-button" onclick="showHomeTips('community')" data-en="→" data-tl="→">→</button>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon"><img src="attached_assets/images/plant.png" /></div>
+                    <h3 data-en="Protects the Environment" data-tl="Pinoprotektahan ang Kapaligiran">Protects the Environment</h3>
+                    <p data-en="Clean water keeps rivers, plants, and animals alive." data-tl="Pinananatiling buhay ng malinis na tubig ang mga ilog, halaman, at hayop">Clean water keeps rivers, plants, and animals alive.</p>
+                    <button class="info-button" onclick="showHomeTips('environment')" data-en="→" data-tl="→">→</button>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon"><img src="attached_assets/images/happy.png" /></div>
+                    <h3 data-en="Boosts Happiness" data-tl="Nagpapasaya">Boosts Happiness</h3>
+                    <p data-en="Clean water lets us play, cook, and live without worry." data-tl="Ang malinis na tubig ay nagbibigay saya sa paglalaro, pagluluto, at pamumuhay nang walang alalahanin">Clean water lets us play, cook, and live without worry</p>
+                    <button class="info-button" onclick="showHomeTips('happiness')" data-en="→" data-tl="→">→</button>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon"><img src="attached_assets/images/grad.png" /></div>
+                    <h3 data-en="Supports Learning" data-tl="Sumusuporta sa Pag-aaral">Supports Learning</h3>
+                    <p data-en="Kids who stay healthy from clean water don’t miss school." data-tl="Ang mga batang nananatiling malusog dahil sa malinis na tubig ay hindi lumiliban sa klase">Kids who stay healthy from clean water don’t miss school.</p>
+                    <button class="info-button" onclick="showHomeTips('learning')" data-en="→" data-tl="→">→</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Handwashing Section -->
+    <section id="handwashing" class="section">
+        <div class="container">
+            <h2 data-en="Steps for Handwashing" data-tl="Mga Hakbang sa Paghuhugas ng Kamay">Steps for Handwashing</h2>
+
+            <!-- Step-by-Step Guide -->
+            <div class="handwashing-steps">
+                <h3 data-en="7 Steps of Handwashing" data-tl="7 Hakbang ng Paghuhugas ng Kamay">7 Steps of Handwashing</h3>
+                <div class="steps-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <div class="step-icon"><img src="attached_assets/images/hand1.png" /></div>
+                            <p data-en="Wet your hands with clean water" data-tl="Basahin ang inyong kamay gamit ang malinis na tubig">Wet your hands with clean water</p>
+                            <button class="info-button" onclick="showVideo('step1')" data-en="→" data-tl="→">→</button>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <div class="step-icon"><img src="attached_assets/images/hand2.png" /></div>
+                            <p data-en="Apply soap to your hands" data-tl="Maglagay ng sabon sa inyong kamay">Apply soap to your hands</p>
+                            <button class="info-button" onclick="showVideo('step2')" data-en="→" data-tl="→">→</button>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <div class="step-icon"><img src="attached_assets/images/hand3.png" /></div>
+                            <p data-en="Rub palms together" data-tl="Kuskusin ang mga palad">Rub palms together</p>
+                            <button class="info-button" onclick="showVideo('step3')" data-en="→" data-tl="→">→</button>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <div class="step-icon"><img src="attached_assets/images/hand4.png" /></div>
+                            <p data-en="Rub back of hands" data-tl="Kuskusin ang likod ng mga kamay">Rub back of hands</p>
+                            <button class="info-button" onclick="showVideo('step4')" data-en="→" data-tl="→">→</button>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <div class="step-icon"><img src="attached_assets/images/hand5.png" /></div>
+                            <p data-en="Clean between fingers" data-tl="Linisin ang pagitan ng mga daliri">Clean between fingers</p>
+                            <button class="info-button" onclick="showVideo('step5')" data-en="→" data-tl="→">→</button>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <div class="step-icon"><img src="attached_assets/images/hand6.png" /></div>
+                            <p data-en="Clean thumbs and nails" data-tl="Linisin ang mga hinlalaki at kuko">Clean thumbs and nails</p>
+                            <button class="info-button" onclick="showVideo('step6')" data-en="→" data-tl="→">→</button>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">7</div>
+                        <div class="step-content">
+                            <div class="step-icon"><img src="attached_assets/images/hand7.png" /></div>
+                            <p data-en="Rinse with clean water" data-tl="Banlawin gamit ang malinis na tubig">Rinse with clean water</p>
+                            <button class="info-button" onclick="showVideo('step7')" data-en="→" data-tl="→">→</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="videoModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeVideo()">&times;</span>
+            <h2 id="videoTitle"></h2>
+            <div id="videoContainer"></div>
+        </div>
+    </div>
+
+    <!-- Games Section -->
+    <section id="games" class="section">
+        <div class="container">
+            <h2 data-en="Learn & Play" data-tl="Matuto at Maglaro">Learn & Play</h2>
+
+            <!-- Spot the Germs Game -->
+            <div class="game-container">
+                <h3 data-en="Spot the Germs Game" data-tl="Hanapin ang mga Mikrobyo">Spot the Germs Game</h3>
+                <p data-en="Click on the germs in the dirty water!" data-tl="I-click ang mga mikrobyo sa maraming tubig!">Click on the germs in the dirty water!</p>
+                <div class="water-glass" id="water-glass">
+                    <div class="germ" data-x="20" data-y="30">🦠</div>
+                    <div class="germ" data-x="60" data-y="50">🦠</div>
+                    <div class="germ" data-x="40" data-y="70">🦠</div>
+                    <div class="germ" data-x="80" data-y="40">🦠</div>
+                    <div class="germ" data-x="15" data-y="80">🦠</div>
+                </div>
+                <div class="game-score">
+                    <span data-en="Germs Found:" data-tl="Natagpuang Mikrobyo:">Germs Found:</span>
+                    <span id="germs-found">0</span>/5
+                </div>
+                <button class="reset-btn" id="reset-germs" data-en="Reset Game" data-tl="I-reset ang Laro">Reset Game</button>
+            </div>
+
+            <!-- When to Wash Hands Quiz -->
+            <div class="game-container">
+                <h3 data-en="When Should You Wash Your Hands?" data-tl="Kailan Dapat Hugasan ang Kamay?">When Should You Wash Your Hands?</h3>
+                <p data-en="Drag the scenarios to the correct box!" data-tl="I-drag ang mga sitwasyon sa tamang kahon!">Drag the scenarios to the correct box!</p>
+
+                <div class="scenarios" id="scenarios">
+                    <div class="scenario-card" draggable="true" data-answer="wash">
+                        <span data-en="Before eating" data-tl="Bago kumain">Before eating</span>
+                        <div class="scenario-icon">🍽️</div>
+                    </div>
+                    <div class="scenario-card" draggable="true" data-answer="wash">
+                        <span data-en="After using toilet" data-tl="Pagkatapos gumamit ng banyo">After using toilet</span>
+                        <div class="scenario-icon">🚽</div>
+                    </div>
+                    <div class="scenario-card" draggable="true" data-answer="no-wash">
+                        <span data-en="Reading a book" data-tl="Pagbabasa ng libro">Reading a book</span>
+                        <div class="scenario-icon">📚</div>
+                    </div>
+                    <div class="scenario-card" draggable="true" data-answer="wash">
+                        <span data-en="After sneezing" data-tl="Pagkatapos bumahing">After sneezing</span>
+                        <div class="scenario-icon">🤧</div>
+                    </div>
+                    <div class="scenario-card" draggable="true" data-answer="wash">
+                        <span data-en="After playing outside" data-tl="Pagkatapos maglaro sa labas">After playing outside</span>
+                        <div class="scenario-icon">⚽</div>
+                    </div>
+                    <div class="scenario-card" draggable="true" data-answer="no-wash">
+                        <span data-en="Watching TV" data-tl="Panonood ng TV">Watching TV</span>
+                        <div class="scenario-icon">📺</div>
+                    </div>
+                </div>
+
+                <div class="drop-zones">
+                    <div class="drop-zone" id="wash-zone" data-answer="wash">
+                        <h4 data-en="Wash Hands!" data-tl="Hugasan ang Kamay!">Wash Hands!</h4>
+                        <div class="zone-icon">✅</div>
+                    </div>
+                    <div class="drop-zone" id="no-wash-zone" data-answer="no-wash">
+                        <h4 data-en="No Need!" data-tl="Hindi Kailangan!">No Need!</h4>
+                        <div class="zone-icon">❌</div>
+                    </div>
+                </div>
+
+                <div class="quiz-score">
+                    <span data-en="Correct:" data-tl="Tama:">Correct:</span>
+                    <span id="quiz-score">0</span>/6
+                </div>
+                <button class="reset-btn" id="reset-quiz" data-en="Reset Quiz" data-tl="I-reset ang Quiz">Reset Quiz</button>
+            </div>
+
+            <!-- Soap Matching Puzzle -->
+            <div class="game-container">
+                <h3 data-en="Soap Matching Puzzle" data-tl="Soap Matching Puzzle">Soap Matching Puzzle</h3>
+                <p data-en="Match the soap to the dirty hands!" data-tl="Itugma ang sabon sa maraming kamay!">Match the soap to the dirty hands!</p>
+
+                <div class="puzzle-game">
+                    <div class="puzzle-items">
+                        <div class="puzzle-item soap" draggable="true" data-type="soap">🧼</div>
+                        <div class="puzzle-item soap" draggable="true" data-type="soap">🧼</div>
+                        <div class="puzzle-item soap" draggable="true" data-type="soap">🧼</div>
+                    </div>
+                    <div class="puzzle-targets">
+                        <div class="puzzle-target dirty-hands" data-type="hands">🤲💩</div>
+                        <div class="puzzle-target dirty-hands" data-type="hands">🤲💩</div>
+                        <div class="puzzle-target dirty-hands" data-type="hands">🤲💩</div>
+                    </div>
+                </div>
+                <div class="puzzle-score">
+                    <span data-en="Matches:" data-tl="Tugma:">Matches:</span>
+                    <span id="puzzle-score">0</span>/3
+                </div>
+                <button class="reset-btn" id="reset-puzzle" data-en="Reset Puzzle" data-tl="I-reset ang Puzzle">Reset Puzzle</button>
+            </div>
+
+            <!-- Memory Game -->
+            <div class="game-container">
+                <h3 data-en="Hygiene Memory Game" data-tl="Hygiene Memory Game">Hygiene Memory Game</h3>
+                <p data-en="Find matching pairs of hygiene items!" data-tl="Hanapin ang mga tumugmang pares ng mga kagamitan sa kalinisan!">Find matching pairs of hygiene items!</p>
+
+                <div class="memory-game" id="memory-game">
+
+                </div>
+                <div class="memory-score">
+                    <span data-en="Pairs Found:" data-tl="Natagpuang Pares:">Pairs Found:</span>
+                    <span id="memory-score">0</span>/6
+                </div>
+                <button class="reset-btn" id="reset-memory" data-en="Reset Game" data-tl="I-reset ang Laro">Reset Game</button>
+            </div>
+
+            <!-- Hygiene Heroes Badges -->
+            <div class="badges-section">
+                <h3 data-en="Hygiene Heroes Badges" data-tl="Mga Badge ng Hygiene Heroes">Hygiene Heroes Badges</h3>
+                <div class="badges-container">
+                    <div class="badge" id="badge-germ-buster">
+                        <div class="badge-icon">🦠💥</div>
+                        <span data-en="Germ Buster" data-tl="Germ Buster">Germ Buster</span>
+                    </div>
+                    <div class="badge" id="badge-soap-saver">
+                        <div class="badge-icon">🧼⭐</div>
+                        <span data-en="Super Soap Saver" data-tl="Super Soap Saver">Super Soap Saver</span>
+                    </div>
+                    <div class="badge" id="badge-quiz-master">
+                        <div class="badge-icon">🏆</div>
+                        <span data-en="Quiz Master" data-tl="Quiz Master">Quiz Master</span>
+                    </div>
+                    <div class="badge" id="badge-memory-champ">
+                        <div class="badge-icon">🧠✨</div>
+                        <span data-en="Memory Champion" data-tl="Memory Champion">Memory Champion</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Resources Section -->
+    <section id="resources" class="section">
+        <div class="container">
+            <h2 data-en="Teacher & Parent Resources" data-tl="Mga Liham para sa Guro at Magulang">Teacher & Parent Resources</h2>
+
+            <div class="resources-grid">
+                <div class="resource-card">
+                    <div class="resource-icon">📋</div>
+                    <h3 data-en="Printable Posters" data-tl="Mga Poster na Maaaring I-print">Printable Posters</h3>
+                    <p data-en="Download handwashing steps and hygiene reminders" data-tl="I-download ang mga hakbang sa paghuhugas ng kamay at mga paalala sa kalinisan">Download handwashing steps and hygiene reminders</p>
+                    <button class="download-btn" onclick="downloadPoster('handwashing')" data-en="Download" data-tl="I-download">Download</button>
+                </div>
+
+                <div class="resource-card">
+                    <div class="resource-icon">📝</div>
+                    <h3 data-en="Worksheets" data-tl="Mga Worksheet">Worksheets</h3>
+                    <p data-en="Fun activities and exercises for kids" data-tl="Mga masayang gawain at ehersisyo para sa mga bata">Fun activities and exercises for kids</p>
+                    <button class="download-btn" onclick="downloadWorksheet()" data-en="Download" data-tl="I-download">Download</button>
+                </div>
+
+                <div class="resource-card">
+                    <div class="resource-icon">🏠</div>
+                    <h3 data-en="Home Tips" data-tl="Mga Tip sa Bahay">Home Tips</h3>
+                    <p data-en="Encourage handwashing habits at home" data-tl="Hikayatin ang mga ugaling paghuhugas ng kamay sa bahay">Encourage handwashing habits at home</p>
+                    <button class="info-btn" onclick="showHomeTips()" data-en="Learn More" data-tl="Matuto Pa">Learn More</button>
+                </div>
+
+                <!-- Home Tips Modal -->
+                <div id="homeTipsModal" class="modal hidden">
+                    <div class="modal-content">
+                        <span class="close-btn" onclick="closeHomeTips()">&times;</span>
+                        <h2 id="tipsTitle"></h2>
+                        <div class="tips-body">
+                            <ul id="tipsList"></ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Certificate Generator -->
+            <div class="certificate-section">
+                <h3 data-en="Hygiene Hero Certificate" data-tl="Certificate ng Hygiene Hero">Hygiene Hero Certificate</h3>
+                <p data-en="Create a personalized certificate!" data-tl="Gumawa ng personalized na certificate!">Create a personalized certificate!</p>
+                <div class="certificate-form">
+                    <input type="text" id="child-name" placeholder="Enter child's name / Ilagay ang pangalan ng bata">
+                    <button id="GenerateCertificate" onclick="generateCertificate()" data-en="Generate Certificate" data-tl="Gumawa ng Certificate">Generate Certificate</button>
+                </div>
+                <div id="certificate-display" class="certificate-display">
+                    <div id="certificate-inner">
+
+                    </div>
+                </div>
+                <button class="dl-button" onclick="downloadCertificate()">Download Certificate</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+
+                <!-- MizuTeku Section -->
+                <div class="footer-section">
+                    <h4 data-en="About MizuTeku" data-tl="Tungkol sa MizuTeku">About MizuTeku</h4>
+                    <p data-en="MizuTeku creates interactive websites to make learning handwashing practices and clean water awareness easier and more engaging."
+                       data-tl="Ang MizuTeku ay gumagawa ng interaktibong website upang gawing mas madali at kawili-wili ang pagkatuto ng wastong paghuhugas ng kamay at kalinisan ng tubig.">
+                        MizuTeku creates interactive websites to make learning handwashing practices and clean water awareness easier and more engaging.
+                    </p>
+                </div>
+
+                <!-- Contact + Socials Section -->
+                <div class="footer-section">
+                    <h4 data-en="Connect with Us" data-tl="Makipag-ugnayan">Connect with Us</h4>
+                    <p data-en="Schools and teachers are welcome to collaborate!" data-tl="Malugod naming tinatanggap ang mga paaralan at guro upang makipagtulungan!">
+                        Schools and teachers are welcome to collaborate!
+                    </p>
+                    <div class="social-links">
+                        <a href="https://facebook.com/mizuteku" target="_blank" aria-label="Facebook" class="social-icon fb"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://twitter.com/mizuteku" target="_blank" aria-label="Twitter" class="social-icon tw"><i class="fab fa-twitter"></i></a>
+                        <a href="https://instagram.com/mizuteku" target="_blank" aria-label="Instagram" class="social-icon ig"><i class="fab fa-instagram"></i></a>
+                        <a href="https://youtube.com/@mizuteku" target="_blank" aria-label="YouTube" class="social-icon yt"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="footer-bottom">
+                <p>
+                    &copy; 2025 MizuTeku.
+                    <span data-en="All rights reserved." data-tl="Lahat ng karapatan ay nakalaan.">All rights reserved.</span>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
