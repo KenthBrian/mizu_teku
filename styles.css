@@ -1,5 +1,6 @@
 html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
 }
 
 ::-webkit-scrollbar {
@@ -451,8 +452,8 @@ body {
 /* Mini Game - Spot the Germs */
 .water-glass {
     position: relative;
-    width: 300px;
-    height: 400px;
+    width: 150px;
+    height: 200px;
     margin: 2rem auto;
     background: linear-gradient(180deg, #87CEEB 0%, #B0E0E6 50%, #87CEFA 100%);
     border: 5px solid #2c3e50;
@@ -461,12 +462,52 @@ body {
     cursor: crosshair;
 }
 
+/* When a dirty glass is selected → ✔ */
+.water-glass.dirty-found::after {
+    content: "✔";
+    position: absolute;
+    top: 5px;
+    right: 8px;
+    font-size: 24px;
+    color: limegreen;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px black;
+}
+
+/* When a clean glass is selected → ❌ */
+.water-glass.clean-selected::after {
+    content: "✖";
+    position: absolute;
+    top: 5px;
+    right: 8px;
+    font-size: 24px;
+    color: red;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px black;
+}
+
+
+@keyframes floatGerm {
+    0% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}
+
 .germ {
     position: absolute;
     font-size: 1.5rem;
     cursor: pointer;
     transition: all 0.3s ease;
     user-select: none;
+    animation: floatGerm 2s ease-in-out infinite;
 }
 
     .germ:hover {
@@ -477,6 +518,7 @@ body {
         opacity: 0;
         transform: scale(0);
     }
+
 
 .game-score {
     font-size: 1.2rem;
@@ -746,6 +788,50 @@ body {
         transform: translateY(-2px);
     }
 
+/* Jingle Section */
+
+.jingle-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+
+.jingle-btn {
+    background: white;
+    padding: 1rem 2rem;
+    border-radius: 20px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.jingle-btn:hover {
+    background: linear-gradient(135deg, #3498db, #2ecc71);
+    color: white;
+    transform: translateY(-3px);
+}
+
+/* ⏱ Timer */
+.jingle-timer {
+    margin-top: 2rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: center;
+    background: linear-gradient(135deg, #3498db, #2ecc71);
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border-radius: 15px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 /* Section Banners */
 .section-banner {
     width: 100%;
@@ -825,12 +911,12 @@ body {
     width: 350px;
 }
 
-    .resource-card:hover {
-        transform: translateY(-5px);
-        background: linear-gradient(135deg, #3498db, #2ecc71);
-        color: white;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-    }
+.resource-card:hover {
+    transform: translateY(-5px);
+    background: linear-gradient(135deg, #3498db, #2ecc71);
+    color: white;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+}
 
 .resource-icon {
     font-size: 2.5rem;
@@ -857,7 +943,6 @@ body {
     font-weight: bold;
 }
 
-
 .download-btn, .info-btn {
     background: linear-gradient(135deg, #3498db, #2ecc71);
     color: white;
@@ -870,10 +955,48 @@ body {
     margin-top: 1rem;
 }
 
-    .download-btn:hover, .info-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
-    }
+.download-btn:hover, .info-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+}
+
+/* Style dropdown inside resource cards */
+.resource-card select {
+    width: 100%;
+    padding: 10px 12px;
+    margin: 10px 0;
+    border: 2px solid #3498db;
+    border-radius: 12px;
+    background: #f9f9f9;
+    font-size: 14px;
+    font-weight: 500;
+    color: #2c3e50;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    appearance: none; /* removes default arrow */
+    background-image: url("data:image/svg+xml;utf8,<svg fill='%233498db' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+}
+
+.resource-card select:hover {
+        border-color: #2ecc71;
+        background-color: #ffffff;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.resource-card select:focus {
+        border-color: #2980b9;
+        box-shadow: 0 0 0 3px rgba(52,152,219,0.3);
+}
+
+/* Option styling */
+.resource-card option {
+    font-size: 14px;
+    padding: 10px;
+}
 
 /* Certificate */
 .certificate-section {
@@ -1069,7 +1192,20 @@ body {
     }
 
     .puzzle-game {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        margin: 1rem 0;
+        flex-wrap: wrap;
+    }
+
+    .puzzle-items, .puzzle-targets {
+        display: flex;
         flex-direction: column;
+        gap: 1rem;
+        flex: 1;
+        min-width: 100px;
     }
 
     .memory-game {
@@ -1131,7 +1267,28 @@ body {
     }
 }
 
-@media (max-width: 480px) {
+@media (max-width:700px) {
+    .scenarios {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: .5rem;
+        justify-items: center;
+        margin-top: 1rem;
+    }
+
+    .scenario-card {
+        background: white;
+        padding: .5rem;
+        border-radius: 15px;
+        box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        transition: all 0.3s ease;
+        width: 200px;
+        cursor: pointer;
+    }
+}
+
+@media (max-width:480px) {
     .hero-title {
         font-size: 1.8rem;
         padding: 0 1rem;
@@ -1146,9 +1303,49 @@ body {
         font-size: 1.8rem;
     }
 
-    .memory-game {
+    .steps-container {
+        grid-template-columns: 2fr;
+        gap: 3px;
+    }
+
+    .step-content {
+        width: 150px;
+    }
+
+    .scenarios {
+        display: grid;
         grid-template-columns: repeat(2, 1fr);
+        justify-items: center;
+    }
+
+    .scenario-card {
+        background: white;
+        padding: .5rem;
+        border-radius: 15px;
+        box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        transition: all 0.3s ease;
+        font-size
+        width: 90px;
+        cursor: pointer;
+    }
+
+    .drop-zones {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .drop-zone {
+        width: 180px;
+    }
+
+    .memory-game {
+        grid-template-columns: repeat(3, 1fr);
         gap: 0.5rem;
+    }
+
+    .memory-card {
+        width: 90px;
     }
 
     .steps-container {
@@ -1172,13 +1369,9 @@ body {
         grid-template-columns: 1fr;
     }
 
-    .scenarios {
-        grid-template-columns: 1fr;
-        gap: 0.5rem;
-    }
-
     .puzzle-items, .puzzle-targets {
-        min-width: 150px;
+        width: 100px;
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .nav-menu a {
@@ -1201,8 +1394,8 @@ body {
     }
 
     .water-glass {
-        width: 200px;
-        height: 300px;
+        width: 100px;
+        height: 150px;
     }
 
     .step {
@@ -1215,6 +1408,34 @@ body {
 
     .resource-card {
         padding: 1.5rem;
+    }
+}
+
+@media (max-width:460px) {
+    .scenarios {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        justify-items: center;
+    }
+
+    .scenario-card {
+        background: white;
+        padding: .3rem;
+        border-radius: 15px;
+        box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        transition: all 0.3s ease;
+        width: 150px;
+        cursor: pointer;
+    }
+
+    .drop-zones {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .drop-zone {
+        width: 140px;
     }
 }
 
