@@ -735,40 +735,44 @@ const tipsTL = [
 const tipsData = {
   home: {
     en: [
-      "Keep drinking glasses and utensils clean",
-      "Sweep and mop floors regularly to remove dirt",
-      "Dispose of garbage properly to avoid pests",
-      "Wash bed sheets and clothes with clean water",
-      "Disinfect commonly touched surfaces like doorknobs",
-      "Keep toilets and bathrooms clean with soap or disinfectant"
+      "A clean home keeps families safe from germs and illnesses.",
+      "Handwashing before meals helps prevent food contamination.",
+      "Clean surroundings make daily life more comfortable and healthy.",
+      "Regular cleaning prevents pests like mosquitoes and cockroaches.",
+      "Sanitized surfaces reduce the chances of spreading colds and flu.",
+      "Proper waste disposal prevents unpleasant odors and infections.",
+      "Organized spaces reduce stress and promote well-being."
     ],
     tl: [
-      "Panatilihing malinis ang mga baso at gamit sa pagkain",
-      "Walisin at mop ang sahig nang regular upang alisin ang dumi",
-      "Itapon ng maayos ang basura upang maiwasan ang peste",
-      "Labhan ang mga kumot at damit gamit ang malinis na tubig",
-      "Disimpektahin ang madalas hinahawakan tulad ng door knob",
-      "Panatilihing malinis ang palikuran at banyo gamit ang sabon o disinfectant"
+      "Ang malinis na bahay ay nagpoprotekta sa pamilya laban sa mikrobyo at sakit.",
+      "Ang paghuhugas ng kamay bago kumain ay nakakaiwas sa kontaminasyon ng pagkain.",
+      "Ang malinis na kapaligiran ay nagbibigay ng mas maayos at malusog na pamumuhay.",
+      "Ang regular na paglilinis ay nakakaiwas sa peste tulad ng lamok at ipis.",
+      "Ang disimpektadong mga ibabaw ay nagpapababa ng tsansa ng sipon at trangkaso.",
+      "Ang maayos na pagtatapon ng basura ay pumipigil sa masamang amoy at impeksyon.",
+      "Ang organisadong lugar ay nagpapababa ng stress at nagpapasigla ng kalusugan."
     ],
-    title: { en: "🏠 Home Hygiene Tips", tl: "🏠 Mga Tip sa Kalinisan sa Bahay" }
+    title: { en: "🏠 Home Hygiene", tl: "🏠 Kalinisan sa Bahay" }
   },
 
   disease: {
     en: [
-      "Wash your hands before eating to avoid germs",
-      "Always drink clean, boiled, or filtered water",
-      "Cover your mouth when coughing or sneezing",
-      "Avoid sharing personal items like towels or utensils",
-      "Cook food thoroughly to kill harmful bacteria",
-      "Stay home if feeling sick to prevent spreading illness"
+      "Proper hygiene reduces the spread of bacteria and viruses.",
+      "Clean water and handwashing lower the risk of diarrhea and respiratory infections.",
+      "Preventing illness keeps people strong and avoids costly medical care.",
+      "Regular handwashing stops germs from spreading to family and friends.",
+      "Staying clean helps the immune system focus on fighting serious infections.",
+      "Teaching children good hygiene builds lifelong healthy habits.",
+      "Avoiding sickness means more energy for school, work, and play."
     ],
     tl: [
-      "Maghugas ng kamay bago kumain upang iwasan ang mikrobyo",
-      "Uminom ng malinis, pinakuluang, o sinalang tubig",
-      "Takpan ang bibig kapag umuubo o bumabahin",
-      "Iwasang magbahagi ng personal na gamit tulad ng tuwalya o kubyertos",
-      "Lutuing mabuti ang pagkain upang mapatay ang mikrobyo",
-      "Manatili sa bahay kung may sakit upang hindi makahawa"
+      "Ang tamang kalinisan ay nagpapababa ng pagkalat ng bacteria at virus.",
+      "Ang malinis na tubig at paghuhugas ng kamay ay nakakaiwas sa pagtatae at impeksyon sa paghinga.",
+      "Ang pag-iwas sa sakit ay nagpapanatiling malakas at nakakaiwas sa magastos na gamutan.",
+      "Ang regular na paghuhugas ng kamay ay pumipigil sa pagkalat ng mikrobyo sa pamilya at kaibigan.",
+      "Ang pagiging malinis ay nakakatulong sa immune system na labanan ang malubhang impeksyon.",
+      "Ang pagtuturo sa mga bata ng mabuting kalinisan ay nagtatatag ng panghabambuhay na healthy habits.",
+      "Ang pag-iwas sa sakit ay nagbibigay ng mas maraming enerhiya para sa paaralan, trabaho, at laro."
     ],
     title: { 
       en: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/hospital.png' /> Prevents Disease", 
@@ -778,20 +782,22 @@ const tipsData = {
 
   strong: {
     en: [
-      "Drink at least 8 glasses of clean water daily",
-      "Eat fruits and vegetables washed with clean water",
-      "Stay active and hydrated",
-      "Sleep at least 7–8 hours every night",
-      "Avoid too many sugary drinks and junk food",
-      "Practice regular exercise for strong muscles and bones"
+      "Clean water keeps the body hydrated and full of energy.",
+      "Washing fruits and vegetables ensures safe and nutritious meals.",
+      "Good hygiene builds strong bodies ready for work and play.",
+      "Eating safely prepared food strengthens immunity.",
+      "Regular hygiene prevents frequent illnesses that weaken the body.",
+      "Healthy habits from clean water improve growth and development.",
+      "Staying clean and healthy allows people to enjoy daily activities fully."
     ],
     tl: [
-      "Uminom ng 8 baso ng malinis na tubig araw-araw",
-      "Kumain ng prutas at gulay na hinugasan ng malinis na tubig",
-      "Maging aktibo at manatiling hydrated",
-      "Matulog ng 7–8 oras gabi-gabi",
-      "Iwasan ang sobrang matatamis na inumin at junk food",
-      "Mag-ehersisyo nang regular para sa malakas na kalamnan at buto"
+      "Ang malinis na tubig ay nagpapanatiling hydrated at puno ng enerhiya ang katawan.",
+      "Ang paghuhugas ng prutas at gulay ay nakakasiguro ng ligtas at masustansyang pagkain.",
+      "Ang mabuting kalinisan ay nagpapatibay ng katawan para sa trabaho at laro.",
+      "Ang ligtas na pagkain ay nagpapalakas ng immune system.",
+      "Ang regular na kalinisan ay pumipigil sa madalas na sakit na nagpapahina sa katawan.",
+      "Ang malusog na gawi mula sa malinis na tubig ay nagpapabuti ng paglaki at development.",
+      "Ang pagiging malinis at malusog ay nagbibigay kakayahang masulit ang pang-araw-araw na gawain."
     ],
     title: { 
       en: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/strong.png' /> Keeps Us Strong", 
@@ -801,20 +807,22 @@ const tipsData = {
 
   community: {
     en: [
-      "Share clean water with neighbors in need",
-      "Keep community wells clean and safe",
-      "Join clean-up drives to protect water sources",
-      "Report broken pipes or leaks to authorities",
-      "Work together to build safe water facilities",
-      "Educate children about proper hygiene in the community"
+      "Clean water unites communities by ensuring everyone’s safety.",
+      "Shared hygiene practices reduce the spread of sickness in neighborhoods.",
+      "Healthy communities are stronger and more productive together.",
+      "Educating neighbors about hygiene creates long-term benefits.",
+      "Clean water helps prevent outbreaks that affect entire villages.",
+      "Community well-being improves when everyone follows safe hygiene.",
+      "Supporting each other in hygiene practices strengthens bonds and trust."
     ],
     tl: [
-      "Ibahagi ang malinis na tubig sa kapitbahay na nangangailangan",
-      "Panatilihing malinis at ligtas ang poso o balon ng komunidad",
-      "Sumali sa clean-up drive para maprotektahan ang mga pinagkukunan ng tubig",
-      "Iulat ang mga sirang tubo o tagas sa mga awtoridad",
-      "Magtulungan sa paggawa ng ligtas na pasilidad ng tubig",
-      "Turuan ang mga bata tungkol sa tamang kalinisan sa komunidad"
+      "Pinagbubuklod ng malinis na tubig ang komunidad dahil ito’y para sa kaligtasan ng lahat.",
+      "Ang sabayang kalinisan ay nakakapigil sa pagkalat ng sakit sa mga kapitbahayan.",
+      "Ang malulusog na komunidad ay mas malakas at mas produktibo nang magkakasama.",
+      "Ang pagtuturo sa kapitbahay tungkol sa kalinisan ay nagdudulot ng pangmatagalang benepisyo.",
+      "Ang malinis na tubig ay nakakaiwas sa outbreak na nakakaapekto sa buong baryo.",
+      "Ang kabutihang panlipunan ay tumataas kapag lahat ay sumusunod sa ligtas na kalinisan.",
+      "Ang pagtutulungan sa kalinisan ay nagpapatibay ng ugnayan at tiwala sa isa’t isa."
     ],
     title: { 
       en: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/world.png' /> Helps Communities", 
@@ -824,20 +832,22 @@ const tipsData = {
 
   environment: {
     en: [
-      "Avoid throwing trash into rivers and lakes",
-      "Use water wisely to prevent waste",
-      "Plant trees to help protect clean water sources",
-      "Reduce use of plastic to prevent water pollution",
-      "Recycle water when possible (like using laundry water for cleaning floors)",
-      "Support eco-friendly programs in your area"
+      "Clean water depends on protecting rivers, lakes, and forests.",
+      "Good hygiene prevents pollution from spreading into water sources.",
+      "Caring for the environment secures clean water for future generations.",
+      "Proper waste disposal reduces harmful chemicals reaching water bodies.",
+      "Planting trees and greenery filters water naturally and prevents soil erosion.",
+      "Reducing litter ensures aquatic life remains healthy and sustainable.",
+      "Communities with clean environments enjoy better overall health."
     ],
     tl: [
-      "Iwasang magtapon ng basura sa ilog at lawa",
-      "Gamitin ang tubig nang matalino upang hindi masayang",
-      "Magtanim ng puno upang maprotektahan ang pinagkukunan ng malinis na tubig",
-      "Bawasan ang paggamit ng plastik upang maiwasan ang polusyon sa tubig",
-      "Gamitin muli ang tubig kung maaari (tulad ng tubig sa labada para sa paglilinis ng sahig)",
-      "Suportahan ang mga eco-friendly na programa sa inyong lugar"
+      "Nakasalalay sa pangangalaga ng ilog, lawa, at kagubatan ang malinis na tubig.",
+      "Ang mabuting kalinisan ay pumipigil sa polusyon na makontamina ang tubig.",
+      "Ang pag-aalaga sa kalikasan ay nagsisiguro ng malinis na tubig para sa susunod na henerasyon.",
+      "Ang wastong pagtatapon ng basura ay nagpapababa ng nakalalasong kemikal sa mga tubig.",
+      "Ang pagtatanim ng puno at halaman ay natural na nagfi-filter ng tubig at pumipigil sa soil erosion.",
+      "Ang pagbabawas ng basura ay nakakatulong sa malusog at sustainable na buhay ng mga hayop sa tubig.",
+      "Ang komunidad na may malinis na kapaligiran ay mas malusog ang kabuuang pamumuhay."
     ],
     title: { 
       en: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/plant.png' /> Protects the Environment", 
@@ -847,20 +857,22 @@ const tipsData = {
 
   happiness: {
     en: [
-      "Enjoy playing outdoors with clean water for fun and games",
-      "Cook meals safely with clean water",
-      "Stay refreshed and happy by drinking safe water",
-      "Take relaxing baths with clean water after a long day",
-      "Bond with family during safe, clean mealtime",
-      "Smile more knowing you are healthy with clean water"
+      "Clean water brings comfort in daily life and family activities.",
+      "Good hygiene makes people feel fresh, confident, and happy.",
+      "Healthy bodies lead to joyful play, meals, and togetherness.",
+      "Hygienic habits reduce stress from illness and discomfort.",
+      "Children enjoy outdoor activities more when surroundings are clean.",
+      "Feeling safe and clean enhances overall mood and positivity.",
+      "Hygiene allows families to celebrate life with fewer interruptions from sickness."
     ],
     tl: [
-      "Magsaya sa paglalaro sa labas gamit ang malinis na tubig para sa laro",
-      "Magluto ng ligtas na pagkain gamit ang malinis na tubig",
-      "Manatiling presko at masaya sa pag-inom ng ligtas na tubig",
-      "Mag-relax sa paliligo gamit ang malinis na tubig matapos ang mahabang araw",
-      "Magsama-sama ang pamilya sa ligtas at malinis na pagkain",
-      "Mas madalas na ngumiti dahil malusog ka sa malinis na tubig"
+      "Nagbibigay ng ginhawa sa araw-araw at sa pamilya ang malinis na tubig.",
+      "Ang mabuting kalinisan ay nagpapasigla at nagpapataas ng kumpiyansa at kasiyahan.",
+      "Ang malusog na katawan ay nagdudulot ng masayang laro, pagkain, at samahan.",
+      "Ang malinis na gawi ay nagpapababa ng stress mula sa sakit at kakulangan sa ginhawa.",
+      "Mas nag-eenjoy ang mga bata sa paglalaro sa labas kapag malinis ang kapaligiran.",
+      "Ang pakiramdam ng kaligtasan at kalinisan ay nagpapataas ng magandang mood at positibong pananaw.",
+      "Pinapayagan ng kalinisan ang pamilya na magsaya nang hindi madalas maistorbo ng sakit."
     ],
     title: { 
         en: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/happy.png'/>  Boosts Happiness", 
@@ -870,20 +882,22 @@ const tipsData = {
 
   learning: {
     en: [
-      "Clean water helps kids stay healthy so they don’t miss school",
-      "Good hygiene makes it easier to focus in class",
-      "Handwashing with clean water prevents sickness during study time",
-      "Bring a water bottle to school to stay hydrated",
-      "Wash fruits before eating during recess",
-      "A healthy body helps the brain learn faster"
+      "Healthy students miss fewer school days and learn more.",
+      "Clean water and hygiene improve focus and classroom performance.",
+      "Children with good hygiene grow into smarter, healthier adults.",
+      "Frequent illness can slow learning and cognitive development.",
+      "Staying clean prevents distractions caused by discomfort or sickness.",
+      "Teaching hygiene habits early helps students develop lifelong routines.",
+      "A safe, healthy environment supports curiosity, creativity, and participation."
     ],
     tl: [
-      "Nakakatulong ang malinis na tubig upang manatiling malusog ang mga bata at hindi makaliban sa klase",
-      "Ang mabuting kalinisan ay nakakatulong upang makapagpokus sa pag-aaral",
-      "Ang paghuhugas ng kamay gamit ang malinis na tubig ay nakakaiwas sa sakit habang nag-aaral",
-      "Magdala ng sariling bote ng tubig sa paaralan upang manatiling hydrated",
-      "Hugasan ang prutas bago kainin tuwing recess",
-      "Ang malusog na katawan ay nakakatulong sa mas mabilis na pagkatuto"
+      "Ang malulusog na mag-aaral ay bihirang lumiban at mas natututo.",
+      "Ang malinis na tubig at kalinisan ay nagpapabuti ng pokus at pagganap sa klase.",
+      "Ang mga batang may mabuting kalinisan ay lumalaking mas matalino at mas malusog.",
+      "Ang madalas na sakit ay nakakapagpabagal sa pagkatuto at cognitive development.",
+      "Ang pagiging malinis ay pumipigil sa mga abala dulot ng kakulangan sa ginhawa o sakit.",
+      "Ang pagtuturo ng gawi sa kalinisan nang maaga ay tumutulong sa panghabambuhay na routine ng mag-aaral.",
+      "Ang ligtas at malusog na kapaligiran ay sumusuporta sa curiosity, creativity, at participation."
     ],
     title: { 
       en: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/grad.png' /> Supports Learning", 
@@ -1202,6 +1216,7 @@ function initializeClearData() {
         }
     });
 }
+
 
 
 
