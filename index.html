@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AquaKids - Learn About Water Hygiene!</title>
+    <title>MizuTeku - Learn About Water Hygiene!</title>
+    <link rel="icon" href="attached_assets/images/logo.png" type="image/x-icon">
+    <link rel="shortcut icon" href="attached_assets/images/logo.png" type="image/x-icon">
+    <link rel="apple-touch-icon" href="attached_assets/images/logo.png">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -14,7 +17,9 @@
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-logo">
-                <span class="logo-text">MizuTeku</span>
+                <span class="logo-text">
+                    <img src="attached_assets/images/logo_text2.png" />
+                </span>
             </div>
 
             <!-- Hamburger Menu Button -->
@@ -33,20 +38,37 @@
                     <li><a href="#resources" data-en="Resources" data-tl="Mga Liham">Resources</a></li>
                     <li><a href="#about_us" data-en="About Us" data-tl="Tungkol sa Amin">About Us</a></li>
                 </ul>
-                <div class="language-switcher">
-                    <button id="lang-en" class="lang-btn active">EN</button>
-                    <button id="lang-tl" class="lang-btn">TL</button>
+
+                <!-- Right-side controls -->
+                <div class="nav-controls">
+                    <div class="language-switcher">
+                        <button id="lang-en" class="lang-btn active">EN</button>
+                        <button id="lang-tl" class="lang-btn">TL</button>
+                        <button id="clearDataBtn" class="clear-btn">Clear Data</button>
+                    </div>
                 </div>
             </div>
         </div>
     </nav>
 
+
+    <!-- Username Popup -->
+    <div id="usernameModal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Welcome!</h2>
+            <p>Please enter your username:</p>
+            <input type="text" id="usernameInput" placeholder="Enter your username">
+            <button id="saveUsername">Save</button>
+        </div>
+    </div>
+
     <!-- Home Section -->
     <section id="home" class="hero-section">
         <div class="hero-content">
-            <h1 class="hero-title" data-en="Wash, Splash, Stay Healthy!" data-tl="Hugasan, Wisikan, Manatiling Malusog!">Wash, Splash, Stay Healthy!</h1>
-            <p class="hero-subtitle" data-en="Learn about water hygiene with Aqua and Soapy!" data-tl="Matuto tungkol sa kalinisan ng tubig kasama sina Aqua at Soapy!">Learn about water hygiene with Aqua and Soapy!</p>
-            <a href="#clean-water"><button class="cta-button" data-en="Start Learning" data-tl="Simulang Matuto">Start Learning</button></a>
+            <h1 class="hero-title">Wash, Splash, Stay Healthy!</h1>
+            <p class="hero-subtitle">Learn about water hygiene with Aqua and Soapy!</p>
+            <p id="userGreeting" class="user-greeting"></p>
+            <a href="#clean-water"><button class="cta-button">Start Learning</button></a>
         </div>
 
         <!-- Quick Facts Slider -->
@@ -271,26 +293,36 @@
             <!-- Soap Matching Puzzle -->
             <div class="game-container">
                 <h3 data-en="Soap Matching Puzzle" data-tl="Soap Matching Puzzle">Soap Matching Puzzle</h3>
-                <p data-en="Match the soap to the dirty hands!" data-tl="Itugma ang sabon sa maraming kamay!">Match the soap to the dirty hands!</p>
+                <p data-en="Match each soap to the correct dirty hands!" data-tl="Itugma ang tamang sabon sa maruming kamay!">
+                    Match each soap to the correct dirty hands!
+                </p>
 
                 <div class="puzzle-game">
-                    <div class="puzzle-items">
-                        <div class="puzzle-item soap" draggable="true" data-type="soap">🧼</div>
-                        <div class="puzzle-item soap" draggable="true" data-type="soap">🧼</div>
-                        <div class="puzzle-item soap" draggable="true" data-type="soap">🧼</div>
+                    <!-- Puzzle Items (Soaps) -->
+                    <div class="puzzle-items" aria-label="Soaps to drag">
+                        <div class="puzzle-item soap" draggable="true" data-type="mud" role="button">🧼💧</div>
+                        <div class="puzzle-item soap" draggable="true" data-type="germs" role="button">🧼🦠</div>
+                        <div class="puzzle-item soap" draggable="true" data-type="paint" role="button">🧼🎨</div>
                     </div>
-                    <div class="puzzle-targets">
-                        <div class="puzzle-target dirty-hands" data-type="hands">🤲💩</div>
-                        <div class="puzzle-target dirty-hands" data-type="hands">🤲💩</div>
-                        <div class="puzzle-target dirty-hands" data-type="hands">🤲💩</div>
+
+                    <!-- Puzzle Targets (Dirty Hands) -->
+                    <div class="puzzle-targets" aria-label="Dirty hands targets">
+                        <div class="puzzle-target dirty-hands" data-type="mud">🤲🌧️</div>
+                        <div class="puzzle-target dirty-hands" data-type="germs">🤲🦠</div>
+                        <div class="puzzle-target dirty-hands" data-type="paint">🤲🎨</div>
                     </div>
                 </div>
+
+                <!-- Puzzle Score -->
                 <div class="puzzle-score">
                     <span data-en="Matches:" data-tl="Tugma:">Matches:</span>
                     <span id="puzzle-score">0</span>/3
                 </div>
+
+                <!-- Reset Button -->
                 <button class="reset-btn" id="reset-puzzle" data-en="Reset Puzzle" data-tl="I-reset ang Puzzle">Reset Puzzle</button>
             </div>
+
 
             <!-- Memory Game -->
             <div class="game-container">
@@ -391,7 +423,7 @@
     </section>
 
     <!-- Footer -->
-    <footer class="footer">
+    <footer class="footer" id="about_us">
         <div class="container">
             <div class="footer-content">
 
