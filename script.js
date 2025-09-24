@@ -734,111 +734,162 @@ const tipsTL = [
 
 const tipsData = {
   home: {
-    en: tipsEN,
-    tl: tipsTL,
+    en: [
+      "Keep drinking glasses and utensils clean",
+      "Sweep and mop floors regularly to remove dirt",
+      "Dispose of garbage properly to avoid pests",
+      "Wash bed sheets and clothes with clean water",
+      "Disinfect commonly touched surfaces like doorknobs",
+      "Keep toilets and bathrooms clean with soap or disinfectant"
+    ],
+    tl: [
+      "Panatilihing malinis ang mga baso at gamit sa pagkain",
+      "Walisin at mop ang sahig nang regular upang alisin ang dumi",
+      "Itapon ng maayos ang basura upang maiwasan ang peste",
+      "Labhan ang mga kumot at damit gamit ang malinis na tubig",
+      "Disimpektahin ang madalas hinahawakan tulad ng door knob",
+      "Panatilihing malinis ang palikuran at banyo gamit ang sabon o disinfectant"
+    ],
     title: { en: "🏠 Home Hygiene Tips", tl: "🏠 Mga Tip sa Kalinisan sa Bahay" }
   },
+
   disease: {
-  en: [
-    "Wash your hands before eating to avoid germs",
-    "Always drink clean, boiled, or filtered water",
-    "Cover your mouth when coughing or sneezing",
-  ],
-  tl: [
-    "Maghugas ng kamay bago kumain upang iwasan ang mikrobyo",
-    "Uminom ng malinis, pinakuluang, o sinalang tubig",
-    "Takpan ang bibig kapag umuubo o bumabahin",
-  ],
-  title: { 
-    en: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/hospital.png' /> Prevents Disease", 
-    tl: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/hospital.png' /> Nagiging Hadlang sa Sakit" 
-  }
-},
+    en: [
+      "Wash your hands before eating to avoid germs",
+      "Always drink clean, boiled, or filtered water",
+      "Cover your mouth when coughing or sneezing",
+      "Avoid sharing personal items like towels or utensils",
+      "Cook food thoroughly to kill harmful bacteria",
+      "Stay home if feeling sick to prevent spreading illness"
+    ],
+    tl: [
+      "Maghugas ng kamay bago kumain upang iwasan ang mikrobyo",
+      "Uminom ng malinis, pinakuluang, o sinalang tubig",
+      "Takpan ang bibig kapag umuubo o bumabahin",
+      "Iwasang magbahagi ng personal na gamit tulad ng tuwalya o kubyertos",
+      "Lutuing mabuti ang pagkain upang mapatay ang mikrobyo",
+      "Manatili sa bahay kung may sakit upang hindi makahawa"
+    ],
+    title: { 
+      en: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/hospital.png' /> Prevents Disease", 
+      tl: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/hospital.png' /> Nagiging Hadlang sa Sakit" 
+    }
+  },
 
-strong: {
-  en: [
-    "Drink at least 8 glasses of clean water daily",
-    "Eat fruits and vegetables washed with clean water",
-    "Stay active and hydrated",
-  ],
-  tl: [
-    "Uminom ng 8 baso ng malinis na tubig araw-araw",
-    "Kumain ng prutas at gulay na hinugasan ng malinis na tubig",
-    "Maging aktibo at manatiling hydrated",
-  ],
-  title: { 
-    en: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/strong.png' /> Keeps Us Strong", 
-    tl: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/strong.png' /> Nagiging Malakas Tayo" 
-  }
-},
+  strong: {
+    en: [
+      "Drink at least 8 glasses of clean water daily",
+      "Eat fruits and vegetables washed with clean water",
+      "Stay active and hydrated",
+      "Sleep at least 7–8 hours every night",
+      "Avoid too many sugary drinks and junk food",
+      "Practice regular exercise for strong muscles and bones"
+    ],
+    tl: [
+      "Uminom ng 8 baso ng malinis na tubig araw-araw",
+      "Kumain ng prutas at gulay na hinugasan ng malinis na tubig",
+      "Maging aktibo at manatiling hydrated",
+      "Matulog ng 7–8 oras gabi-gabi",
+      "Iwasan ang sobrang matatamis na inumin at junk food",
+      "Mag-ehersisyo nang regular para sa malakas na kalamnan at buto"
+    ],
+    title: { 
+      en: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/strong.png' /> Keeps Us Strong", 
+      tl: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/strong.png' /> Nagiging Malakas Tayo" 
+    }
+  },
 
-community: {
-  en: [
-    "Share clean water with neighbors in need",
-    "Keep community wells clean and safe",
-    "Join clean-up drives to protect water sources",
-  ],
-  tl: [
-    "Ibahagi ang malinis na tubig sa kapitbahay na nangangailangan",
-    "Panatilihing malinis at ligtas ang poso o balon ng komunidad",
-    "Sumali sa clean-up drive para maprotektahan ang mga pinagkukunan ng tubig",
-  ],
-  title: { 
-    en: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/world.png' /> Helps Communities", 
-    tl: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/wrodl.png' /> Tumutulong sa mga Komunidad" 
-  }
-},
+  community: {
+    en: [
+      "Share clean water with neighbors in need",
+      "Keep community wells clean and safe",
+      "Join clean-up drives to protect water sources",
+      "Report broken pipes or leaks to authorities",
+      "Work together to build safe water facilities",
+      "Educate children about proper hygiene in the community"
+    ],
+    tl: [
+      "Ibahagi ang malinis na tubig sa kapitbahay na nangangailangan",
+      "Panatilihing malinis at ligtas ang poso o balon ng komunidad",
+      "Sumali sa clean-up drive para maprotektahan ang mga pinagkukunan ng tubig",
+      "Iulat ang mga sirang tubo o tagas sa mga awtoridad",
+      "Magtulungan sa paggawa ng ligtas na pasilidad ng tubig",
+      "Turuan ang mga bata tungkol sa tamang kalinisan sa komunidad"
+    ],
+    title: { 
+      en: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/world.png' /> Helps Communities", 
+      tl: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/wrodl.png' /> Tumutulong sa mga Komunidad" 
+    }
+  },
 
-environment: {
-  en: [
-    "Avoid throwing trash into rivers and lakes",
-    "Use water wisely to prevent waste",
-    "Plant trees to help protect clean water sources",
-  ],
-  tl: [
-    "Iwasang magtapon ng basura sa ilog at lawa",
-    "Gamitin ang tubig nang matalino upang hindi masayang",
-    "Magtanim ng puno upang maprotektahan ang pinagkukunan ng malinis na tubig",
-  ],
-  title: { 
-    en: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/plant.png' /> Protects the Environment", 
-    tl: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/plant.png' /> Pinoprotektahan ang Kapaligiran" 
-  }
-},
+  environment: {
+    en: [
+      "Avoid throwing trash into rivers and lakes",
+      "Use water wisely to prevent waste",
+      "Plant trees to help protect clean water sources",
+      "Reduce use of plastic to prevent water pollution",
+      "Recycle water when possible (like using laundry water for cleaning floors)",
+      "Support eco-friendly programs in your area"
+    ],
+    tl: [
+      "Iwasang magtapon ng basura sa ilog at lawa",
+      "Gamitin ang tubig nang matalino upang hindi masayang",
+      "Magtanim ng puno upang maprotektahan ang pinagkukunan ng malinis na tubig",
+      "Bawasan ang paggamit ng plastik upang maiwasan ang polusyon sa tubig",
+      "Gamitin muli ang tubig kung maaari (tulad ng tubig sa labada para sa paglilinis ng sahig)",
+      "Suportahan ang mga eco-friendly na programa sa inyong lugar"
+    ],
+    title: { 
+      en: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/plant.png' /> Protects the Environment", 
+      tl: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/plant.png' /> Pinoprotektahan ang Kapaligiran" 
+    }
+  },
 
-happiness: {
-  en: [
-    "Enjoy playing outdoors with clean water for fun and games",
-    "Cook meals safely with clean water",
-    "Stay refreshed and happy by drinking safe water",
-  ],
-  tl: [
-    "Magsaya sa paglalaro sa labas gamit ang malinis na tubig para sa laro",
-    "Magluto ng ligtas na pagkain gamit ang malinis na tubig",
-    "Manatiling presko at masaya sa pag-inom ng ligtas na tubig",
-  ],
-  title: { 
-      en: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/happy.png'/>  Boosts Happiness", 
-      tl: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/happy.png'/> Nagpapasaya" 
-  }
-},
+  happiness: {
+    en: [
+      "Enjoy playing outdoors with clean water for fun and games",
+      "Cook meals safely with clean water",
+      "Stay refreshed and happy by drinking safe water",
+      "Take relaxing baths with clean water after a long day",
+      "Bond with family during safe, clean mealtime",
+      "Smile more knowing you are healthy with clean water"
+    ],
+    tl: [
+      "Magsaya sa paglalaro sa labas gamit ang malinis na tubig para sa laro",
+      "Magluto ng ligtas na pagkain gamit ang malinis na tubig",
+      "Manatiling presko at masaya sa pag-inom ng ligtas na tubig",
+      "Mag-relax sa paliligo gamit ang malinis na tubig matapos ang mahabang araw",
+      "Magsama-sama ang pamilya sa ligtas at malinis na pagkain",
+      "Mas madalas na ngumiti dahil malusog ka sa malinis na tubig"
+    ],
+    title: { 
+        en: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/happy.png'/>  Boosts Happiness", 
+        tl: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/happy.png'/> Nagpapasaya" 
+    }
+  },
 
-learning: {
-  en: [
-    "Clean water helps kids stay healthy so they don’t miss school",
-    "Good hygiene makes it easier to focus in class",
-    "Handwashing with clean water prevents sickness during study time",
-  ],
-  tl: [
-    "Nakakatulong ang malinis na tubig upang manatiling malusog ang mga bata at hindi makaliban sa klase",
-    "Ang mabuting kalinisan ay nakakatulong upang makapagpokus sa pag-aaral",
-    "Ang paghuhugas ng kamay gamit ang malinis na tubig ay nakakaiwas sa sakit habang nag-aaral",
-  ],
-  title: { 
-    en: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/grad.png' /> Supports Learning", 
-    tl: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/grad.png' /> Sumusuporta sa Pag-aaral" 
+  learning: {
+    en: [
+      "Clean water helps kids stay healthy so they don’t miss school",
+      "Good hygiene makes it easier to focus in class",
+      "Handwashing with clean water prevents sickness during study time",
+      "Bring a water bottle to school to stay hydrated",
+      "Wash fruits before eating during recess",
+      "A healthy body helps the brain learn faster"
+    ],
+    tl: [
+      "Nakakatulong ang malinis na tubig upang manatiling malusog ang mga bata at hindi makaliban sa klase",
+      "Ang mabuting kalinisan ay nakakatulong upang makapagpokus sa pag-aaral",
+      "Ang paghuhugas ng kamay gamit ang malinis na tubig ay nakakaiwas sa sakit habang nag-aaral",
+      "Magdala ng sariling bote ng tubig sa paaralan upang manatiling hydrated",
+      "Hugasan ang prutas bago kainin tuwing recess",
+      "Ang malusog na katawan ay nakakatulong sa mas mabilis na pagkatuto"
+    ],
+    title: { 
+      en: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/grad.png' /> Supports Learning", 
+      tl: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/grad.png' /> Sumusuporta sa Pag-aaral" 
+    }
   }
- }
 };
 
 function showHomeTips(type = "home") {
@@ -1151,6 +1202,7 @@ function initializeClearData() {
         }
     });
 }
+
 
 
 
