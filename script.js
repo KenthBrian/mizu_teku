@@ -188,7 +188,7 @@ let memoryCards = [];
 let flippedCards = [];
 let canFlip = true;
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener("DOMContentLoaded", function () {
     initializeLanguageSwitcher();
     initializeFactsSlider();
     initializeGermGame();
@@ -199,6 +199,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeHamburgerMenu();
     initializeGameResets();
     initializeBadges();
+    initializeClearData();
 });
 
 function initializeLanguageSwitcher() {
@@ -447,40 +448,44 @@ function initializeQuiz() {
     });
 }
 
-
-
-
 // Puzzle Game
 function initializePuzzleGame() {
-    const soapItems = document.querySelectorAll('.puzzle-item[data-type="soap"]');
-    const handTargets = document.querySelectorAll('.puzzle-target[data-type="hands"]');
+    const soapItems = document.querySelectorAll('.puzzle-item');
+    const handTargets = document.querySelectorAll('.puzzle-target');
     const scoreElement = document.getElementById('puzzle-score');
-    
+
+    puzzleScore = 0;
+    scoreElement.textContent = puzzleScore;
+
+    // Enable dragging soaps
     soapItems.forEach(soap => {
         soap.addEventListener('dragstart', (e) => {
-            e.dataTransfer.setData('text/plain', 'soap');
+            e.dataTransfer.setData('text/plain', soap.dataset.type);
         });
     });
-    
+
+    // Enable dropping on dirty hands
     handTargets.forEach(target => {
         target.addEventListener('dragover', (e) => {
             e.preventDefault();
         });
-        
+
         target.addEventListener('drop', (e) => {
             e.preventDefault();
             const draggedType = e.dataTransfer.getData('text/plain');
-            
-            if (draggedType === 'soap' && !target.classList.contains('correct')) {
+
+            // Check if the soap type matches the hand type
+            if (draggedType === target.dataset.type && !target.classList.contains('correct')) {
                 target.classList.add('correct');
                 target.innerHTML = '🤲✨'; // Clean hands
                 puzzleScore++;
                 scoreElement.textContent = puzzleScore;
-                
-                if (puzzleScore === 3) {
+
+                // Win condition
+                if (puzzleScore === handTargets.length) {
                     setTimeout(() => {
-                        alert(currentLanguage === 'en' 
-                            ? 'Perfect! Soap makes hands clean!' 
+                        alert(currentLanguage === 'en'
+                            ? 'Perfect! Soap makes hands clean!'
                             : 'Perpekto! Ang sabon ay naglilinis ng kamay!');
                         earnBadge('badge-soap-saver');
                     }, 500);
@@ -488,6 +493,22 @@ function initializePuzzleGame() {
             }
         });
     });
+
+    // Reset button
+    const resetBtn = document.getElementById('reset-puzzle');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+            puzzleScore = 0;
+            scoreElement.textContent = 0;
+
+            handTargets.forEach(target => {
+                target.classList.remove('correct');
+                if (target.dataset.type === 'mud') target.innerHTML = '🤲🌧️';
+                if (target.dataset.type === 'germs') target.innerHTML = '🤲🦠';
+                if (target.dataset.type === 'paint') target.innerHTML = '🤲🎨';
+            });
+        });
+    }
 }
 
 // Memory Game
@@ -564,20 +585,42 @@ function initializeMemoryGame() {
 }
 
 // Badge System
+// Load badges on page start
 function initializeBadges() {
+    const earnedBadges = JSON.parse(localStorage.getItem("earnedBadges")) || [];
+
+    earnedBadges.forEach((badgeId) => {
+        const badge = document.getElementById(badgeId);
+        if (badge) {
+            badge.classList.add("earned");
+        }
+    });
 }
 
 function earnBadge(badgeId) {
     const badge = document.getElementById(badgeId);
-    if (badge && !badge.classList.contains('earned')) {
-        badge.classList.add('earned');
+    if (badge && !badge.classList.contains("earned")) {
+        badge.classList.add("earned");
+
+        // Save to localStorage
+        let earnedBadges = JSON.parse(localStorage.getItem("earnedBadges")) || [];
+        if (!earnedBadges.includes(badgeId)) {
+            earnedBadges.push(badgeId);
+            localStorage.setItem("earnedBadges", JSON.stringify(earnedBadges));
+        }
+
         setTimeout(() => {
-            alert(currentLanguage === 'en' 
-                ? 'Badge earned! You are a Hygiene Hero!' 
-                : 'Badge na nakuha! Ikaw ay isang Hygiene Hero!');
+            alert(
+                currentLanguage === "en"
+                    ? "Badge earned! You are a Hygiene Hero!"
+                    : "Badge na nakuha! Ikaw ay isang Hygiene Hero!"
+            );
         }, 100);
     }
 }
+
+// Call this when the page loads
+window.addEventListener("load", initializeBadges);
 
 // Game Reset Functions
 function initializeGameResets() {
@@ -622,14 +665,27 @@ function resetQuizGame() {
 function resetPuzzleGame() {
     puzzleScore = 0;
     document.getElementById('puzzle-score').textContent = puzzleScore;
-    
+
     const targets = document.querySelectorAll('.puzzle-target');
     targets.forEach(target => {
         target.classList.remove('correct');
-        target.innerHTML = '🤲💩';
+
+        // Restore original dirty hand based on its type
+        switch (target.dataset.type) {
+            case 'mud':
+                target.innerHTML = '🤲🌧️';
+                break;
+            case 'germs':
+                target.innerHTML = '🤲🦠';
+                break;
+            case 'paint':
+                target.innerHTML = '🤲🎨';
+                break;
+        }
     });
-    
-    const soapItems = document.querySelectorAll('.puzzle-item[data-type="soap"]');
+
+    // Reset soaps
+    const soapItems = document.querySelectorAll('.puzzle-item');
     soapItems.forEach(soap => {
         soap.style.opacity = '1';
         soap.style.pointerEvents = 'auto';
@@ -1013,4 +1069,89 @@ function downloadCertificate() {
         alert("Please generate the certificate first.");
     }
 }
+
+//Username Section
+function updateGreeting() {
+    const username = localStorage.getItem("username");
+    const greetingEl = document.getElementById("userGreeting");
+    if (greetingEl) {
+        if (username) {
+            greetingEl.textContent = "Hi, " + username + "!";
+        } else {
+            greetingEl.textContent = "";
+        }
+    }
+}
+
+window.addEventListener("load", () => {
+    const modal = document.getElementById("usernameModal");
+    const closeBtn = document.getElementById("closeUsernameModal"); // X button
+    const saveBtn = document.getElementById("saveUsername");
+    const input = document.getElementById("usernameInput");
+
+    // Show modal if no username saved
+    if (!localStorage.getItem("username")) {
+        modal.classList.remove("hidden");
+        input.focus();
+    } else {
+        updateGreeting();
+    }
+
+    // Save username + close modal
+    saveBtn.addEventListener("click", () => {
+        const name = input.value.trim();
+        if (name) {
+            localStorage.setItem("username", name);
+            updateGreeting();
+            modal.classList.add("hidden"); // ✅ auto close
+        } else {
+            alert("Please enter your name!");
+            input.focus();
+        }
+    });
+});
+
+
+function saveUsername() {
+    const username = document.getElementById("usernameInput").value.trim();
+    if (username) {
+        localStorage.setItem("username", username);
+        alert("Welcome, " + username + "!");
+        closeUsernameModal();
+        updateGreeting();
+    } else {
+        alert("Please enter a valid username.");
+    }
+}
+
+function initializeClearData() {
+    const clearBtn = document.getElementById("clearDataBtn");
+    if (!clearBtn) {
+        console.error("❌ Clear Data button not found");
+        return;
+    }
+
+    clearBtn.addEventListener("click", () => {
+        console.log("✅ Clear Data clicked")
+
+        const confirmClear = confirm(
+            currentLanguage === "en"
+                ? "Are you sure you want to clear all saved data? This cannot be undone."
+                : "Sigurado ka bang gusto mong burahin ang lahat ng data? Hindi na ito maibabalik."
+        );
+
+        if (confirmClear) {
+            localStorage.clear();
+            alert(
+                currentLanguage === "en"
+                    ? "All data cleared! Refreshing..."
+                    : "Burado na ang lahat ng data! Nagre-refresh..."
+            );
+            location.reload();
+        }
+    });
+}
+
+
+
 
