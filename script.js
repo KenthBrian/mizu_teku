@@ -10,7 +10,7 @@ const translations = {
         
         // Hero section
         'Wash, Splash, Stay Healthy!': 'Wash, Splash, Stay Healthy!',
-        'Learn about water hygiene with Aqua and Soapy!': 'Learn about water hygiene with Aqua and Soapy!',
+        'Learn about water hygiene with us!': 'Learn about water hygiene with us!',
         'Start Learning': 'Start Learning',
         
         // Facts
@@ -82,7 +82,7 @@ const translations = {
         'Generate Certificate': 'Generate Certificate',
         
         // Footer
-        'AquaKids': 'AquaKids',
+        'MizuTeku': 'MizuTeku',
         'Learning water hygiene the fun way!': 'Learning water hygiene the fun way!',
         'Contact': 'Contact',
         'Schools and teachers welcome!': 'Schools and teachers welcome!',
@@ -98,7 +98,7 @@ const translations = {
         
         // Hero section
         'Wash, Splash, Stay Healthy!': 'Hugasan, Wisikan, Manatiling Malusog!',
-        'Learn about water hygiene with Aqua and Soapy!': 'Matuto tungkol sa kalinisan ng tubig kasama sina Aqua at Soapy!',
+        'Learn about water hygiene with US!': 'Matuto tungkol sa kalinisan ng tubig kasama kami!',
         'Start Learning': 'Simulang Matuto',
         
         // Facts
@@ -170,7 +170,7 @@ const translations = {
         'Generate Certificate': 'Gumawa ng Certificate',
         
         // Footer
-        'AquaKids': 'AquaKids',
+        'MizuTeku': 'MizuTeku',
         'Learning water hygiene the fun way!': 'Natutuhan ang kalinisan ng tubig sa masayang paraan!',
         'Contact': 'Makipag-ugnayan',
         'Schools and teachers welcome!': 'Malugod naming tinatanggap ang mga paaralan at guro!',
@@ -191,7 +191,7 @@ let canFlip = true;
 document.addEventListener("DOMContentLoaded", function () {
     initializeLanguageSwitcher();
     initializeFactsSlider();
-    initializeGermGame();
+    initializeDirtyGlassGame();
     initializeQuiz();
     initializePuzzleGame();
     initializeMemoryGame();
@@ -290,35 +290,84 @@ function initializeHamburgerMenu() {
     });
 }
 
-// Spot the Germs Game
-function initializeGermGame() {
-    const germs = document.querySelectorAll('.germ');
-    const scoreElement = document.getElementById('germs-found');
-    
-    germs.forEach(germ => {
-        const x = Math.random() * 80 + 10; 
-        const y = Math.random() * 70 + 20; 
-        germ.style.left = x + '%';
-        germ.style.top = y + '%';
-        
-        germ.addEventListener('click', () => {
-            if (!germ.classList.contains('found')) {
-                germ.classList.add('found');
-                germsFound++;
-                scoreElement.textContent = germsFound;
-                
-                if (germsFound === 5) {
-                    setTimeout(() => {
-                        alert(currentLanguage === 'en' 
-                            ? 'Great job! You found all the germs!' 
-                            : 'Magaling! Nahanap mo ang lahat ng mikrobyo!');
-                        earnBadge('badge-germ-buster');
-                    }, 500);
+const totalGlasses = 5;
+const dirtyGlassesCount = 3;
+const germsPerGlass = 5;
+
+function initializeDirtyGlassGame() {
+    const container = document.querySelector('.glasses-container');
+    const scoreElement = document.getElementById('dirty-found');
+    let dirtyFound = 0;
+
+    function generateGlasses() {
+        container.innerHTML = '';
+        dirtyFound = 0;
+        scoreElement.textContent = dirtyFound;
+
+        // Randomly choose which glasses are dirty
+        const dirtyIndices = [];
+        while (dirtyIndices.length < dirtyGlassesCount) {
+            const rand = Math.floor(Math.random() * totalGlasses);
+            if (!dirtyIndices.includes(rand)) dirtyIndices.push(rand);
+        }
+
+        for (let i = 0; i < totalGlasses; i++) {
+            const glass = document.createElement('div');
+            glass.classList.add('water-glass');
+            const isDirty = dirtyIndices.includes(i);
+            glass.dataset.dirty = isDirty ? 'true' : 'false';
+
+            // Set background color based on dirty/clean
+            if (isDirty) {
+                glass.style.background = 'linear-gradient(180deg, rgba(139,69,19,0.7) 0%, rgba(160,82,45,0.7) 50%, rgba(139,69,19,0.7) 100%)';
+            } else {
+                glass.style.background = 'linear-gradient(180deg, #87CEEB 0%, #B0E0E6 50%, #87CEFA 100%)';
+            }
+
+            // Add germs if dirty
+            if (isDirty) {
+                for (let j = 0; j < germsPerGlass; j++) {
+                    const germ = document.createElement('div');
+                    germ.classList.add('germ');
+                    germ.textContent = '🦠';
+                    germ.style.left = Math.random() * 80 + 10 + '%';
+                    germ.style.top = Math.random() * 70 + 20 + '%';
+                    glass.appendChild(germ);
                 }
             }
-        });
-    });
+
+            glass.addEventListener('click', () => {
+                if (!glass.classList.contains('selected')) {
+                    glass.classList.add('selected'); // triggers dark background
+
+                    if (isDirty) {
+                        glass.classList.add('dirty-found'); // ✅ add green check
+                        dirtyFound++;
+                        scoreElement.textContent = dirtyFound;
+
+                        if (dirtyFound === dirtyGlassesCount) {
+                            setTimeout(() => {
+                                alert('Great job! You found all the dirty glasses!');
+                                if (typeof earnBadge === 'function') earnBadge('badge-germ-buster');
+                            }, 300);
+                        }
+                    } else {
+                        glass.classList.add('clean-selected'); // ❌ add red cross
+                        alert('Oops! This one is clean.');
+                    }
+                }
+            });
+            container.appendChild(glass);
+        }
+    }
+
+    document.getElementById('reset-dirty').addEventListener('click', generateGlasses);
+
+    generateGlasses();
 }
+
+// Initialize the game
+initializeDirtyGlassGame();
 
 // Quiz Game (Drag and Drop)
 function initializeQuiz() {
@@ -624,26 +673,12 @@ window.addEventListener("load", initializeBadges);
 
 // Game Reset Functions
 function initializeGameResets() {
-    document.getElementById('reset-germs').addEventListener('click', resetGermsGame);
     
     document.getElementById('reset-quiz').addEventListener('click', resetQuizGame);
     
     document.getElementById('reset-puzzle').addEventListener('click', resetPuzzleGame);
 }
 
-function resetGermsGame() {
-    germsFound = 0;
-    document.getElementById('germs-found').textContent = germsFound;
-    
-    const germs = document.querySelectorAll('.germ');
-    germs.forEach(germ => {
-        germ.classList.remove('found');
-        const x = Math.random() * 80 + 10;
-        const y = Math.random() * 70 + 20;
-        germ.style.left = x + '%';
-        germ.style.top = y + '%';
-    });
-}
 
 function resetQuizGame() {
     quizScore = 0;
@@ -692,21 +727,71 @@ function resetPuzzleGame() {
     });
 }
 
+//Jingle Section
+
+document.addEventListener("DOMContentLoaded", () => {
+    const buttons = document.querySelectorAll(".jingle-btn");
+    const timerDisplay = document.getElementById("timer");
+
+    let audio = new Audio();
+    let countdown;
+
+    buttons.forEach(button => {
+        button.addEventListener("click", () => {
+            clearInterval(countdown);
+            audio.pause();
+            audio.currentTime = 0;
+
+            const src = button.getAttribute("data-src");
+            audio = new Audio(src);
+            audio.play();
+
+            let timeLeft = 30;
+            timerDisplay.textContent = timeLeft;
+
+            countdown = setInterval(() => {
+                timeLeft--;
+                timerDisplay.textContent = timeLeft;
+
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    audio.pause();
+                    audio.currentTime = 0;
+                }
+            }, 1000);
+        });
+    });
+});
+
 // Resource Functions
 function downloadPoster() {
+    const file = document.getElementById("posterSelect").value;
+    if (!file) {
+        alert("Please select a poster.");
+        return;
+    }
+
     const link = document.createElement('a');
-    link.href = './files/POSTER.pdf';  
-    link.target = "_blank"; 
+    link.href = `./files/${file}`;
+    link.target = "_blank";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 }
 
 function downloadWorksheet() {
+    const file = document.getElementById("worksheetSelect").value;
+    if (!file) {
+        alert("Please select a worksheet.");
+        return;
+    }
+
     const link = document.createElement('a');
-    link.href = './files/WORKSHEET.pdf';  
-   link.target = "_blank";
+    link.href = `./files/${file}`;
+    link.target = "_blank";
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
 }
 
 
@@ -733,177 +818,177 @@ const tipsTL = [
 ];
 
 const tipsData = {
-  home: {
-    en: [
-      "A clean home keeps families safe from germs and illnesses.",
-      "Handwashing before meals helps prevent food contamination.",
-      "Clean surroundings make daily life more comfortable and healthy.",
-      "Regular cleaning prevents pests like mosquitoes and cockroaches.",
-      "Sanitized surfaces reduce the chances of spreading colds and flu.",
-      "Proper waste disposal prevents unpleasant odors and infections.",
-      "Organized spaces reduce stress and promote well-being."
-    ],
-    tl: [
-      "Ang malinis na bahay ay nagpoprotekta sa pamilya laban sa mikrobyo at sakit.",
-      "Ang paghuhugas ng kamay bago kumain ay nakakaiwas sa kontaminasyon ng pagkain.",
-      "Ang malinis na kapaligiran ay nagbibigay ng mas maayos at malusog na pamumuhay.",
-      "Ang regular na paglilinis ay nakakaiwas sa peste tulad ng lamok at ipis.",
-      "Ang disimpektadong mga ibabaw ay nagpapababa ng tsansa ng sipon at trangkaso.",
-      "Ang maayos na pagtatapon ng basura ay pumipigil sa masamang amoy at impeksyon.",
-      "Ang organisadong lugar ay nagpapababa ng stress at nagpapasigla ng kalusugan."
-    ],
-    title: { en: "🏠 Home Hygiene", tl: "🏠 Kalinisan sa Bahay" }
-  },
+    home: {
+        en: [
+            "A clean home keeps families safe from germs and illnesses.",
+            "Handwashing before meals helps prevent food contamination.",
+            "Clean surroundings make daily life more comfortable and healthy.",
+            "Regular cleaning prevents pests like mosquitoes and cockroaches.",
+            "Sanitized surfaces reduce the chances of spreading colds and flu.",
+            "Proper waste disposal prevents unpleasant odors and infections.",
+            "Organized spaces reduce stress and promote well-being."
+        ],
+        tl: [
+            "Ang malinis na bahay ay nagpoprotekta sa pamilya laban sa mikrobyo at sakit.",
+            "Ang paghuhugas ng kamay bago kumain ay nakakaiwas sa kontaminasyon ng pagkain.",
+            "Ang malinis na kapaligiran ay nagbibigay ng mas maayos at malusog na pamumuhay.",
+            "Ang regular na paglilinis ay nakakaiwas sa peste tulad ng lamok at ipis.",
+            "Ang disimpektadong mga ibabaw ay nagpapababa ng tsansa ng sipon at trangkaso.",
+            "Ang maayos na pagtatapon ng basura ay pumipigil sa masamang amoy at impeksyon.",
+            "Ang organisadong lugar ay nagpapababa ng stress at nagpapasigla ng kalusugan."
+        ],
+        title: { en: "🏠 Home Hygiene", tl: "🏠 Kalinisan sa Bahay" }
+    },
 
-  disease: {
-    en: [
-      "Proper hygiene reduces the spread of bacteria and viruses.",
-      "Clean water and handwashing lower the risk of diarrhea and respiratory infections.",
-      "Preventing illness keeps people strong and avoids costly medical care.",
-      "Regular handwashing stops germs from spreading to family and friends.",
-      "Staying clean helps the immune system focus on fighting serious infections.",
-      "Teaching children good hygiene builds lifelong healthy habits.",
-      "Avoiding sickness means more energy for school, work, and play."
-    ],
-    tl: [
-      "Ang tamang kalinisan ay nagpapababa ng pagkalat ng bacteria at virus.",
-      "Ang malinis na tubig at paghuhugas ng kamay ay nakakaiwas sa pagtatae at impeksyon sa paghinga.",
-      "Ang pag-iwas sa sakit ay nagpapanatiling malakas at nakakaiwas sa magastos na gamutan.",
-      "Ang regular na paghuhugas ng kamay ay pumipigil sa pagkalat ng mikrobyo sa pamilya at kaibigan.",
-      "Ang pagiging malinis ay nakakatulong sa immune system na labanan ang malubhang impeksyon.",
-      "Ang pagtuturo sa mga bata ng mabuting kalinisan ay nagtatatag ng panghabambuhay na healthy habits.",
-      "Ang pag-iwas sa sakit ay nagbibigay ng mas maraming enerhiya para sa paaralan, trabaho, at laro."
-    ],
-    title: { 
-      en: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/hospital.png' /> Prevents Disease", 
-      tl: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/hospital.png' /> Nagiging Hadlang sa Sakit" 
-    }
-  },
+    disease: {
+        en: [
+            "Proper hygiene reduces the spread of bacteria and viruses.",
+            "Clean water and handwashing lower the risk of diarrhea and respiratory infections.",
+            "Preventing illness keeps people strong and avoids costly medical care.",
+            "Regular handwashing stops germs from spreading to family and friends.",
+            "Staying clean helps the immune system focus on fighting serious infections.",
+            "Teaching children good hygiene builds lifelong healthy habits.",
+            "Avoiding sickness means more energy for school, work, and play."
+        ],
+        tl: [
+            "Ang tamang kalinisan ay nagpapababa ng pagkalat ng bacteria at virus.",
+            "Ang malinis na tubig at paghuhugas ng kamay ay nakakaiwas sa pagtatae at impeksyon sa paghinga.",
+            "Ang pag-iwas sa sakit ay nagpapanatiling malakas at nakakaiwas sa magastos na gamutan.",
+            "Ang regular na paghuhugas ng kamay ay pumipigil sa pagkalat ng mikrobyo sa pamilya at kaibigan.",
+            "Ang pagiging malinis ay nakakatulong sa immune system na labanan ang malubhang impeksyon.",
+            "Ang pagtuturo sa mga bata ng mabuting kalinisan ay nagtatatag ng panghabambuhay na healthy habits.",
+            "Ang pag-iwas sa sakit ay nagbibigay ng mas maraming enerhiya para sa paaralan, trabaho, at laro."
+        ],
+        title: {
+            en: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/hospital.png' /> Prevents Disease",
+            tl: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/hospital.png' /> Nagiging Hadlang sa Sakit"
+        }
+    },
 
-  strong: {
-    en: [
-      "Clean water keeps the body hydrated and full of energy.",
-      "Washing fruits and vegetables ensures safe and nutritious meals.",
-      "Good hygiene builds strong bodies ready for work and play.",
-      "Eating safely prepared food strengthens immunity.",
-      "Regular hygiene prevents frequent illnesses that weaken the body.",
-      "Healthy habits from clean water improve growth and development.",
-      "Staying clean and healthy allows people to enjoy daily activities fully."
-    ],
-    tl: [
-      "Ang malinis na tubig ay nagpapanatiling hydrated at puno ng enerhiya ang katawan.",
-      "Ang paghuhugas ng prutas at gulay ay nakakasiguro ng ligtas at masustansyang pagkain.",
-      "Ang mabuting kalinisan ay nagpapatibay ng katawan para sa trabaho at laro.",
-      "Ang ligtas na pagkain ay nagpapalakas ng immune system.",
-      "Ang regular na kalinisan ay pumipigil sa madalas na sakit na nagpapahina sa katawan.",
-      "Ang malusog na gawi mula sa malinis na tubig ay nagpapabuti ng paglaki at development.",
-      "Ang pagiging malinis at malusog ay nagbibigay kakayahang masulit ang pang-araw-araw na gawain."
-    ],
-    title: { 
-      en: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/strong.png' /> Keeps Us Strong", 
-      tl: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/strong.png' /> Nagiging Malakas Tayo" 
-    }
-  },
+    strong: {
+        en: [
+            "Clean water keeps the body hydrated and full of energy.",
+            "Washing fruits and vegetables ensures safe and nutritious meals.",
+            "Good hygiene builds strong bodies ready for work and play.",
+            "Eating safely prepared food strengthens immunity.",
+            "Regular hygiene prevents frequent illnesses that weaken the body.",
+            "Healthy habits from clean water improve growth and development.",
+            "Staying clean and healthy allows people to enjoy daily activities fully."
+        ],
+        tl: [
+            "Ang malinis na tubig ay nagpapanatiling hydrated at puno ng enerhiya ang katawan.",
+            "Ang paghuhugas ng prutas at gulay ay nakakasiguro ng ligtas at masustansyang pagkain.",
+            "Ang mabuting kalinisan ay nagpapatibay ng katawan para sa trabaho at laro.",
+            "Ang ligtas na pagkain ay nagpapalakas ng immune system.",
+            "Ang regular na kalinisan ay pumipigil sa madalas na sakit na nagpapahina sa katawan.",
+            "Ang malusog na gawi mula sa malinis na tubig ay nagpapabuti ng paglaki at development.",
+            "Ang pagiging malinis at malusog ay nagbibigay kakayahang masulit ang pang-araw-araw na gawain."
+        ],
+        title: {
+            en: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/strong.png' /> Keeps Us Strong",
+            tl: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/strong.png' /> Nagiging Malakas Tayo"
+        }
+    },
 
-  community: {
-    en: [
-      "Clean water unites communities by ensuring everyone’s safety.",
-      "Shared hygiene practices reduce the spread of sickness in neighborhoods.",
-      "Healthy communities are stronger and more productive together.",
-      "Educating neighbors about hygiene creates long-term benefits.",
-      "Clean water helps prevent outbreaks that affect entire villages.",
-      "Community well-being improves when everyone follows safe hygiene.",
-      "Supporting each other in hygiene practices strengthens bonds and trust."
-    ],
-    tl: [
-      "Pinagbubuklod ng malinis na tubig ang komunidad dahil ito’y para sa kaligtasan ng lahat.",
-      "Ang sabayang kalinisan ay nakakapigil sa pagkalat ng sakit sa mga kapitbahayan.",
-      "Ang malulusog na komunidad ay mas malakas at mas produktibo nang magkakasama.",
-      "Ang pagtuturo sa kapitbahay tungkol sa kalinisan ay nagdudulot ng pangmatagalang benepisyo.",
-      "Ang malinis na tubig ay nakakaiwas sa outbreak na nakakaapekto sa buong baryo.",
-      "Ang kabutihang panlipunan ay tumataas kapag lahat ay sumusunod sa ligtas na kalinisan.",
-      "Ang pagtutulungan sa kalinisan ay nagpapatibay ng ugnayan at tiwala sa isa’t isa."
-    ],
-    title: { 
-      en: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/world.png' /> Helps Communities", 
-      tl: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/wrodl.png' /> Tumutulong sa mga Komunidad" 
-    }
-  },
+    community: {
+        en: [
+            "Clean water unites communities by ensuring everyone’s safety.",
+            "Shared hygiene practices reduce the spread of sickness in neighborhoods.",
+            "Healthy communities are stronger and more productive together.",
+            "Educating neighbors about hygiene creates long-term benefits.",
+            "Clean water helps prevent outbreaks that affect entire villages.",
+            "Community well-being improves when everyone follows safe hygiene.",
+            "Supporting each other in hygiene practices strengthens bonds and trust."
+        ],
+        tl: [
+            "Pinagbubuklod ng malinis na tubig ang komunidad dahil ito’y para sa kaligtasan ng lahat.",
+            "Ang sabayang kalinisan ay nakakapigil sa pagkalat ng sakit sa mga kapitbahayan.",
+            "Ang malulusog na komunidad ay mas malakas at mas produktibo nang magkakasama.",
+            "Ang pagtuturo sa kapitbahay tungkol sa kalinisan ay nagdudulot ng pangmatagalang benepisyo.",
+            "Ang malinis na tubig ay nakakaiwas sa outbreak na nakakaapekto sa buong baryo.",
+            "Ang kabutihang panlipunan ay tumataas kapag lahat ay sumusunod sa ligtas na kalinisan.",
+            "Ang pagtutulungan sa kalinisan ay nagpapatibay ng ugnayan at tiwala sa isa’t isa."
+        ],
+        title: {
+            en: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/world.png' /> Helps Communities",
+            tl: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/wrodl.png' /> Tumutulong sa mga Komunidad"
+        }
+    },
 
-  environment: {
-    en: [
-      "Clean water depends on protecting rivers, lakes, and forests.",
-      "Good hygiene prevents pollution from spreading into water sources.",
-      "Caring for the environment secures clean water for future generations.",
-      "Proper waste disposal reduces harmful chemicals reaching water bodies.",
-      "Planting trees and greenery filters water naturally and prevents soil erosion.",
-      "Reducing litter ensures aquatic life remains healthy and sustainable.",
-      "Communities with clean environments enjoy better overall health."
-    ],
-    tl: [
-      "Nakasalalay sa pangangalaga ng ilog, lawa, at kagubatan ang malinis na tubig.",
-      "Ang mabuting kalinisan ay pumipigil sa polusyon na makontamina ang tubig.",
-      "Ang pag-aalaga sa kalikasan ay nagsisiguro ng malinis na tubig para sa susunod na henerasyon.",
-      "Ang wastong pagtatapon ng basura ay nagpapababa ng nakalalasong kemikal sa mga tubig.",
-      "Ang pagtatanim ng puno at halaman ay natural na nagfi-filter ng tubig at pumipigil sa soil erosion.",
-      "Ang pagbabawas ng basura ay nakakatulong sa malusog at sustainable na buhay ng mga hayop sa tubig.",
-      "Ang komunidad na may malinis na kapaligiran ay mas malusog ang kabuuang pamumuhay."
-    ],
-    title: { 
-      en: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/plant.png' /> Protects the Environment", 
-      tl: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/plant.png' /> Pinoprotektahan ang Kapaligiran" 
-    }
-  },
+    environment: {
+        en: [
+            "Clean water depends on protecting rivers, lakes, and forests.",
+            "Good hygiene prevents pollution from spreading into water sources.",
+            "Caring for the environment secures clean water for future generations.",
+            "Proper waste disposal reduces harmful chemicals reaching water bodies.",
+            "Planting trees and greenery filters water naturally and prevents soil erosion.",
+            "Reducing litter ensures aquatic life remains healthy and sustainable.",
+            "Communities with clean environments enjoy better overall health."
+        ],
+        tl: [
+            "Nakasalalay sa pangangalaga ng ilog, lawa, at kagubatan ang malinis na tubig.",
+            "Ang mabuting kalinisan ay pumipigil sa polusyon na makontamina ang tubig.",
+            "Ang pag-aalaga sa kalikasan ay nagsisiguro ng malinis na tubig para sa susunod na henerasyon.",
+            "Ang wastong pagtatapon ng basura ay nagpapababa ng nakalalasong kemikal sa mga tubig.",
+            "Ang pagtatanim ng puno at halaman ay natural na nagfi-filter ng tubig at pumipigil sa soil erosion.",
+            "Ang pagbabawas ng basura ay nakakatulong sa malusog at sustainable na buhay ng mga hayop sa tubig.",
+            "Ang komunidad na may malinis na kapaligiran ay mas malusog ang kabuuang pamumuhay."
+        ],
+        title: {
+            en: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/plant.png' /> Protects the Environment",
+            tl: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/plant.png' /> Pinoprotektahan ang Kapaligiran"
+        }
+    },
 
-  happiness: {
-    en: [
-      "Clean water brings comfort in daily life and family activities.",
-      "Good hygiene makes people feel fresh, confident, and happy.",
-      "Healthy bodies lead to joyful play, meals, and togetherness.",
-      "Hygienic habits reduce stress from illness and discomfort.",
-      "Children enjoy outdoor activities more when surroundings are clean.",
-      "Feeling safe and clean enhances overall mood and positivity.",
-      "Hygiene allows families to celebrate life with fewer interruptions from sickness."
-    ],
-    tl: [
-      "Nagbibigay ng ginhawa sa araw-araw at sa pamilya ang malinis na tubig.",
-      "Ang mabuting kalinisan ay nagpapasigla at nagpapataas ng kumpiyansa at kasiyahan.",
-      "Ang malusog na katawan ay nagdudulot ng masayang laro, pagkain, at samahan.",
-      "Ang malinis na gawi ay nagpapababa ng stress mula sa sakit at kakulangan sa ginhawa.",
-      "Mas nag-eenjoy ang mga bata sa paglalaro sa labas kapag malinis ang kapaligiran.",
-      "Ang pakiramdam ng kaligtasan at kalinisan ay nagpapataas ng magandang mood at positibong pananaw.",
-      "Pinapayagan ng kalinisan ang pamilya na magsaya nang hindi madalas maistorbo ng sakit."
-    ],
-    title: { 
-        en: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/happy.png'/>  Boosts Happiness", 
-        tl: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/happy.png'/> Nagpapasaya" 
-    }
-  },
+    happiness: {
+        en: [
+            "Clean water brings comfort in daily life and family activities.",
+            "Good hygiene makes people feel fresh, confident, and happy.",
+            "Healthy bodies lead to joyful play, meals, and togetherness.",
+            "Hygienic habits reduce stress from illness and discomfort.",
+            "Children enjoy outdoor activities more when surroundings are clean.",
+            "Feeling safe and clean enhances overall mood and positivity.",
+            "Hygiene allows families to celebrate life with fewer interruptions from sickness."
+        ],
+        tl: [
+            "Nagbibigay ng ginhawa sa araw-araw at sa pamilya ang malinis na tubig.",
+            "Ang mabuting kalinisan ay nagpapasigla at nagpapataas ng kumpiyansa at kasiyahan.",
+            "Ang malusog na katawan ay nagdudulot ng masayang laro, pagkain, at samahan.",
+            "Ang malinis na gawi ay nagpapababa ng stress mula sa sakit at kakulangan sa ginhawa.",
+            "Mas nag-eenjoy ang mga bata sa paglalaro sa labas kapag malinis ang kapaligiran.",
+            "Ang pakiramdam ng kaligtasan at kalinisan ay nagpapataas ng magandang mood at positibong pananaw.",
+            "Pinapayagan ng kalinisan ang pamilya na magsaya nang hindi madalas maistorbo ng sakit."
+        ],
+        title: {
+            en: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/happy.png'/>  Boosts Happiness",
+            tl: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/happy.png'/> Nagpapasaya"
+        }
+    },
 
-  learning: {
-    en: [
-      "Healthy students miss fewer school days and learn more.",
-      "Clean water and hygiene improve focus and classroom performance.",
-      "Children with good hygiene grow into smarter, healthier adults.",
-      "Frequent illness can slow learning and cognitive development.",
-      "Staying clean prevents distractions caused by discomfort or sickness.",
-      "Teaching hygiene habits early helps students develop lifelong routines.",
-      "A safe, healthy environment supports curiosity, creativity, and participation."
-    ],
-    tl: [
-      "Ang malulusog na mag-aaral ay bihirang lumiban at mas natututo.",
-      "Ang malinis na tubig at kalinisan ay nagpapabuti ng pokus at pagganap sa klase.",
-      "Ang mga batang may mabuting kalinisan ay lumalaking mas matalino at mas malusog.",
-      "Ang madalas na sakit ay nakakapagpabagal sa pagkatuto at cognitive development.",
-      "Ang pagiging malinis ay pumipigil sa mga abala dulot ng kakulangan sa ginhawa o sakit.",
-      "Ang pagtuturo ng gawi sa kalinisan nang maaga ay tumutulong sa panghabambuhay na routine ng mag-aaral.",
-      "Ang ligtas at malusog na kapaligiran ay sumusuporta sa curiosity, creativity, at participation."
-    ],
-    title: { 
-      en: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/grad.png' /> Supports Learning", 
-      tl: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/grad.png' /> Sumusuporta sa Pag-aaral" 
+    learning: {
+        en: [
+            "Healthy students miss fewer school days and learn more.",
+            "Clean water and hygiene improve focus and classroom performance.",
+            "Children with good hygiene grow into smarter, healthier adults.",
+            "Frequent illness can slow learning and cognitive development.",
+            "Staying clean prevents distractions caused by discomfort or sickness.",
+            "Teaching hygiene habits early helps students develop lifelong routines.",
+            "A safe, healthy environment supports curiosity, creativity, and participation."
+        ],
+        tl: [
+            "Ang malulusog na mag-aaral ay bihirang lumiban at mas natututo.",
+            "Ang malinis na tubig at kalinisan ay nagpapabuti ng pokus at pagganap sa klase.",
+            "Ang mga batang may mabuting kalinisan ay lumalaking mas matalino at mas malusog.",
+            "Ang madalas na sakit ay nakakapagpabagal sa pagkatuto at cognitive development.",
+            "Ang pagiging malinis ay pumipigil sa mga abala dulot ng kakulangan sa ginhawa o sakit.",
+            "Ang pagtuturo ng gawi sa kalinisan nang maaga ay tumutulong sa panghabambuhay na routine ng mag-aaral.",
+            "Ang ligtas at malusog na kapaligiran ay sumusuporta sa curiosity, creativity, at participation."
+        ],
+        title: {
+            en: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/grad.png' /> Supports Learning",
+            tl: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/grad.png' /> Sumusuporta sa Pag-aaral"
+        }
     }
-  }
 };
 
 function showHomeTips(type = "home") {
@@ -1035,7 +1120,7 @@ function allBadgesEarned() {
 let generatedPDF = null;
 
 function generateCertificate() {
-    if (allBadgesEarned()) {
+    if (!allBadgesEarned()) {
         alert(currentLanguage === 'en'
             ? 'Earn all the badges first before generating your certificate!'
             : 'Kunin muna lahat ng badge bago makagawa ng certificate!');
@@ -1216,8 +1301,6 @@ function initializeClearData() {
         }
     });
 }
-
-
 
 
 
