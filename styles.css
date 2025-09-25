@@ -1413,6 +1413,10 @@ body {
 }
 
 @media (max-width:460px) {
+    .resource-card {
+        width: 300px;
+    }
+    
     .scenarios {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
@@ -1515,5 +1519,6 @@ body {
         transform: scale(1);
     }
 }
+
 
 
