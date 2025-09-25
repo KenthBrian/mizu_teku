@@ -1413,7 +1413,7 @@ body {
 
 @media (max-width:460px) {
     .resource-card {
-        width: 280px;
+        width: 290px;
     }
     
     .scenarios {
@@ -1518,6 +1518,7 @@ body {
         transform: scale(1);
     }
 }
+
 
 
 
