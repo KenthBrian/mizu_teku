@@ -1404,6 +1404,7 @@ body {
 
     .info-item {
         padding: 1.5rem;
+        width: 300px;
     }
 
     .resource-card {
@@ -1514,3 +1515,4 @@ body {
         transform: scale(1);
     }
 }
+
