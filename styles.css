@@ -1426,7 +1426,7 @@ body {
         box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
         text-align: center;
         transition: all 0.3s ease;
-        width: 150px;
+        width: 110px;
         cursor: pointer;
     }
 
@@ -1436,7 +1436,7 @@ body {
     }
 
     .drop-zone {
-        width: 140px;
+        width: 110px;
     }
 }
 
@@ -1515,4 +1515,5 @@ body {
         transform: scale(1);
     }
 }
+
 
