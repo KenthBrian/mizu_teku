@@ -1325,7 +1325,6 @@ body {
         box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
         text-align: center;
         transition: all 0.3s ease;
-        font-size
         width: 90px;
         cursor: pointer;
     }
@@ -1414,7 +1413,7 @@ body {
 
 @media (max-width:460px) {
     .resource-card {
-        width: 300px;
+        width: 260px;
     }
     
     .scenarios {
@@ -1519,6 +1518,7 @@ body {
         transform: scale(1);
     }
 }
+
 
 
 
