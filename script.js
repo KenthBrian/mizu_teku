@@ -475,14 +475,19 @@ function initializeQuiz() {
 
         setTimeout(() => {
             if (quizScore === totalQuestions) {
-                alert(currentLanguage === 'en'
-                    ? 'Excellent! You know when to wash hands!'
-                    : 'Napakahusay! Alam mo kung kailan hugasan ang kamay!');
+                showAlertModal(
+                    currentLanguage === 'en' ? 'Excellent!' : 'Napakahusay!',
+                    currentLanguage === 'en'
+                        ? 'You know when to wash hands!'
+                        : 'Alam mo kung kailan hugasan ang kamay!'
+                );
                 earnBadge('badge-quiz-master');
             } else {
-                alert(currentLanguage === 'en'
-                    ? 'Some answers are incorrect:\n\n' + incorrectCards.join("\n")
-                    : 'May mga maling sagot:\n\n' + incorrectCards.join("\n"));
+                showAlertModal(
+                    currentLanguage === 'en' ? 'Try Again!' : 'Subukan Muli!',
+                    currentLanguage === 'en'
+                        ? 'Some answers are incorrect:\n\n' + incorrectCards.join("\n")
+                        : 'May mga maling sagot:\n\n' + incorrectCards.join("\n"));
             }
         }, 500);
     }
@@ -552,9 +557,12 @@ function initializePuzzleGame() {
                 // Win condition
                 if (puzzleScore === handTargets.length) {
                     setTimeout(() => {
-                        alert(currentLanguage === 'en'
-                            ? 'Perfect! Soap makes hands clean!'
-                            : 'Perpekto! Ang sabon ay naglilinis ng kamay!');
+                        showAlertModal(
+                            currentLanguage === 'en' ? 'Perfect!' : 'Perpekto!',
+                            currentLanguage === 'en'
+                                ? 'Soap makes hands clean!'
+                                : 'Ang sabon ay naglilinis ng kamay!'
+                        );
                         earnBadge('badge-soap-saver');
                     }, 500);
                 }
@@ -629,9 +637,12 @@ function initializeMemoryGame() {
                     
                     if (memoryScore === 6) {
                         setTimeout(() => {
-                            alert(currentLanguage === 'en' 
-                                ? 'Amazing memory! You found all pairs!' 
-                                : 'Kamangha-manghang memorya! Nahanap mo ang lahat ng pares!');
+                            showAlertModal(
+                                currentLanguage === 'en' ? 'Amazing memory!' : 'Kamangha-manghang memorya!',
+                                currentLanguage === 'en'
+                                    ? 'You found all pairs!'
+                                    : 'Nahanap mo ang lahat ng pares!'
+                            );
                             earnBadge('badge-memory-champ');
                         }, 500);
                     }
@@ -678,10 +689,11 @@ function earnBadge(badgeId) {
         }
 
         setTimeout(() => {
-            alert(
+            showAlertModal(
+                currentLanguage === "en" ? "Badge earned!" : "Badge na nakuha!",
                 currentLanguage === "en"
-                    ? "Badge earned! You are a Hygiene Hero!"
-                    : "Badge na nakuha! Ikaw ay isang Hygiene Hero!"
+                    ? "You are a Hygiene Hero!"
+                    : "Ikaw ay isang Hygiene Hero!"
             );
         }, 100);
     }
@@ -1170,9 +1182,14 @@ let generatedPDF = null;
 
 function generateCertificate() {
     if (!allBadgesEarned()) {
-        alert(currentLanguage === 'en'
-            ? 'Earn all the badges first before generating your certificate!'
-            : 'Kunin muna lahat ng badge bago makagawa ng certificate!');
+        showAlertModal(
+    currentLanguage === 'en'
+        ? 'Hold on!'
+        : 'Hintayin muna!',
+    currentLanguage === 'en'
+        ? 'Earn all the badges first before generating your certificate!'
+        : 'Kunin muna lahat ng badge bago makagawa ng certificate!'
+        );
         return;
     }
 
@@ -1323,6 +1340,32 @@ function saveUsername() {
     }
 }
 
+function showConfirmModal(title, message, onConfirm, onCancel) {
+  const modal = document.getElementById("confirmModal");
+  const modalTitle = document.getElementById("confirmModalTitle");
+  const modalMessage = document.getElementById("confirmModalMessage");
+  const yesBtn = document.getElementById("confirmYesBtn");
+  const noBtn = document.getElementById("confirmNoBtn");
+
+  modalTitle.textContent = title;
+  modalMessage.textContent = message;
+  modal.style.display = "flex";
+
+  // Remove old listeners to prevent stacking
+  yesBtn.onclick = null;
+  noBtn.onclick = null;
+
+  yesBtn.onclick = () => {
+    modal.style.display = "none";
+    if (onConfirm) onConfirm();
+  };
+
+  noBtn.onclick = () => {
+    modal.style.display = "none";
+    if (onCancel) onCancel();
+  };
+}
+
 function initializeClearData() {
     const clearBtn = document.getElementById("clearDataBtn");
     if (!clearBtn) {
@@ -1331,34 +1374,28 @@ function initializeClearData() {
     }
 
     clearBtn.addEventListener("click", () => {
-        console.log("✅ Clear Data clicked")
+    console.log("✅ Clear Data clicked");
 
-        const confirmClear = confirm(
-            currentLanguage === "en"
-                ? "Are you sure you want to clear all saved data? This cannot be undone."
-                : "Sigurado ka bang gusto mong burahin ang lahat ng data? Hindi na ito maibabalik."
-        );
-
-        if (confirmClear) {
+    // Custom confirm modal instead of browser confirm
+    showConfirmModal(
+        currentLanguage === "en"
+            ? "Are you sure?"
+            : "Sigurado ka ba?",
+        currentLanguage === "en"
+            ? "Do you really want to clear all saved data? This cannot be undone."
+            : "Gusto mo bang burahin ang lahat ng data? Hindi na ito maibabalik.",
+        () => {
+            // ✅ User clicked "Yes"
             localStorage.clear();
-            alert(
+            showAlertModal(
                 currentLanguage === "en"
-                    ? "All data cleared! Refreshing..."
-                    : "Burado na ang lahat ng data! Nagre-refresh..."
+                    ? "All data cleared!"
+                    : "Burado na ang lahat ng data!",
+                currentLanguage === "en"
+                    ? "Refreshing..."
+                    : "Nagre-refresh..."
             );
-            location.reload();
+            setTimeout(() => location.reload(), 1000);
         }
-    });
-}
-
-
-
-
-
-
-
-
-
-
-
-
+    );
+});
