@@ -798,9 +798,14 @@ document.addEventListener("DOMContentLoaded", () => {
 function downloadPoster() {
     const file = document.getElementById("posterSelect").value;
     if (!file) {
-        alert("Please select a poster.");
-        return;
-    }
+    showAlertModal(
+        currentLanguage === "en"
+            ? "Please select a poster."
+            : "Mangyaring pumili ng poster."
+    );
+    return;
+}
+
 
     const link = document.createElement('a');
     link.href = `./files/${file}`;
@@ -813,9 +818,13 @@ function downloadPoster() {
 function downloadWorksheet() {
     const file = document.getElementById("worksheetSelect").value;
     if (!file) {
-        alert("Please select a worksheet.");
-        return;
-    }
+    showAlertModal(
+        currentLanguage === "en"
+            ? "Please select a worksheet."
+            : "Mangyaring pumili ng worksheet."
+        );
+    return;
+}
 
     const link = document.createElement('a');
     link.href = `./files/${file}`;
@@ -1197,11 +1206,14 @@ function generateCertificate() {
     const sanitizedName = name.replace(/[^a-zA-Z\s\-']/g, '');
 
     if (!sanitizedName) {
-        alert(currentLanguage === 'en'
-            ? 'Please enter a valid name (letters only)!'
-            : 'Pakiinput ang tamang pangalan (mga titik lamang)!');
+        showAlertModal(
+    currentLanguage === 'en'
+        ? 'Please enter a valid name (letters only)!'
+        : 'Pakiinput ang tamang pangalan (mga titik lamang)!'
+        );
         return;
     }
+
 
     const certificateDisplay = document.getElementById('certificate-display');
     certificateDisplay.innerHTML = '';
@@ -1400,4 +1412,5 @@ function initializeClearData() {
     );
   });
 }
+
 
