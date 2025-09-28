@@ -1399,6 +1399,7 @@ body {
     }
 
     .step {
+        width: 300px;
         padding: 1rem;
     }
 
@@ -1659,6 +1660,7 @@ body {
 .modal-buttons .no-btn:hover {
   background: #d32f2f;
 }
+
 
 
 
