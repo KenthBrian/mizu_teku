@@ -52,7 +52,7 @@ body {
 .nav-right {
     display: flex;
     align-items: center;
-    gap: 2rem;
+    gap: 1rem;
 }
 
 .nav-logo img {
@@ -1659,6 +1659,7 @@ body {
 .modal-buttons .no-btn:hover {
   background: #d32f2f;
 }
+
 
 
 
