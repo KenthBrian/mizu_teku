@@ -1359,7 +1359,14 @@ function downloadCertificate() {
         const name = document.getElementById('child-name').value.trim() || "certificate";
         generatedPDF.save(`${name}_certificate.pdf`);
     } else {
-        alert("Please generate the certificate first.");
+        showAlertModal(
+            currentLanguage === "en" 
+                ? "Notice" 
+                : "Paalala",
+            currentLanguage === "en" 
+                ? "Please generate the certificate first." 
+                : "Mangyaring gumawa muna ng certificate."
+        );
     }
 }
 
@@ -1477,6 +1484,7 @@ function initializeClearData() {
     );
   });
 }
+
 
 
 
