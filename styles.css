@@ -3,6 +3,10 @@ html {
     overflow-x: hidden;
 }
 
+button {
+    font-family: 'Chewy', sans-serif;
+}
+
 ::-webkit-scrollbar {
     display: none;
 }
@@ -1668,6 +1672,7 @@ body {
 .modal-buttons .no-btn:hover {
   background: #d32f2f;
 }
+
 
 
 
