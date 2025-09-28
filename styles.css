@@ -590,6 +590,7 @@ body {
 }
 
 .scenario-card {
+    touch-action: none;
     background: white;
     padding: 1.5rem;
     border-radius: 15px;
@@ -1658,6 +1659,7 @@ body {
 .modal-buttons .no-btn:hover {
   background: #d32f2f;
 }
+
 
 
 
