@@ -291,6 +291,7 @@ function initializeHamburgerMenu() {
 }
 
 function showAlertModal(title, message) {
+  console.log("showAlertModal called with:", title, message);
   document.getElementById("alertModalTitle").innerText = title;
   document.getElementById("alertModalMessage").innerText = message;
   document.getElementById("alertModal").classList.remove("hidden");
@@ -1349,6 +1350,7 @@ function initializeClearData() {
         }
     });
 }
+
 
 
 
