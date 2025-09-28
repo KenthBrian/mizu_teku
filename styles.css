@@ -1399,8 +1399,9 @@ body {
     }
 
     .step {
-        width: 300px;
-        padding: 1rem;
+    padding: 1rem;
+    justify-items: center;
+    width: 300px;
     }
 
     .info-item {
@@ -1660,6 +1661,7 @@ body {
 .modal-buttons .no-btn:hover {
   background: #d32f2f;
 }
+
 
 
 
