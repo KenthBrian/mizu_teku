@@ -505,10 +505,6 @@ function initializeQuiz() {
             const touch = e.touches[0];
             draggedElement.startX = touch.clientX;
             draggedElement.startY = touch.clientY;
-
-            draggedElement.style.position = "absolute";
-            draggedElement.style.zIndex = 9999;
-            draggedElement.style.transform = "none";
         });
 
         scenario.addEventListener('touchmove', (e) => {
@@ -519,6 +515,7 @@ function initializeQuiz() {
             const dx = touch.clientX - draggedElement.startX;
             const dy = touch.clientY - draggedElement.startY;
 
+            // Only visual feedback
             draggedElement.style.transform = `translate(${dx}px, ${dy}px)`;
 
             let target = document.elementFromPoint(touch.clientX, touch.clientY);
@@ -544,11 +541,8 @@ function initializeQuiz() {
                 }
             }
 
-            // reset styles
+            // Reset transform (only temporary visual)
             draggedElement.style.transform = "none";
-            draggedElement.style.position = "relative";
-            draggedElement.style.zIndex = "auto";
-
             draggedElement.classList.remove('dragging');
             draggedElement = null;
             });
@@ -1560,6 +1554,7 @@ function initializeClearData() {
     );
   });
 }
+
 
 
 
