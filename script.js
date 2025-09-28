@@ -369,6 +369,12 @@ function initializeDirtyGlassGame() {
 
 initializeDirtyGlassGame();
 
+function showAlertModal(title, message) {
+  document.getElementById("alertModalTitle").innerText = title;
+  document.getElementById("alertModalMessage").innerText = message;
+  document.getElementById("alertModal").classList.remove("hidden");
+}
+
 function closeAlert() {
     document.getElementById("alertModal").classList.add("hidden");
 }
@@ -1343,6 +1349,7 @@ function initializeClearData() {
         }
     });
 }
+
 
 
 
