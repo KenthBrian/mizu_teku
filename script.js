@@ -491,13 +491,25 @@ function initializeQuiz() {
             scenario.addEventListener('touchstart', (e) => {
                 draggedElement = scenario;
                 scenario.classList.add('dragging');
+
+                const touch = e.touches[0];
+                // store offset so it doesn’t "jump"
+                draggedElement.startX = touch.clientX - scenario.offsetLeft;
+                draggedElement.startY = touch.clientY - scenario.offsetTop;
+
+                scenario.style.position = "absolute";
+                scenario.style.zIndex = "1000";
             });
 
             scenario.addEventListener('touchmove', (e) => {
                 if (!draggedElement) return;
-                let touch = e.touches[0];
-                let target = document.elementFromPoint(touch.clientX, touch.clientY);
+                e.preventDefault(); // prevent scrolling while dragging
 
+                const touch = e.touches[0];
+                draggedElement.style.left = (touch.clientX - draggedElement.startX) + "px";
+                draggedElement.style.top = (touch.clientY - draggedElement.startY) + "px";
+
+                let target = document.elementFromPoint(touch.clientX, touch.clientY);
                 dropZones.forEach(zone => zone.classList.remove('drag-over'));
                 if (target && target.classList.contains('drop-zone')) {
                     target.classList.add('drag-over');
@@ -506,18 +518,30 @@ function initializeQuiz() {
 
             scenario.addEventListener('touchend', (e) => {
                 if (!draggedElement) return;
-
-                let touch = e.changedTouches[0];
+                const touch = e.changedTouches[0];
                 let target = document.elementFromPoint(touch.clientX, touch.clientY);
 
                 dropZones.forEach(zone => zone.classList.remove('drag-over'));
 
                 if (target && target.classList.contains('drop-zone')) {
                     target.appendChild(draggedElement);
+
+                    // reset style when placed
+                    draggedElement.style.position = "relative";
+                    draggedElement.style.left = "auto";
+                    draggedElement.style.top = "auto";
+                    draggedElement.style.zIndex = "auto";
+
                     placedCount++;
                     if (placedCount === totalQuestions) {
                         checkAnswers();
                     }
+                } else {
+                    // snap back if dropped outside
+                    draggedElement.style.position = "relative";
+                    draggedElement.style.left = "auto";
+                    draggedElement.style.top = "auto";
+                    draggedElement.style.zIndex = "auto";
                 }
 
                 draggedElement.classList.remove('dragging');
@@ -596,6 +620,7 @@ function initializeQuiz() {
             }
         }, 500);
     }
+}
 
     resetBtn.addEventListener('click', () => {
         quizScore = 0;
@@ -1524,6 +1549,7 @@ function initializeClearData() {
     );
   });
 }
+
 
 
 
