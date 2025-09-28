@@ -548,22 +548,12 @@ body {
     cursor: pointer;
 }
 
-.steps-container {
-    display: flex;
-    flex-wrap: wrap;   /* allows items to move to the next row */
-    gap: 1rem;         /* controls spacing between items */
-}
-
 .steps-container .step:nth-child(-n+4) {
-    flex: 0 1 25%;     /* exact 25% width for first 4 items */
+    flex: 0 1 calc(25% - 0.5rem);
 }
 
 .steps-container .step:nth-child(n+5) {
-    flex: 0 1 30%;     /* exact 30% width for remaining items */
-}
-
-.step-icon img {
-    height: 150px;
+    flex: 0 1 calc(30% - 0.5rem);
 }
 
 .step:hover {
@@ -1666,6 +1656,7 @@ body {
 .modal-buttons .no-btn:hover {
   background: #d32f2f;
 }
+
 
 
 
