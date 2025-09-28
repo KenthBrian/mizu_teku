@@ -471,69 +471,86 @@ function initializeQuiz() {
     });
 
     function bindDragEvents() {
-        scenarios.forEach(scenario => {
-            // Desktop drag
-            scenario.setAttribute("draggable", "true");
-            scenario.style.cursor = "grab";
+    function getDropZone(target) {
+        while (target && target !== document) {
+            if (target.classList && target.classList.contains('drop-zone')) {
+                return target;
+            }
+            target = target.parentNode;
+        }
+        return null;
+    }
 
-            scenario.addEventListener('dragstart', (e) => {
-                draggedElement = scenario;
-                e.dataTransfer.setData('id', scenario.id);
-                scenario.classList.add('dragging');
-            });
+    scenarios.forEach(scenario => {
+        // Desktop drag
+        scenario.setAttribute("draggable", "true");
+        scenario.style.cursor = "grab";
 
-            scenario.addEventListener('dragend', () => {
-                draggedElement = null;
-                scenario.classList.remove('dragging');
-            });
+        scenario.addEventListener('dragstart', (e) => {
+            draggedElement = scenario;
+            e.dataTransfer.setData('id', scenario.id);
+            scenario.classList.add('dragging');
+        });
 
-            // Mobile touch
-            scenario.addEventListener('touchstart', (e) => {
-                draggedElement = scenario;
-                scenario.classList.add('dragging');
-            
-                const touch = e.touches[0];
-                draggedElement.startX = touch.clientX;
-                draggedElement.startY = touch.clientY;
-            
-                // reset transform
-                draggedElement.style.transform = "none";
-            });
-            
-            scenario.addEventListener('touchmove', (e) => {
-                if (!draggedElement) return;
-                e.preventDefault(); // stop scrolling
-            
-                const touch = e.touches[0];
-                const dx = touch.clientX - draggedElement.startX;
-                const dy = touch.clientY - draggedElement.startY;
-            
-                // use transform for smooth drag
-                draggedElement.style.transform = `translate(${dx}px, ${dy}px)`;
-            
-                let target = document.elementFromPoint(touch.clientX, touch.clientY);
-                dropZones.forEach(zone => zone.classList.remove('drag-over'));
-                if (target && target.classList.contains('drop-zone')) {
-                    target.classList.add('drag-over');
+        scenario.addEventListener('dragend', () => {
+            draggedElement = null;
+            scenario.classList.remove('dragging');
+        });
+
+        // Mobile touch
+        scenario.addEventListener('touchstart', (e) => {
+            draggedElement = scenario;
+            scenario.classList.add('dragging');
+
+            const touch = e.touches[0];
+            draggedElement.startX = touch.clientX;
+            draggedElement.startY = touch.clientY;
+
+            draggedElement.style.position = "absolute";
+            draggedElement.style.zIndex = 9999;
+            draggedElement.style.transform = "none";
+        });
+
+        scenario.addEventListener('touchmove', (e) => {
+            if (!draggedElement) return;
+            e.preventDefault(); // stop scrolling
+
+            const touch = e.touches[0];
+            const dx = touch.clientX - draggedElement.startX;
+            const dy = touch.clientY - draggedElement.startY;
+
+            draggedElement.style.transform = `translate(${dx}px, ${dy}px)`;
+
+            let target = document.elementFromPoint(touch.clientX, touch.clientY);
+            let dropZone = getDropZone(target);
+
+            dropZones.forEach(zone => zone.classList.remove('drag-over'));
+            if (dropZone) dropZone.classList.add('drag-over');
+        });
+
+        scenario.addEventListener('touchend', (e) => {
+            if (!draggedElement) return;
+            const touch = e.changedTouches[0];
+            let target = document.elementFromPoint(touch.clientX, touch.clientY);
+            let dropZone = getDropZone(target);
+
+            dropZones.forEach(zone => zone.classList.remove('drag-over'));
+
+            if (dropZone) {
+                dropZone.appendChild(draggedElement);
+                placedCount++;
+                if (placedCount === totalQuestions) {
+                    checkAnswers();
                 }
-            });
-            
-            scenario.addEventListener('touchend', (e) => {
-                if (!draggedElement) return;
-                const touch = e.changedTouches[0];
-                let target = document.elementFromPoint(touch.clientX, touch.clientY);
-            
-                dropZones.forEach(zone => zone.classList.remove('drag-over'));
-            
-                if (target && target.classList.contains('drop-zone')) {
-                    target.appendChild(draggedElement);
-                }
-            
-                // reset transform after drop
-                draggedElement.style.transform = "none";
-            
-                draggedElement.classList.remove('dragging');
-                draggedElement = null;
+            }
+
+            // reset styles
+            draggedElement.style.transform = "none";
+            draggedElement.style.position = "relative";
+            draggedElement.style.zIndex = "auto";
+
+            draggedElement.classList.remove('dragging');
+            draggedElement = null;
             });
         });
     }
@@ -1543,6 +1560,7 @@ function initializeClearData() {
     );
   });
 }
+
 
 
 
