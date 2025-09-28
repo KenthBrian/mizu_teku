@@ -1027,13 +1027,13 @@ modal.addEventListener("click", function (event) {
 
 
 const handwashingVideos = {
-    step1: { url: "attached_assets/videos/rickroll.mp4", title: { en: "Step 1: Wet Your Hands", tl: "Hakbang 1: Basain ang mga Kamay" } },
-    step2: { url: "attached_assets/videos/rickroll.mp4", title: { en: "Step 2: Apply Soap", tl: "Hakbang 2: Maglagay ng Sabon sa Kamay" } },
-    step3: { url: "attached_assets/videos/rickroll.mp4", title: { en: "Step 3: Rub Your Palms", tl: "Hakbang 3: Kuskusin ang mga Palad" } },
-    step4: { url: "attached_assets/videos/rickroll.mp4", title: { en: "Step 4: Rub The Back of Your Hands", tl: "Hakbang 4: Kuskusin ang Likod ng Kamay" } },
-    step5: { url: "attached_assets/videos/rickroll.mp4", title: { en: "Step 5: Clean Between Your Fingers", tl: "Hakbang 5: Linisin ang pagitan ng mga Daliri" } },
-    step6: { url: "attached_assets/videos/rickroll.mp4", title: { en: "Step 6: Clean Your Thumbs and Nails", tl: "Hakbang 6: Linisin ang mga Hinlalaki at Kuko" } },
-    step7: { url: "attached_assets/videos/rickroll.mp4", title: { en: "Step 7: Rinse Your Hands", tl: "Hakbang 7: Banlawan ang mga Kamay" } }
+    step1: { url: "attached_assets/videos/step1.mp4", title: { en: "Step 1: Wet Your Hands", tl: "Hakbang 1: Basain ang mga Kamay" } },
+    step2: { url: "attached_assets/videos/step2.mp4", title: { en: "Step 2: Apply Soap", tl: "Hakbang 2: Maglagay ng Sabon sa Kamay" } },
+    step3: { url: "attached_assets/videos/step3.mp4", title: { en: "Step 3: Rub Your Palms", tl: "Hakbang 3: Kuskusin ang mga Palad" } },
+    step4: { url: "attached_assets/videos/step4.mp4", title: { en: "Step 4: Rub The Back of Your Hands", tl: "Hakbang 4: Kuskusin ang Likod ng Kamay" } },
+    step5: { url: "attached_assets/videos/step5.mp4", title: { en: "Step 5: Clean Between Your Fingers", tl: "Hakbang 5: Linisin ang pagitan ng mga Daliri" } },
+    step6: { url: "attached_assets/videos/step6.mp4", title: { en: "Step 6: Clean Your Thumbs and Nails", tl: "Hakbang 6: Linisin ang mga Hinlalaki at Kuko" } },
+    step7: { url: "attached_assets/videos/step7.mp4", title: { en: "Step 7: Rinse Your Hands", tl: "Hakbang 7: Banlawan ang mga Kamay" } }
 };
 
 function showVideo(step) {
@@ -1301,6 +1301,7 @@ function initializeClearData() {
         }
     });
 }
+
 
 
 
