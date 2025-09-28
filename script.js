@@ -347,13 +347,11 @@ function initializeDirtyGlassGame() {
 
                         if (dirtyFound === dirtyGlassesCount) {
                             setTimeout(() => {
-                                alert('Great job! You found all the dirty glasses!');
+                                showAlertModal("Great job!", "You found all the dirty glasses!");
                                 if (typeof earnBadge === 'function') earnBadge('badge-germ-buster');
                             }, 300);
-                        }
-                    } else {
-                        glass.classList.add('clean-selected'); // ❌ add red cross
-                        alert('Oops! This one is clean.');
+                        } else {
+                            showAlertModal("Oops!", "This one is clean.");
                     }
                 }
             });
@@ -366,8 +364,20 @@ function initializeDirtyGlassGame() {
     generateGlasses();
 }
 
-// Initialize the game
 initializeDirtyGlassGame();
+
+function closeAlert() {
+    document.getElementById("alertModal").classList.add("hidden");
+}
+
+// Close when clicking outside modal
+window.addEventListener("click", function(event) {
+    const alertModal = document.getElementById("alertModal");
+    if (event.target === alertModal) {
+        closeAlert();
+    }
+});
+
 
 // Quiz Game (Drag and Drop)
 function initializeQuiz() {
@@ -1331,6 +1341,7 @@ function initializeClearData() {
         }
     });
 }
+
 
 
 
