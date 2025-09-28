@@ -1238,6 +1238,7 @@ body {
     }
 
     .steps-container {
+        display: grid;
         grid-template-columns: 1fr;
         gap: 1rem;
     }
@@ -1305,6 +1306,7 @@ body {
     }
 
     .steps-container {
+        display: grid;
         grid-template-columns: 2fr;
         gap: 3px;
     }
@@ -1349,6 +1351,7 @@ body {
     }
 
     .steps-container {
+        display: grid;
         grid-template-columns: 1fr;
     }
 
@@ -1661,6 +1664,7 @@ body {
 .modal-buttons .no-btn:hover {
   background: #d32f2f;
 }
+
 
 
 
