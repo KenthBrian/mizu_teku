@@ -1398,4 +1398,6 @@ function initializeClearData() {
             setTimeout(() => location.reload(), 1000);
         }
     );
-});
+  });
+}
+
