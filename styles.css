@@ -1519,9 +1519,72 @@ body {
     }
 }
 
+.hidden {
+  display: none !important;
+}
 
+#alertModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 123, 255, 0.25); /* semi-transparent backdrop */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
 
+#alertModal .modal-content {
+  background-color: #fff3e0; /* warm pastel background */
+  border-radius: 20px;
+  padding: 30px 40px;
+  max-width: 500px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  color: #005577;
+  position: relative;
+  animation: fadeInScale 0.3s ease-in-out;
+}
 
+#alertModal h2 {
+  font-size: 1.8rem;
+  margin-bottom: 15px;
+  color: #0077aa;
+}
 
+#alertModal p {
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+  color: #444;
+}
 
+#alertModal .close-btn {
+  position: absolute;
+  top: 12px;
+  right: 18px;
+  font-size: 28px;
+  font-weight: bold;
+  color: #005577;
+  cursor: pointer;
+  transition: color 0.2s ease-in-out;
+}
+
+#alertModal .close-btn:hover {
+  color: #ff5252;
+}
+
+/* Small animation for smooth entry */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
 
