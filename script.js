@@ -317,13 +317,11 @@ function initializeDirtyGlassGame() {
             const isDirty = dirtyIndices.includes(i);
             glass.dataset.dirty = isDirty ? 'true' : 'false';
 
-            // Set background color based on dirty/clean
+            // Set background color
             if (isDirty) {
-                glass.style.background =
-                    'linear-gradient(180deg, rgba(139,69,19,0.7) 0%, rgba(160,82,45,0.7) 50%, rgba(139,69,19,0.7) 100%)';
+                glass.style.background = 'linear-gradient(180deg, rgba(139,69,19,0.7) 0%, rgba(160,82,45,0.7) 50%, rgba(139,69,19,0.7) 100%)';
             } else {
-                glass.style.background =
-                    'linear-gradient(180deg, #87CEEB 0%, #B0E0E6 50%, #87CEFA 100%)';
+                glass.style.background = 'linear-gradient(180deg, #87CEEB 0%, #B0E0E6 50%, #87CEFA 100%)';
             }
 
             // Add germs if dirty
@@ -338,12 +336,13 @@ function initializeDirtyGlassGame() {
                 }
             }
 
+            // 👇 fixed braces here
             glass.addEventListener('click', () => {
                 if (!glass.classList.contains('selected')) {
-                    glass.classList.add('selected'); // triggers dark background
+                    glass.classList.add('selected'); // dark background
 
                     if (isDirty) {
-                        glass.classList.add('dirty-found'); // ✅ add green check
+                        glass.classList.add('dirty-found'); // green check
                         dirtyFound++;
                         scoreElement.textContent = dirtyFound;
 
@@ -370,13 +369,12 @@ function initializeDirtyGlassGame() {
 
 initializeDirtyGlassGame();
 
-// ===== Alert modal handling =====
 function closeAlert() {
     document.getElementById("alertModal").classList.add("hidden");
 }
 
 // Close when clicking outside modal
-window.addEventListener("click", function (event) {
+window.addEventListener("click", function(event) {
     const alertModal = document.getElementById("alertModal");
     if (event.target === alertModal) {
         closeAlert();
@@ -1345,6 +1343,7 @@ function initializeClearData() {
         }
     });
 }
+
 
 
 
