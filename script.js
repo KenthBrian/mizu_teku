@@ -355,12 +355,22 @@ function initializeDirtyGlassGame() {
 
                         if (dirtyFound === dirtyGlassesCount) {
                             setTimeout(() => {
-                                showAlertModal("Great job!", "You found all the dirty glasses!");
-                                if (typeof earnBadge === 'function') earnBadge('badge-germ-buster');
+                                showAlertModal("Great job!", "You found all the dirty glasses!", () => {
+                                    showAlertModal(
+                                        currentLanguage === "en" ? "Badge earned!" : "Badge na nakuha!",
+                                        currentLanguage === "en"
+                                            ? "You are a Hygiene Hero!"
+                                            : "Ikaw ay isang Hygiene Hero!",
+                                        () => {
+                                            if (typeof earnBadge === "function") {
+                                                earnBadge("badge-germ-buster");
+                                            }
+                                        }
+                                    );
+                                });
                             }, 300);
-                        }
-                    } else {
-                        showAlertModal("Oops!", "This one is clean.");
+                        } else {
+                            showAlertModal("Oops!", "This one is clean.");
                     }
                 }
             });
@@ -1412,5 +1422,6 @@ function initializeClearData() {
     );
   });
 }
+
 
 
