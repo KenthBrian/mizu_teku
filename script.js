@@ -326,9 +326,11 @@ function initializeDirtyGlassGame() {
 
             // Set background color
             if (isDirty) {
-                glass.style.background = 'linear-gradient(180deg, rgba(139,69,19,0.7) 0%, rgba(160,82,45,0.7) 50%, rgba(139,69,19,0.7) 100%)';
+                glass.style.background =
+                    'linear-gradient(180deg, rgba(139,69,19,0.7) 0%, rgba(160,82,45,0.7) 50%, rgba(139,69,19,0.7) 100%)';
             } else {
-                glass.style.background = 'linear-gradient(180deg, #87CEEB 0%, #B0E0E6 50%, #87CEFA 100%)';
+                glass.style.background =
+                    'linear-gradient(180deg, #87CEEB 0%, #B0E0E6 50%, #87CEFA 100%)';
             }
 
             // Add germs if dirty
@@ -343,7 +345,7 @@ function initializeDirtyGlassGame() {
                 }
             }
 
-            // 👇 fixed braces here
+            // Glass click event
             glass.addEventListener('click', () => {
                 if (!glass.classList.contains('selected')) {
                     glass.classList.add('selected'); // dark background
@@ -369,8 +371,9 @@ function initializeDirtyGlassGame() {
                                     );
                                 });
                             }, 300);
-                        } else {
-                            showAlertModal("Oops!", "This one is clean.");
+                        }
+                    } else {
+                        showAlertModal("Oops!", "This one is clean.");
                     }
                 }
             });
@@ -1422,6 +1425,7 @@ function initializeClearData() {
     );
   });
 }
+
 
 
 
