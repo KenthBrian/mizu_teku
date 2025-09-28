@@ -533,7 +533,7 @@ body {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 1.9rem;
+    gap: 2rem;
     margin-top: 3rem;
     margin-bottom: 2rem;
 }
@@ -1241,7 +1241,7 @@ body {
         justify-items: center;
         display: grid;
         grid-template-columns: 1fr;
-        gap: 1rem;
+        gap: 2rem;
     }
 
     .badges-container {
@@ -1310,7 +1310,7 @@ body {
         justify-items: center;
         display: grid;
         grid-template-columns: 2fr;
-        gap: 3px;
+        gap: 2px;
     }
 
     .step-content {
@@ -1667,6 +1667,7 @@ body {
 .modal-buttons .no-btn:hover {
   background: #d32f2f;
 }
+
 
 
 
