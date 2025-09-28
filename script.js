@@ -290,12 +290,86 @@ function initializeHamburgerMenu() {
     });
 }
 
-function showAlertModal(title, message) {
-  console.log("showAlertModal called with:", title, message);
-  document.getElementById("alertModalTitle").innerText = title;
-  document.getElementById("alertModalMessage").innerText = message;
-  document.getElementById("alertModal").classList.remove("hidden");
+// ===== Alert modal queueing (drop-in replacement) =====
+let _alertQueue = [];
+let _isAlertOpen = false;
+
+function showAlertModal(title = '', message = '', callback = null) {
+  const modal = document.getElementById('alertModal');
+  if (!modal) {
+    console.warn('showAlertModal: #alertModal not found');
+    if (callback) callback();
+    return;
+  }
+
+  // If another alert is open, enqueue this one
+  if (_isAlertOpen) {
+    _alertQueue.push({ title, message, callback });
+    console.log('showAlertModal: queued:', title);
+    return;
+  }
+
+  console.log('showAlertModal: showing:', title);
+  // Fill contents
+  const titleEl = document.getElementById('alertModalTitle');
+  const msgEl = document.getElementById('alertModalMessage');
+  if (titleEl) titleEl.innerText = title;
+  if (msgEl) msgEl.innerText = message;
+
+  // Attach callback to modal instance
+  modal._alertCallback = typeof callback === 'function' ? callback : null;
+
+  // Show
+  modal.classList.remove('hidden');
+  modal.setAttribute('aria-hidden', 'false');
+  _isAlertOpen = true;
+
+  // optional: focus close button for accessibility
+  const closeBtn = modal.querySelector('.close-btn');
+  if (closeBtn) closeBtn.focus();
 }
+
+function closeAlert() {
+  const modal = document.getElementById('alertModal');
+  if (!modal) return;
+
+  // hide modal first (so UI updates)
+  modal.classList.add('hidden');
+  modal.setAttribute('aria-hidden', 'true');
+
+  // run callback if provided
+  const cb = modal._alertCallback;
+  modal._alertCallback = null;
+  _isAlertOpen = false;
+
+  if (typeof cb === 'function') {
+    try {
+      console.log('closeAlert: running callback');
+      cb();
+    } catch (err) {
+      console.error('closeAlert: callback error', err);
+    }
+  }
+
+  if (_alertQueue.length > 0) {
+    const next = _alertQueue.shift();
+    setTimeout(() => {
+      showAlertModal(next.title, next.message, next.callback);
+    }, 120);
+  }
+}
+
+window.addEventListener('click', function (event) {
+  const modal = document.getElementById('alertModal');
+  if (!modal) return;
+  if (event.target === modal) closeAlert();
+});
+
+window.addEventListener('keydown', function (e) {
+  const modal = document.getElementById('alertModal');
+  if (!modal || modal.classList.contains('hidden')) return;
+  if (e.key === 'Escape') closeAlert();
+});
 
 const totalGlasses = 5;
 const dirtyGlassesCount = 3;
@@ -388,18 +462,6 @@ function initializeDirtyGlassGame() {
 }
 
 initializeDirtyGlassGame();
-
-function closeAlert() {
-    document.getElementById("alertModal").classList.add("hidden");
-}
-
-// Close when clicking outside modal
-window.addEventListener("click", function(event) {
-    const alertModal = document.getElementById("alertModal");
-    if (event.target === alertModal) {
-        closeAlert();
-    }
-});
 
 // Quiz Game (Drag and Drop)
 function initializeQuiz() {
@@ -1425,6 +1487,7 @@ function initializeClearData() {
     );
   });
 }
+
 
 
 
