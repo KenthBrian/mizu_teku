@@ -1310,7 +1310,7 @@ body {
         justify-items: center;
         display: grid;
         grid-template-columns: 2fr;
-        gap: 2px;
+        gap: 2rem;
     }
 
     .step-content {
@@ -1667,6 +1667,7 @@ body {
 .modal-buttons .no-btn:hover {
   background: #d32f2f;
 }
+
 
 
 
