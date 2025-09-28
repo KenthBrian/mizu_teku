@@ -290,6 +290,12 @@ function initializeHamburgerMenu() {
     });
 }
 
+function showAlertModal(title, message) {
+  document.getElementById("alertModalTitle").innerText = title;
+  document.getElementById("alertModalMessage").innerText = message;
+  document.getElementById("alertModal").classList.remove("hidden");
+}
+
 const totalGlasses = 5;
 const dirtyGlassesCount = 3;
 const germsPerGlass = 5;
@@ -368,12 +374,6 @@ function initializeDirtyGlassGame() {
 }
 
 initializeDirtyGlassGame();
-
-function showAlertModal(title, message) {
-  document.getElementById("alertModalTitle").innerText = title;
-  document.getElementById("alertModalMessage").innerText = message;
-  document.getElementById("alertModal").classList.remove("hidden");
-}
 
 function closeAlert() {
     document.getElementById("alertModal").classList.add("hidden");
@@ -1349,6 +1349,7 @@ function initializeClearData() {
         }
     });
 }
+
 
 
 
