@@ -620,8 +620,8 @@ function initializeQuiz() {
             }
         }, 500);
     }
-}
 
+    // ✅ Reset button logic (inside initializeQuiz)
     resetBtn.addEventListener('click', () => {
         quizScore = 0;
         placedCount = 0;
@@ -645,6 +645,12 @@ function initializeQuiz() {
             container.appendChild(card);
             card.setAttribute("draggable", "true");
             card.style.cursor = "grab";
+
+            // reset touch styles
+            card.style.position = "relative";
+            card.style.left = "auto";
+            card.style.top = "auto";
+            card.style.zIndex = "auto";
         });
 
         bindDragEvents();
@@ -1549,6 +1555,7 @@ function initializeClearData() {
     );
   });
 }
+
 
 
 
