@@ -463,6 +463,7 @@ function initializeQuiz() {
     let quizScore = 0;
     let placedCount = 0;
     const totalQuestions = scenarios.length;
+    let draggedElement = null; // works for both desktop & mobile
 
     scenarios.forEach((scenario, index) => {
         if (!scenario.id) scenario.id = `scenario-${index}`;
@@ -471,17 +472,56 @@ function initializeQuiz() {
 
     function bindDragEvents() {
         scenarios.forEach(scenario => {
+            // Desktop drag
             scenario.setAttribute("draggable", "true");
             scenario.style.cursor = "grab";
 
             scenario.addEventListener('dragstart', (e) => {
-                e.dataTransfer.setData('text/plain', scenario.dataset.answer);
+                draggedElement = scenario;
                 e.dataTransfer.setData('id', scenario.id);
                 scenario.classList.add('dragging');
             });
 
             scenario.addEventListener('dragend', () => {
+                draggedElement = null;
                 scenario.classList.remove('dragging');
+            });
+
+            // Mobile touch
+            scenario.addEventListener('touchstart', (e) => {
+                draggedElement = scenario;
+                scenario.classList.add('dragging');
+            });
+
+            scenario.addEventListener('touchmove', (e) => {
+                if (!draggedElement) return;
+                let touch = e.touches[0];
+                let target = document.elementFromPoint(touch.clientX, touch.clientY);
+
+                dropZones.forEach(zone => zone.classList.remove('drag-over'));
+                if (target && target.classList.contains('drop-zone')) {
+                    target.classList.add('drag-over');
+                }
+            });
+
+            scenario.addEventListener('touchend', (e) => {
+                if (!draggedElement) return;
+
+                let touch = e.changedTouches[0];
+                let target = document.elementFromPoint(touch.clientX, touch.clientY);
+
+                dropZones.forEach(zone => zone.classList.remove('drag-over'));
+
+                if (target && target.classList.contains('drop-zone')) {
+                    target.appendChild(draggedElement);
+                    placedCount++;
+                    if (placedCount === totalQuestions) {
+                        checkAnswers();
+                    }
+                }
+
+                draggedElement.classList.remove('dragging');
+                draggedElement = null;
             });
         });
     }
@@ -489,6 +529,7 @@ function initializeQuiz() {
     bindDragEvents();
 
     dropZones.forEach(zone => {
+        // Desktop events
         zone.addEventListener('dragover', (e) => {
             e.preventDefault();
             zone.classList.add('drag-over');
@@ -503,13 +544,11 @@ function initializeQuiz() {
             zone.classList.remove('drag-over');
 
             const draggedId = e.dataTransfer.getData('id');
-            const draggedElement = document.getElementById(draggedId);
+            const element = document.getElementById(draggedId);
+            if (!element) return;
 
-            if (!draggedElement) return;
-
-            zone.appendChild(draggedElement);
+            zone.appendChild(element);
             placedCount++;
-
             if (placedCount === totalQuestions) {
                 checkAnswers();
             }
@@ -552,7 +591,8 @@ function initializeQuiz() {
                     currentLanguage === 'en' ? 'Try Again!' : 'Subukan Muli!',
                     currentLanguage === 'en'
                         ? 'Some answers are incorrect:\n\n' + incorrectCards.join("\n")
-                        : 'May mga maling sagot:\n\n' + incorrectCards.join("\n"));
+                        : 'May mga maling sagot:\n\n' + incorrectCards.join("\n")
+                );
             }
         }, 500);
     }
@@ -1484,6 +1524,7 @@ function initializeClearData() {
     );
   });
 }
+
 
 
 
