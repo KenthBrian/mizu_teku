@@ -527,8 +527,8 @@ body {
     margin-top: 1rem;
 }
 
-/* Steps */
 
+/* Steps */
 .steps-container {
     display: flex;
     flex-wrap: wrap;
@@ -548,18 +548,16 @@ body {
     cursor: pointer;
 }
 
-.steps-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
 .steps-container .step:nth-child(-n+4) {
     flex: 0 1 calc(25% - 1.5rem);
 }
 
 .steps-container .step:nth-child(n+5) {
     flex: 0 1 calc(30% - 1.5rem);
+}
+
+.step-icon img {
+    height: 150px;
 }
 
 .step:hover {
@@ -1662,6 +1660,7 @@ body {
 .modal-buttons .no-btn:hover {
   background: #d32f2f;
 }
+
 
 
 
