@@ -491,59 +491,47 @@ function initializeQuiz() {
             scenario.addEventListener('touchstart', (e) => {
                 draggedElement = scenario;
                 scenario.classList.add('dragging');
-
+            
                 const touch = e.touches[0];
-                // store offset so it doesn’t "jump"
-                draggedElement.startX = touch.clientX - scenario.offsetLeft;
-                draggedElement.startY = touch.clientY - scenario.offsetTop;
-
-                scenario.style.position = "absolute";
-                scenario.style.zIndex = "1000";
+                draggedElement.startX = touch.clientX;
+                draggedElement.startY = touch.clientY;
+            
+                // reset transform
+                draggedElement.style.transform = "none";
             });
-
+            
             scenario.addEventListener('touchmove', (e) => {
                 if (!draggedElement) return;
-                e.preventDefault(); // prevent scrolling while dragging
-
+                e.preventDefault(); // stop scrolling
+            
                 const touch = e.touches[0];
-                draggedElement.style.left = (touch.clientX - draggedElement.startX) + "px";
-                draggedElement.style.top = (touch.clientY - draggedElement.startY) + "px";
-
+                const dx = touch.clientX - draggedElement.startX;
+                const dy = touch.clientY - draggedElement.startY;
+            
+                // use transform for smooth drag
+                draggedElement.style.transform = `translate(${dx}px, ${dy}px)`;
+            
                 let target = document.elementFromPoint(touch.clientX, touch.clientY);
                 dropZones.forEach(zone => zone.classList.remove('drag-over'));
                 if (target && target.classList.contains('drop-zone')) {
                     target.classList.add('drag-over');
                 }
             });
-
+            
             scenario.addEventListener('touchend', (e) => {
                 if (!draggedElement) return;
                 const touch = e.changedTouches[0];
                 let target = document.elementFromPoint(touch.clientX, touch.clientY);
-
+            
                 dropZones.forEach(zone => zone.classList.remove('drag-over'));
-
+            
                 if (target && target.classList.contains('drop-zone')) {
                     target.appendChild(draggedElement);
-
-                    // reset style when placed
-                    draggedElement.style.position = "relative";
-                    draggedElement.style.left = "auto";
-                    draggedElement.style.top = "auto";
-                    draggedElement.style.zIndex = "auto";
-
-                    placedCount++;
-                    if (placedCount === totalQuestions) {
-                        checkAnswers();
-                    }
-                } else {
-                    // snap back if dropped outside
-                    draggedElement.style.position = "relative";
-                    draggedElement.style.left = "auto";
-                    draggedElement.style.top = "auto";
-                    draggedElement.style.zIndex = "auto";
                 }
-
+            
+                // reset transform after drop
+                draggedElement.style.transform = "none";
+            
                 draggedElement.classList.remove('dragging');
                 draggedElement = null;
             });
@@ -1555,6 +1543,7 @@ function initializeClearData() {
     );
   });
 }
+
 
 
 
