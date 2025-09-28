@@ -319,9 +319,11 @@ function initializeDirtyGlassGame() {
 
             // Set background color based on dirty/clean
             if (isDirty) {
-                glass.style.background = 'linear-gradient(180deg, rgba(139,69,19,0.7) 0%, rgba(160,82,45,0.7) 50%, rgba(139,69,19,0.7) 100%)';
+                glass.style.background =
+                    'linear-gradient(180deg, rgba(139,69,19,0.7) 0%, rgba(160,82,45,0.7) 50%, rgba(139,69,19,0.7) 100%)';
             } else {
-                glass.style.background = 'linear-gradient(180deg, #87CEEB 0%, #B0E0E6 50%, #87CEFA 100%)';
+                glass.style.background =
+                    'linear-gradient(180deg, #87CEEB 0%, #B0E0E6 50%, #87CEFA 100%)';
             }
 
             // Add germs if dirty
@@ -350,11 +352,13 @@ function initializeDirtyGlassGame() {
                                 showAlertModal("Great job!", "You found all the dirty glasses!");
                                 if (typeof earnBadge === 'function') earnBadge('badge-germ-buster');
                             }, 300);
-                        } else {
-                            showAlertModal("Oops!", "This one is clean.");
+                        }
+                    } else {
+                        showAlertModal("Oops!", "This one is clean.");
                     }
                 }
             });
+
             container.appendChild(glass);
         }
     }
@@ -366,18 +370,18 @@ function initializeDirtyGlassGame() {
 
 initializeDirtyGlassGame();
 
+// ===== Alert modal handling =====
 function closeAlert() {
     document.getElementById("alertModal").classList.add("hidden");
 }
 
 // Close when clicking outside modal
-window.addEventListener("click", function(event) {
+window.addEventListener("click", function (event) {
     const alertModal = document.getElementById("alertModal");
     if (event.target === alertModal) {
         closeAlert();
     }
 });
-
 
 // Quiz Game (Drag and Drop)
 function initializeQuiz() {
@@ -1341,6 +1345,7 @@ function initializeClearData() {
         }
     });
 }
+
 
 
 
