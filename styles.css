@@ -14,7 +14,7 @@ html {
 }
 
 body {
-    font-family: 'Chewy';
+    font-family: 'Modak', sans-serif;
     background: linear-gradient(135deg, #87CEEB 0%, #98FB98 100%);
     min-height: 100vh;
     color: #2c3e50;
@@ -182,7 +182,7 @@ body {
         width: 320px;
         max-width: 90%;
         box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-        font-family: 'Chewy';
+        font-family: 'Modak', sans-serif;
         color: #2c3e50;
         animation: fadeInScale 0.3s ease;
     }
@@ -1471,7 +1471,7 @@ body {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     text-align: center;
     animation: fadeIn 0.3s ease-in-out;
-    font-family: 'Chewy';
+    font-family: 'Modak', sans-serif;
     position: relative;
 }
 
@@ -1544,7 +1544,7 @@ body {
     width: 320px;
     max-width: 90%;
     box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-    font-family: 'Chewy';
+    font-family: 'Modak', sans-serif;
     color: #2c3e50;
     animation: fadeInScale 0.3s ease;
     position: relative;
@@ -1658,6 +1658,7 @@ body {
 .modal-buttons .no-btn:hover {
   background: #d32f2f;
 }
+
 
 
 
