@@ -481,6 +481,9 @@ function initializeQuiz() {
         return null;
     }
 
+    let lastDropZone = null;
+    let isDraggingFrame = false;
+
     scenarios.forEach(scenario => {
         // Desktop drag
         scenario.setAttribute("draggable", "true");
@@ -515,23 +518,36 @@ function initializeQuiz() {
             const dx = touch.clientX - draggedElement.startX;
             const dy = touch.clientY - draggedElement.startY;
 
-            // Only visual feedback
-            draggedElement.style.transform = `translate(${dx}px, ${dy}px)`;
+            if (!isDraggingFrame) {
+                isDraggingFrame = true;
+                requestAnimationFrame(() => {
+                    // Only visual feedback
+                    draggedElement.style.transform = `translate(${dx}px, ${dy}px)`;
 
-            let target = document.elementFromPoint(touch.clientX, touch.clientY);
-            let dropZone = getDropZone(target);
+                    // Check drop zone
+                    let target = document.elementFromPoint(touch.clientX, touch.clientY);
+                    let dropZone = getDropZone(target);
 
-            dropZones.forEach(zone => zone.classList.remove('drag-over'));
-            if (dropZone) dropZone.classList.add('drag-over');
+                    if (dropZone !== lastDropZone) {
+                        dropZones.forEach(zone => zone.classList.remove('drag-over'));
+                        if (dropZone) dropZone.classList.add('drag-over');
+                        lastDropZone = dropZone;
+                    }
+
+                    isDraggingFrame = false;
+                });
+            }
         });
 
         scenario.addEventListener('touchend', (e) => {
             if (!draggedElement) return;
+
             const touch = e.changedTouches[0];
             let target = document.elementFromPoint(touch.clientX, touch.clientY);
             let dropZone = getDropZone(target);
 
             dropZones.forEach(zone => zone.classList.remove('drag-over'));
+            lastDropZone = null;
 
             if (dropZone) {
                 dropZone.appendChild(draggedElement);
@@ -1554,6 +1570,7 @@ function initializeClearData() {
     );
   });
 }
+
 
 
 
