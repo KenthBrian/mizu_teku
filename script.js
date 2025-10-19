@@ -1520,9 +1520,11 @@ window.addEventListener("load", () => {
     if (file) {
       dropboxLabel.textContent = "✅ ID uploaded: " + file.name;
       const reader = new FileReader();
-      reader.onload = function (e) {
-        filePreview.innerHTML = `<img src="${e.target.result}" alt="Preview" style="width:120px;height:auto;margin-top:10px;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,0.2);">`;
-      };
+      reader.onload = function () {
+      filePreview.innerHTML = `<p style="color:#2ecc71; font-weight:bold; margin-top:10px;">
+        ✅ Image uploaded successfully!
+      </p>`;
+    };
       reader.readAsDataURL(file);
     } else {
       dropboxLabel.textContent = "📁 Drop your ID here or click to upload";
@@ -1678,6 +1680,7 @@ function initializeClearData() {
     );
   });
 }
+
 
 
 
