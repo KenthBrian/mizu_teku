@@ -66,29 +66,38 @@
 
 
     <!-- Username Popup -->
-<div id="usernameModal" class="modal hidden">
-  <div class="modal-content">
-    <h2>Student Sign Up</h2>
-    <p>Please enter your username and upload your student ID:</p>
-
-    <!-- Username input -->
-    <input type="text" id="usernameInput" placeholder="Enter your username">
-
-    <!-- ID upload area -->
-    <label for="idUpload" class="dropbox" id="dropboxLabel">📁 Drop your ID here or click to upload</label>
-    <input type="file" id="idUpload" accept="image/*">
-    <div id="filePreview"></div>
-
-    <!-- OCR scan + status -->
-    <button id="scanIdBtn">Scan ID (OCR)</button>
-    <p id="ocrResult"></p>
-
-    <!-- Save user -->
-    <button id="saveUsername">Save</button>
-  </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@2/dist/tesseract.min.js"></script>
+    <div id="usernameModal" class="modal hidden">
+      <div class="modal-content">
+        <h2 id="modalTitle">Student Sign Up</h2>
+        <p id="modalDesc">Please enter your details and upload your Student ID:</p>
+    
+        <!-- Username input -->
+        <input type="text" id="usernameInput" placeholder="Enter your username">
+    
+        <!-- Password input -->
+        <input type="password" id="passwordInput" placeholder="Enter your password">
+    
+        <!-- ID upload area -->
+        <label for="idUpload" class="dropbox" id="dropboxLabel">📁 Drop your ID here or click to upload</label>
+        <input type="file" id="idUpload" accept="image/*">
+        <div id="filePreview"></div>
+    
+        <!-- OCR scan + status -->
+        <button id="scanIdBtn">Scan ID (OCR)</button>
+        <p id="ocrResult"></p>
+    
+        <!-- Save user -->
+        <button id="saveUsername">Sign Up</button>
+    
+        <!-- Switch link -->
+        <p style="margin-top:10px;">
+          Already have an account?
+          <a href="#" id="switchToSignIn">Sign In</a>
+        </p>
+      </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2/dist/tesseract.min.js"></script>
 
     <!-- Home Section -->
     <section id="home" class="hero-section">
@@ -554,6 +563,7 @@
     <script src="script.js"></script>
 </body>
 </html>
+
 
 
 
