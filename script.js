@@ -1525,7 +1525,13 @@ idUpload.addEventListener("change", () => {
       // Normalize text for easier checking
       const lowerText = text.toLowerCase();
 
-      const isGradeOK = lowerText.includes("grade 1") || lowerText.includes("grade 2") || lowerText.includes("grade 3") || lowerText.includes("I"); || lowerText.includes("II"); || lowerText.includes("III");;
+      const isGradeOK =
+      lowerText.includes("grade 1") ||
+      lowerText.includes("grade 2") ||
+      lowerText.includes("grade 3") ||
+      lowerText.includes("i") ||
+      lowerText.includes("ii") ||
+      lowerText.includes("iii");
       const isYearOK = lowerText.includes("2025-2026") || lowerText.includes("sy 2025-2026");
 
       if (isGradeOK && isYearOK) {
@@ -1641,6 +1647,7 @@ function initializeClearData() {
     );
   });
 }
+
 
 
 
