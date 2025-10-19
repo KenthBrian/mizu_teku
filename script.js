@@ -1471,7 +1471,6 @@ window.addEventListener("load", () => {
   const scanBtn = document.getElementById("scanIdBtn");
   const resultEl = document.getElementById("ocrResult");
   const idUpload = document.getElementById("idUpload");
-  const idUpload = document.getElementById("idUpload");
   const dropboxLabel = document.getElementById("dropboxLabel");
   const filePreview = document.getElementById("filePreview");
 
@@ -1642,6 +1641,7 @@ function initializeClearData() {
     );
   });
 }
+
 
 
 
