@@ -66,14 +66,28 @@
 
 
     <!-- Username Popup -->
-    <div id="usernameModal" class="modal hidden">
-        <div class="modal-content">
-            <h2>Welcome!</h2>
-            <p>Please enter your username:</p>
-            <input type="text" id="usernameInput" placeholder="Enter your username">
-            <button id="saveUsername">Save</button>
-        </div>
-    </div>
+<div id="usernameModal" class="modal hidden">
+  <div class="modal-content">
+    <h2>Student Sign Up</h2>
+    <p>Please enter your username and upload your student ID:</p>
+
+    <!-- Username input -->
+    <input type="text" id="usernameInput" placeholder="Enter your username">
+
+    <!-- ID upload area -->
+    <label for="idUpload" class="dropbox">📁 Drop your ID here or click to upload</label>
+    <input type="file" id="idUpload" accept="image/*">
+
+    <!-- OCR scan + status -->
+    <button id="scanIdBtn">Scan ID (OCR)</button>
+    <p id="ocrResult"></p>
+
+    <!-- Save user -->
+    <button id="saveUsername">Save</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@2/dist/tesseract.min.js"></script>
 
     <!-- Home Section -->
     <section id="home" class="hero-section">
@@ -539,6 +553,7 @@
     <script src="script.js"></script>
 </body>
 </html>
+
 
 
 
