@@ -1471,6 +1471,37 @@ window.addEventListener("load", () => {
   const scanBtn = document.getElementById("scanIdBtn");
   const resultEl = document.getElementById("ocrResult");
   const idUpload = document.getElementById("idUpload");
+  const idUpload = document.getElementById("idUpload");
+  const dropboxLabel = document.getElementById("dropboxLabel");
+  const filePreview = document.getElementById("filePreview");
+
+// When user uploads an image
+idUpload.addEventListener("change", () => {
+  const file = idUpload.files[0];
+  if (file) {
+    // Change label text
+    dropboxLabel.textContent = "✅ ID uploaded: " + file.name;
+
+    // Optional: show image preview
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      filePreview.innerHTML = `
+        <img src="${e.target.result}" alt="Preview" style="
+          width: 120px;
+          height: auto;
+          margin-top: 10px;
+          border-radius: 10px;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        ">
+      `;
+    };
+    reader.readAsDataURL(file);
+  } else {
+    dropboxLabel.textContent = "📁 Drop your ID here or click to upload";
+    filePreview.innerHTML = "";
+  }
+});
+
 
   // Show modal if no verified user
   if (!localStorage.getItem("user")) {
@@ -1611,6 +1642,7 @@ function initializeClearData() {
     );
   });
 }
+
 
 
 
