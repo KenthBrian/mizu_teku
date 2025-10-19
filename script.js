@@ -1493,7 +1493,7 @@ window.addEventListener("load", () => {
       switchLink.textContent = "Sign In";
       scanBtn.style.display = "inline-block";
       dropboxLabel.style.display = "block";
-      idUpload.style.display = "block";
+      idUpload.style.display = "none";
       filePreview.style.display = "block";
       resultEl.style.display = "block";
     } else {
@@ -1678,6 +1678,7 @@ function initializeClearData() {
     );
   });
 }
+
 
 
 
