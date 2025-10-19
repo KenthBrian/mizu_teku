@@ -1456,45 +1456,86 @@ function downloadCertificate() {
     }
 }
 
-//Username Section
 function updateGreeting() {
-    const username = localStorage.getItem("username");
-    const greetingEl = document.getElementById("userGreeting");
-    if (greetingEl) {
-        if (username) {
-            greetingEl.textContent = "Hi, " + username + "!";
-        } else {
-            greetingEl.textContent = "";
-        }
-    }
+  const user = JSON.parse(localStorage.getItem("user"));
+  const greetingEl = document.getElementById("userGreeting");
+  if (greetingEl) {
+    greetingEl.textContent = user ? "Welcome, " + user.username + "!" : "";
+  }
 }
 
 window.addEventListener("load", () => {
-    const modal = document.getElementById("usernameModal");
-    const closeBtn = document.getElementById("closeUsernameModal"); // X button
-    const saveBtn = document.getElementById("saveUsername");
-    const input = document.getElementById("usernameInput");
+  const modal = document.getElementById("usernameModal");
+  const saveBtn = document.getElementById("saveUsername");
+  const input = document.getElementById("usernameInput");
+  const scanBtn = document.getElementById("scanIdBtn");
+  const resultEl = document.getElementById("ocrResult");
+  const idUpload = document.getElementById("idUpload");
 
-    // Show modal if no username saved
-    if (!localStorage.getItem("username")) {
-        modal.classList.remove("hidden");
-        input.focus();
-    } else {
-        updateGreeting();
+  // Show modal if no verified user
+  if (!localStorage.getItem("user")) {
+    modal.classList.remove("hidden");
+    input.focus();
+  } else {
+    updateGreeting();
+  }
+
+  // OCR Scan
+  scanBtn.addEventListener("click", async () => {
+    const file = idUpload.files[0];
+    if (!file) return alert("Please upload your Student ID first!");
+
+    resultEl.textContent = "🔍 Scanning your ID... Please wait.";
+
+    try {
+      const { data: { text } } = await Tesseract.recognize(file, 'eng');
+      console.log("OCR Text:", text);
+      resultEl.textContent = "OCR Result:\n" + text;
+
+      // Normalize text for easier checking
+      const lowerText = text.toLowerCase();
+
+      const isGradeOK = lowerText.includes("grade 1") || lowerText.includes("grade 2") || lowerText.includes("grade 3");
+      const isYearOK = lowerText.includes("2025-2026") || lowerText.includes("sy 2025-2026");
+
+      if (isGradeOK && isYearOK) {
+        resultEl.textContent += "\n✅ Verified: Grade 1–3, SY 2025–2026";
+        resultEl.dataset.verified = "true";
+      } else {
+        let msg = "\n❌ Verification failed. ";
+        if (!isGradeOK) msg += "Student is not in Grade 1–3. ";
+        if (!isYearOK) msg += "ID not valid for SY 2025–2026.";
+        resultEl.textContent += msg;
+        resultEl.dataset.verified = "false";
+      }
+
+    } catch (err) {
+      resultEl.textContent = "❌ OCR failed: " + err.message;
+    }
+  });
+
+  // Save verified user
+  saveBtn.addEventListener("click", () => {
+    const username = input.value.trim();
+    const ocrText = resultEl.textContent || "";
+    const verified = resultEl.dataset.verified === "true";
+
+    if (!username) {
+      alert("Please enter your name!");
+      return input.focus();
     }
 
-    // Save username + close modal
-    saveBtn.addEventListener("click", () => {
-        const name = input.value.trim();
-        if (name) {
-            localStorage.setItem("username", name);
-            updateGreeting();
-            modal.classList.add("hidden"); // ✅ auto close
-        } else {
-            alert("Please enter your name!");
-            input.focus();
-        }
-    });
+    if (!verified) {
+      alert("Please complete verification before signing up!");
+      return;
+    }
+
+    const userData = { username, ocrText, verified };
+    localStorage.setItem("user", JSON.stringify(userData));
+
+    updateGreeting();
+    modal.classList.add("hidden");
+  });
 });
 
 
@@ -1570,6 +1611,7 @@ function initializeClearData() {
     );
   });
 }
+
 
 
 
