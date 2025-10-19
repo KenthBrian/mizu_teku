@@ -1511,44 +1511,48 @@ idUpload.addEventListener("change", () => {
   }
 
   // OCR Scan
-  scanBtn.addEventListener("click", async () => {
-    const file = idUpload.files[0];
-    if (!file) return alert("Please upload your Student ID first!");
+scanBtn.addEventListener("click", async () => {
+  const file = idUpload.files[0];
+  if (!file) return alert("Please upload your Student ID first!");
 
-    resultEl.textContent = "🔍 Scanning your ID... Please wait.";
+  resultEl.textContent = "🔍 Scanning your ID... Please wait.";
 
-    try {
-      const { data: { text } } = await Tesseract.recognize(file, 'eng');
-      console.log("OCR Text:", text);
-      resultEl.textContent = "OCR Result:\n" + text;
+  try {
+    // Perform OCR
+    const { data: { text } } = await Tesseract.recognize(file, 'eng');
+    console.log("OCR Text:", text); // for debugging only, not shown to user
 
-      // Normalize text for easier checking
-      const lowerText = text.toLowerCase();
+    // Clean and normalize text
+    const lowerText = text.toLowerCase().replace(/\s+/g, ' ');
 
-      const isGradeOK =
+    // Check if grade is 1–3 (accepts word or roman numeral)
+    const isGradeOK =
       lowerText.includes("grade 1") ||
       lowerText.includes("grade 2") ||
       lowerText.includes("grade 3") ||
-      lowerText.includes("i") ||
-      lowerText.includes("ii") ||
-      lowerText.includes("iii");
-      const isYearOK = lowerText.includes("2025-2026") || lowerText.includes("sy 2025-2026");
+      lowerText.includes(" i ") ||
+      lowerText.includes(" ii ") ||
+      lowerText.includes(" iii ");
 
-      if (isGradeOK && isYearOK) {
-        resultEl.textContent += "\n✅ Verified: Grade 1–3, SY 2025–2026";
-        resultEl.dataset.verified = "true";
-      } else {
-        let msg = "\n❌ Verification failed. ";
-        if (!isGradeOK) msg += "Student is not in Grade 1–3. ";
-        if (!isYearOK) msg += "ID not valid for SY 2025–2026.";
-        resultEl.textContent += msg;
-        resultEl.dataset.verified = "false";
-      }
+    // Check if school year 2025–2026 is mentioned
+    const isYearOK = lowerText.includes("2025") && lowerText.includes("2026");
 
-    } catch (err) {
-      resultEl.textContent = "❌ OCR failed: " + err.message;
+    // Display verification result
+    if (isGradeOK && isYearOK) {
+      resultEl.textContent = "✅ Verified: Grade 1–3, SY 2025–2026";
+      resultEl.dataset.verified = "true";
+    } else {
+      let msg = "❌ Verification failed. ";
+      if (!isGradeOK) msg += "Student is not in Grade 1–3. ";
+      if (!isYearOK) msg += "ID not valid for SY 2025–2026.";
+      resultEl.textContent = msg;
+      resultEl.dataset.verified = "false";
     }
-  });
+
+  } catch (err) {
+    resultEl.textContent = "❌ OCR failed: " + err.message;
+  }
+});
 
   // Save verified user
   saveBtn.addEventListener("click", () => {
@@ -1647,6 +1651,7 @@ function initializeClearData() {
     );
   });
 }
+
 
 
 
