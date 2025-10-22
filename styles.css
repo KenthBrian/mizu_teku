@@ -219,7 +219,7 @@ body {
 
 /* ===== Inputs ===== */
 #usernameModal input[type="text"],
-#usernameModal input[type="password"]
+#usernameModal input[type="password"],
 #usernameModal input[type="email"] {
   width: 100%;
   padding: 0.8rem;
@@ -232,7 +232,7 @@ body {
 }
 
 #usernameModal input[type="text"]:focus,
-#usernameModal input[type="password"]:focus
+#usernameModal input[type="password"]:focus,
 #usernameModal input[type="email"]:focus {
   border-color: #2ecc71;
   box-shadow: 0 0 6px rgba(46, 204, 113, 0.5);
