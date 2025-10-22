@@ -1589,32 +1589,56 @@ function initializeClearData() {
         return;
     }
 
-    clearBtn.addEventListener("click", () => {
-    console.log("✅ Clear Data clicked");
+    clearBtn.addEventListener("click", async () => {
+        console.log("✅ Sign Out clicked");
 
-    // Custom confirm modal instead of browser confirm
-    showConfirmModal(
-        currentLanguage === "en"
-            ? "Are you sure?"
-            : "Sigurado ka ba?",
-        currentLanguage === "en"
-            ? "Do you really want to clear all saved data? This cannot be undone."
-            : "Gusto mo bang burahin ang lahat ng data? Hindi na ito maibabalik.",
-        () => {
-            // ✅ User clicked "Yes"
-            localStorage.clear();
-            showAlertModal(
-                currentLanguage === "en"
-                    ? "All data cleared!"
-                    : "Burado na ang lahat ng data!",
-                currentLanguage === "en"
-                    ? "Refreshing..."
-                    : "Nagre-refresh..."
-            );
-            setTimeout(() => location.reload(), 1000);
-        }
-    );
-  });
+        // Confirm before signing out
+        showConfirmModal(
+            currentLanguage === "en"
+                ? "Sign Out?"
+                : "Mag-sign out?",
+            currentLanguage === "en"
+                ? "Do you really want to sign out of your account?"
+                : "Gusto mo bang mag-sign out sa iyong account?",
+            async () => {
+                try {
+                    // ✅ Firebase sign out
+                    const { getAuth, signOut } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js");
+                    const auth = getAuth();
+                    await signOut(auth);
+
+                    // ✅ Clear remembered email (if used)
+                    localStorage.removeItem("rememberedEmail");
+
+                    // ✅ Notify user
+                    showAlertModal(
+                        currentLanguage === "en"
+                            ? "Signed out successfully!"
+                            : "Matagumpay na naka-sign out!",
+                        currentLanguage === "en"
+                            ? "Redirecting to login..."
+                            : "Babalik sa login..."
+                    );
+
+                    // ✅ Return to login modal
+                    setTimeout(() => {
+                        location.reload(); // reloads to show login again
+                    }, 1000);
+
+                } catch (error) {
+                    console.error("❌ Sign out failed:", error);
+                    showAlertModal(
+                        currentLanguage === "en"
+                            ? "Error"
+                            : "Error",
+                        currentLanguage === "en"
+                            ? "Failed to sign out. Please try again."
+                            : "Hindi nakapag-sign out. Subukang muli."
+                    );
+                }
+            }
+        );
+    });
 }
 
 
