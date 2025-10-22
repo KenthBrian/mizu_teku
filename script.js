@@ -199,6 +199,7 @@ document.addEventListener("DOMContentLoaded", function () {
     initializeHamburgerMenu();
     initializeGameResets();
     initializeBadges();
+    initializeClearData();
 });
 
 function initializeLanguageSwitcher() {
@@ -288,6 +289,87 @@ function initializeHamburgerMenu() {
         }
     });
 }
+
+// ===== Alert modal queueing (drop-in replacement) =====
+let _alertQueue = [];
+let _isAlertOpen = false;
+
+function showAlertModal(title = '', message = '', callback = null) {
+  const modal = document.getElementById('alertModal');
+  if (!modal) {
+    console.warn('showAlertModal: #alertModal not found');
+    if (callback) callback();
+    return;
+  }
+
+  // If another alert is open, enqueue this one
+  if (_isAlertOpen) {
+    _alertQueue.push({ title, message, callback });
+    console.log('showAlertModal: queued:', title);
+    return;
+  }
+
+  console.log('showAlertModal: showing:', title);
+  // Fill contents
+  const titleEl = document.getElementById('alertModalTitle');
+  const msgEl = document.getElementById('alertModalMessage');
+  if (titleEl) titleEl.innerText = title;
+  if (msgEl) msgEl.innerText = message;
+
+  // Attach callback to modal instance
+  modal._alertCallback = typeof callback === 'function' ? callback : null;
+
+  // Show
+  modal.classList.remove('hidden');
+  modal.setAttribute('aria-hidden', 'false');
+  _isAlertOpen = true;
+
+  // optional: focus close button for accessibility
+  const closeBtn = modal.querySelector('.close-btn');
+  if (closeBtn) closeBtn.focus();
+}
+
+function closeAlert() {
+  const modal = document.getElementById('alertModal');
+  if (!modal) return;
+
+  // hide modal first (so UI updates)
+  modal.classList.add('hidden');
+  modal.setAttribute('aria-hidden', 'true');
+
+  // run callback if provided
+  const cb = modal._alertCallback;
+  modal._alertCallback = null;
+  _isAlertOpen = false;
+
+  if (typeof cb === 'function') {
+    try {
+      console.log('closeAlert: running callback');
+      cb();
+    } catch (err) {
+      console.error('closeAlert: callback error', err);
+    }
+  }
+
+  if (_alertQueue.length > 0) {
+    const next = _alertQueue.shift();
+    setTimeout(() => {
+      showAlertModal(next.title, next.message, next.callback);
+    }, 120);
+  }
+}
+
+window.addEventListener('click', function (event) {
+  const modal = document.getElementById('alertModal');
+  if (!modal) return;
+  if (event.target === modal) closeAlert();
+});
+
+window.addEventListener('keydown', function (e) {
+  const modal = document.getElementById('alertModal');
+  if (!modal || modal.classList.contains('hidden')) return;
+  if (e.key === 'Escape') closeAlert();
+});
 
 const totalGlasses = 5;
 const dirtyGlassesCount = 3;
@@ -1384,4 +1466,69 @@ const firebaseConfig = {
     measurementId: "G-NTT38FCEKG"
   };
 
+function showConfirmModal(title, message, onConfirm, onCancel) {
+  const modal = document.getElementById("confirmModal");
+  const modalTitle = document.getElementById("confirmModalTitle");
+  const modalMessage = document.getElementById("confirmModalMessage");
+  const yesBtn = document.getElementById("confirmYesBtn");
+  const noBtn = document.getElementById("confirmNoBtn");
 
+  modalTitle.textContent = title;
+  modalMessage.textContent = message;
+  modal.style.display = "flex";
+
+  yesBtn.onclick = null;
+  noBtn.onclick = null;
+
+  yesBtn.onclick = () => {
+    modal.style.display = "none";
+    if (onConfirm) onConfirm();
+  };
+
+  noBtn.onclick = () => {
+    modal.style.display = "none";
+    if (onCancel) onCancel();
+  };
+}
+
+function initializeClearData() {
+    const clearBtn = document.getElementById("clearDataBtn");
+    if (!clearBtn) {
+        console.error("❌ Clear Data button not found");
+        return;
+    }   
+
+    clearBtn.addEventListener("click", async () => {
+        console.log("✅ Sign Out clicked");
+
+        // Confirm before signing out
+        showConfirmModal(
+            currentLanguage === "en" ? "Sign Out?" : "Mag-sign out?",
+            currentLanguage === "en" ? "Do you really want to sign out of your account?" : "Gusto mo bang mag-sign out sa iyong account?",
+            async () => {
+                try {
+                    // Use the auth instance you already created
+                    await signOut(auth);
+
+                    localStorage.removeItem("rememberedEmail");
+
+                    showAlertModal(
+                        currentLanguage === "en" ? "Signed out successfully!" : "Matagumpay na naka-sign out!",
+                        currentLanguage === "en" ? "Redirecting to login..." : "Babalik sa login..."
+                    );
+
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+
+                } catch (error) {
+                    console.error("❌ Sign out failed:", error);
+                    showAlertModal(
+                        currentLanguage === "en" ? "Error" : "Error",
+                        currentLanguage === "en" ? "Failed to sign out. Please try again." : "Hindi nakapag-sign out. Subukang muli."
+                    );
+                }
+            }
+        );
+    });
+}
