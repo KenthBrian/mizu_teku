@@ -1501,35 +1501,17 @@ const firebaseConfig = {
         modalDesc.textContent = "Please enter your details and upload your Student ID:";
         saveBtn.textContent = "Sign Up";
         switchLink.textContent = "Sign In";
-        dropboxLabel.style.display = "block";
-        idUpload.style.display = "block";
-        filePreview.style.display = "block";
       } else {
         modalTitle.textContent = "Student Sign In";
         modalDesc.textContent = "Welcome back! Please enter your name and password:";
         saveBtn.textContent = "Sign In";
         switchLink.textContent = "Sign Up";
-        dropboxLabel.style.display = "none";
-        idUpload.style.display = "none";
-        filePreview.style.display = "none";
       }
 
       lastnameInput.value = "";
       firstnameInput.value = "";
       middleinitialInput.value = "";
       passwordInput.value = "";
-    });
-
-    // === File upload preview ===
-    idUpload.addEventListener("change", () => {
-      const file = idUpload.files[0];
-      if (file) {
-        dropboxLabel.textContent = "✅ ID uploaded: " + file.name;
-        filePreview.innerHTML = `<p style="color:#2ecc71; font-weight:bold; margin-top:10px;">✅ Image uploaded successfully!</p>`;
-      } else {
-        dropboxLabel.textContent = "📁 Drop your ID here or click to upload";
-        filePreview.innerHTML = "";
-      }
     });
 
     // === SIGN UP ===
