@@ -1182,8 +1182,6 @@ const tipsData = {
     }
 };
 
-
-
 function showHomeTips(type = "home") {
     const lang = (typeof currentLanguage !== "undefined" && currentLanguage === "tl") ? "tl" : "en";
 
@@ -1210,6 +1208,8 @@ function showHomeTips(type = "home") {
     homeTipsModal.classList.remove("hidden");
 }
 
+window.showHomeTips = showHomeTips;
+
 function closeHomeTips() {
     const homeTipsModal = document.getElementById("homeTipsModal");
     if (!homeTipsModal) return;
@@ -1223,6 +1223,8 @@ if (modal) {
         if (event.target === modal) closeHomeTips();
     });
 }
+
+window.closeHomeTips = closeHomeTips;
 
 // Add event listeners to all buttons with class "info-button"
 document.querySelectorAll(".info-button").forEach(btn => {
