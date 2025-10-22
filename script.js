@@ -1203,6 +1203,8 @@ function showHomeTips(type = "home") {
   document.getElementById("homeTipsModal").classList.remove("hidden");
 }
 
+window.showHomeTips = showHomeTips;
+
 function closeHomeTips() {
   document.getElementById("homeTipsModal").classList.add("hidden");
 }
@@ -1216,6 +1218,7 @@ modal.addEventListener("click", function (event) {
     }
 });
 
+window.showHomeTips = showHomeTips;
 
 const handwashingVideos = {
     step1: { 
