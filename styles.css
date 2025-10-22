@@ -163,16 +163,30 @@ body {
         transform: rotate(45deg) translate(-5px, -6px);
     }
 
-/* ===== SIGNUP PAGE ===== */
+/* ===== FULLSCREEN SIGNUP PAGE ===== */
 #signupPage {
-  max-width: 400px;
-  margin: 80px auto;
-  padding: 2rem;
-  background: #ffffff;
-  border-radius: 20px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  text-align: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #ffffff, #e8f6ff);
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-family: 'Chewy', sans-serif;
+  z-index: 1000;
+}
+
+/* Inner container */
+#signupPage .content {
+  background: white;
+  padding: 2.5rem 3rem;
+  border-radius: 20px;
+  width: 380px;
+  max-width: 90%;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  text-align: center;
   color: #2c3e50;
 }
 
@@ -185,7 +199,7 @@ body {
 
 #signupPage p {
   font-size: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
 }
 
 /* ===== Inputs ===== */
@@ -206,7 +220,7 @@ body {
   box-shadow: 0 0 6px rgba(46, 204, 113, 0.5);
 }
 
-/* ===== Upload Area ===== */
+/* ===== Dropbox (upload area) ===== */
 .dropbox {
   display: block;
   border: 2px dashed #3498db;
@@ -260,19 +274,6 @@ button:hover {
 
 #signupPage a:hover {
   color: #2ecc71;
-}
-
-
-/* ===== Animation ===== */
-@keyframes fadeInScale {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
 }
 
 /* Hero Section */
