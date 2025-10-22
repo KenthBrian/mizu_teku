@@ -1182,39 +1182,62 @@ const tipsData = {
     }
 };
 
+
+
 function showHomeTips(type = "home") {
-  const lang = (typeof currentLanguage !== "undefined" && currentLanguage === "tl") ? "tl" : "en";
+    const lang = (typeof currentLanguage !== "undefined" && currentLanguage === "tl") ? "tl" : "en";
 
-  if (!tipsData[type]) return;
+    if (!tipsData[type]) return;
 
-  const tips = tipsData[type][lang];
-  const title = tipsData[type].title[lang];
+    const tips = tipsData[type][lang];
+    const title = tipsData[type].title[lang];
 
-  document.getElementById("tipsTitle").innerHTML = title;
+    const tipsTitle = document.getElementById("tipsTitle");
+    const tipsList = document.getElementById("tipsList");
+    const homeTipsModal = document.getElementById("homeTipsModal");
 
-  const tipsList = document.getElementById("tipsList");
-  tipsList.innerHTML = "";
-  tips.forEach(item => {
-    const li = document.createElement("li");
-    li.textContent = item;
-    tipsList.appendChild(li);
-  });
+    if (!tipsTitle || !tipsList || !homeTipsModal) return;
 
-  document.getElementById("homeTipsModal").classList.remove("hidden");
+    tipsTitle.textContent = title;
+
+    tipsList.innerHTML = "";
+    tips.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = item;
+        tipsList.appendChild(li);
+    });
+
+    homeTipsModal.classList.remove("hidden");
 }
 
 function closeHomeTips() {
-  document.getElementById("homeTipsModal").classList.add("hidden");
+    const homeTipsModal = document.getElementById("homeTipsModal");
+    if (!homeTipsModal) return;
+    homeTipsModal.classList.add("hidden");
 }
 
+// Close modal when clicking outside content
 const modal = document.getElementById("homeTipsModal");
+if (modal) {
+    modal.addEventListener("click", function(event) {
+        if (event.target === modal) closeHomeTips();
+    });
+}
 
-modal.addEventListener("click", function (event) {
-    // Only close if clicked outside the modal content
-    if (event.target === modal) {
-        closeHomeTips();
-    }
+// Add event listeners to all buttons with class "info-button"
+document.querySelectorAll(".info-button").forEach(btn => {
+    btn.addEventListener("click", () => {
+        const type = btn.dataset.topic || "home";
+        showHomeTips(type);
+    });
 });
+
+// Optional: attach close button inside modal
+const closeBtn = document.getElementById("closeHomeTipsBtn");
+if (closeBtn) {
+    closeBtn.addEventListener("click", closeHomeTips);
+}
+
 
 
 const handwashingVideos = {
@@ -1456,15 +1479,30 @@ function downloadCertificate() {
     }
 }
 
+import { 
+  getAuth, 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword, 
+  onAuthStateChanged, 
+  setPersistence, 
+  browserSessionPersistence,
+  signOut 
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
 const firebaseConfig = {
-    apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
-    authDomain: "mizuteku-3a441.firebaseapp.com",
-    projectId: "mizuteku-3a441",
-    storageBucket: "mizuteku-3a441.firebasestorage.app",
-    messagingSenderId: "473895456413",
-    appId: "1:473895456413:web:1452ef7b9860908dd78e74",
-    measurementId: "G-NTT38FCEKG"
-  };
+  apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
+  authDomain: "mizuteku-3a441.firebaseapp.com",
+  projectId: "mizuteku-3a441",
+  storageBucket: "mizuteku-3a441.firebasestorage.app",
+  messagingSenderId: "473895456413",
+  appId: "1:473895456413:web:1452ef7b9860908dd78e74",
+  measurementId: "G-NTT38FCEKG",
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
 function showConfirmModal(title, message, onConfirm, onCancel) {
   const modal = document.getElementById("confirmModal");
@@ -1491,12 +1529,6 @@ function showConfirmModal(title, message, onConfirm, onCancel) {
   };
 }
 
-// external.js
-import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-
-// Initialize Firebase Auth once at the top
-const auth = getAuth();
-
 export function initializeClearData(currentLanguage = "en") {
     const clearBtn = document.getElementById("clearDataBtn");
     if (!clearBtn) {
@@ -1515,7 +1547,7 @@ export function initializeClearData(currentLanguage = "en") {
                 : "Gusto mo bang mag-sign out sa iyong account?",
             async () => {
                 try {
-                    await signOut(auth); // ✅ auth is defined now
+                    await signOut(auth); // ✅ auth is defined
 
                     localStorage.removeItem("rememberedEmail");
 
@@ -1528,9 +1560,11 @@ export function initializeClearData(currentLanguage = "en") {
                             : "Babalik sa login..."
                     );
 
+                    // Redirect to login page instead of reload
                     setTimeout(() => {
-                        location.reload();
+                        window.location.href = 'index.html';
                     }, 1000);
+
                 } catch (error) {
                     console.error("❌ Sign out failed:", error);
                     showAlertModal(
