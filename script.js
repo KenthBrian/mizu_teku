@@ -1456,6 +1456,11 @@ function downloadCertificate() {
     }
 }
 
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+
 const firebaseConfig = {
     apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
     authDomain: "mizuteku-3a441.firebaseapp.com",
@@ -1471,115 +1476,118 @@ const firebaseConfig = {
   const db = firebase.firestore();
   const storage = firebase.storage();
 
+  const modal = document.getElementById("usernameModal");
+  const modalTitle = document.getElementById("modalTitle");
+  const modalDesc = document.getElementById("modalDesc");
+  const saveBtn = document.getElementById("saveUsername");
+  const switchLink = document.getElementById("switchToSignIn");
+
+  const lastnameInput = document.getElementById("lastnameInput");
+  const firstnameInput = document.getElementById("firstnameInput");
+  const middleinitialInput = document.getElementById("middleinitialInput");
+  const emailInput = document.getElementById("emailInput");
+  const passwordInput = document.getElementById("passwordInput");
+  const confirmPasswordInput = document.getElementById("confirmPasswordInput");
+
+  let isSignUpMode = true;
+  let selectedFile = null;
+
+  // === Show modal when page loads ===
   window.addEventListener("load", () => {
-    const modal = document.getElementById("usernameModal");
-    const modalTitle = document.getElementById("modalTitle");
-    const modalDesc = document.getElementById("modalDesc");
-    const saveBtn = document.getElementById("saveUsername");
-    const switchLink = document.getElementById("switchToSignIn");
-
-    const lastnameInput = document.getElementById("lastnameInput");
-    const firstnameInput = document.getElementById("firstnameInput");
-    const middleinitialInput = document.getElementById("middleinitialInput");
-    const passwordInput = document.getElementById("passwordInput");
-    const dropboxLabel = document.getElementById("dropboxLabel");
-    const filePreview = document.getElementById("filePreview");
-
-    let isSignUpMode = true;
-
-    // Show modal when page loads
     modal.classList.remove("hidden");
+  });
 
-    // === Switch between Sign Up and Sign In ===
-    switchLink.addEventListener("click", (e) => {
-      e.preventDefault();
-      isSignUpMode = !isSignUpMode;
+  // === Switch between Sign Up and Sign In ===
+  switchLink.addEventListener("click", (e) => {
+    e.preventDefault();
+    isSignUpMode = !isSignUpMode;
 
+    if (isSignUpMode) {
+      modalTitle.textContent = "Student Sign Up";
+      modalDesc.textContent = "Please enter your details and upload your Student ID:";
+      saveBtn.textContent = "Sign Up";
+      switchLink.textContent = "Sign In";
+      confirmPasswordInput.style.display = "block";
+      emailInput.style.display = "block";
+    } else {
+      modalTitle.textContent = "Student Sign In";
+      modalDesc.textContent = "Welcome back! Please enter your name and password:";
+      saveBtn.textContent = "Sign In";
+      switchLink.textContent = "Sign Up";
+      confirmPasswordInput.style.display = "none";
+      emailInput.style.display = "none";
+    }
+
+    lastnameInput.value = "";
+    firstnameInput.value = "";
+    middleinitialInput.value = "";
+    passwordInput.value = "";
+    confirmPasswordInput.value = "";
+  });
+
+  // === SIGN UP / SIGN IN ACTION ===
+  saveBtn.addEventListener("click", async () => {
+    const lastName = lastnameInput.value.trim();
+    const firstName = firstnameInput.value.trim();
+    const middleInitial = middleinitialInput.value.trim();
+    const password = passwordInput.value.trim();
+    const confirmPassword = confirmPasswordInput.value.trim();
+
+    if (!lastName || !firstName || !password) {
+      alert("⚠️ Please fill in all required fields!");
+      return;
+    }
+
+    if (isSignUpMode && password !== confirmPassword) {
+      alert("⚠️ Passwords do not match!");
+      return;
+    }
+
+    const fakeEmail = `${lastName}_${firstName}@school.com`;
+
+    try {
       if (isSignUpMode) {
-        modalTitle.textContent = "Student Sign Up";
-        modalDesc.textContent = "Please enter your details and upload your Student ID:";
-        saveBtn.textContent = "Sign Up";
-        switchLink.textContent = "Sign In";
-      } else {
-        modalTitle.textContent = "Student Sign In";
-        modalDesc.textContent = "Welcome back! Please enter your name and password:";
-        saveBtn.textContent = "Sign In";
-        switchLink.textContent = "Sign Up";
-      }
+        // === SIGN UP ===
+        const userCredential = await createUserWithEmailAndPassword(auth, fakeEmail, password);
+        const user = userCredential.user;
 
-      lastnameInput.value = "";
-      firstnameInput.value = "";
-      middleinitialInput.value = "";
-      passwordInput.value = "";
-    });
-
-    // === SIGN UP ===
-    saveBtn.addEventListener("click", async () => {
-      const lastName = lastnameInput.value.trim();
-      const firstName = firstnameInput.value.trim();
-      const middleInitial = middleinitialInput.value.trim();
-      const password = passwordInput.value.trim();
-
-      if (!lastName || !firstName || !password) {
-        alert("Please fill in all required fields!");
-        return;
-      }
-
-      // SIGN UP MODE
-      if (isSignUpMode) {
-        try {
-          // Fake email trick
-          const fakeEmail = `${lastName}_${firstName}@school.com`;
-
-          // Create account in Firebase Auth
-          const userCredential = await auth.createUserWithEmailAndPassword(fakeEmail, password);
-          const user = userCredential.user;
-
-          // Upload ID to Firebase Storage
-          let idUrl = "";
-          if (file) {
-            const ref = storage.ref(`studentIDs/${user.uid}-${file.name}`);
-            await ref.put(file);
-            idUrl = await ref.getDownloadURL();
-          }
-
-          // Save student info to Firestore
-          await db.collection("students").doc(user.uid).set({
-            lastName,
-            firstName,
-            middleInitial,
-            idUrl,
-            verified: false,
-            createdAt: new Date()
-          });
-
-          alert("✅ Sign-up successful! Waiting for teacher verification.");
-          modal.classList.add("hidden");
-        } catch (err) {
-          alert("❌ " + err.message);
+        let idUrl = "";
+        if (selectedFile) {
+          const fileRef = ref(storage, `studentIDs/${user.uid}-${selectedFile.name}`);
+          await uploadBytes(fileRef, selectedFile);
+          idUrl = await getDownloadURL(fileRef);
         }
+
+        await setDoc(doc(db, "students", user.uid), {
+          lastName,
+          firstName,
+          middleInitial,
+          idUrl,
+          verified: false,
+          createdAt: new Date()
+        });
+
+        alert("✅ Sign-up successful! Waiting for teacher verification.");
+        modal.classList.add("hidden");
+
       } else {
         // === SIGN IN ===
-        try {
-          const fakeEmail = `${lastName}_${firstName}@school.com`;
-          const userCredential = await auth.signInWithEmailAndPassword(fakeEmail, password);
-          const user = userCredential.user;
+        const userCredential = await signInWithEmailAndPassword(auth, fakeEmail, password);
+        const user = userCredential.user;
 
-          const doc = await db.collection("students").doc(user.uid).get();
+        const docSnap = await getDoc(doc(db, "students", user.uid));
 
-          if (doc.exists && doc.data().verified) {
-            alert(`✅ Welcome ${doc.data().firstName}! You are verified.`);
-            modal.classList.add("hidden");
-            // Redirect if needed:
-            // window.location.href = "student_dashboard.html";
-          } else {
-            alert("⏳ Your account is pending teacher verification.");
-          }
-        } catch (err) {
-          alert("❌ " + err.message);
+        if (docSnap.exists() && docSnap.data().verified) {
+          alert(`✅ Welcome ${docSnap.data().firstName}!`);
+          modal.classList.add("hidden");
+          window.location.href = "student_dashboard.html";
+        } else {
+          alert("⏳ Your account is pending teacher verification.");
         }
       }
-    });
+    } catch (err) {
+      alert("❌ " + err.message);
+    }
   });
 
 
