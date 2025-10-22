@@ -1471,7 +1471,7 @@ const firebaseConfig = {
   const db = firebase.firestore();
   const storage = firebase.storage();
 
-  const modal = document.getElementById("usernameModal");
+  const usernamemodal = document.getElementById("usernameModal");
   const modalTitle = document.getElementById("modalTitle");
   const modalDesc = document.getElementById("modalDesc");
   const saveBtn = document.getElementById("saveUsername");
@@ -1489,7 +1489,7 @@ const firebaseConfig = {
 
   // === Show modal when page loads ===
   window.addEventListener("load", () => {
-    modal.classList.remove("hidden");
+    usernamemodal.classList.remove("hidden");
   });
 
   // === Switch between Sign Up and Sign In ===
