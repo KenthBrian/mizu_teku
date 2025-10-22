@@ -1456,6 +1456,66 @@ function downloadCertificate() {
     }
 }
 
+const firebaseConfig = {
+    apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
+    authDomain: "mizuteku-3a441.firebaseapp.com",
+    projectId: "mizuteku-3a441",
+    storageBucket: "mizuteku-3a441.firebasestorage.app",
+    messagingSenderId: "473895456413",
+    appId: "1:473895456413:web:1452ef7b9860908dd78e74",
+    measurementId: "G-NTT38FCEKG"
+  };
+
+
+  const usernamemodal = document.getElementById("usernameModal");
+  const modalTitle = document.getElementById("modalTitle");
+  const modalDesc = document.getElementById("modalDesc");
+  const saveBtn = document.getElementById("saveUsername");
+  const switchLink = document.getElementById("switchToSignIn");
+
+  const lastnameInput = document.getElementById("lastnameInput");
+  const firstnameInput = document.getElementById("firstnameInput");
+  const middleinitialInput = document.getElementById("middleinitialInput");
+  const emailInput = document.getElementById("emailInput");
+  const passwordInput = document.getElementById("passwordInput");
+  const confirmPasswordInput = document.getElementById("confirmPasswordInput");
+
+  let isSignUpMode = true;
+  let selectedFile = null;
+
+  // === Show modal when page loads ===
+  window.addEventListener("load", () => {
+    usernamemodal.classList.remove("hidden");
+  });
+
+  // === Switch between Sign Up and Sign In ===
+  switchLink.addEventListener("click", (e) => {
+    e.preventDefault();
+    isSignUpMode = !isSignUpMode;
+
+    if (isSignUpMode) {
+      modalTitle.textContent = "Student Sign Up";
+      modalDesc.textContent = "Please enter your details and upload your Student ID:";
+      saveBtn.textContent = "Sign Up";
+      switchLink.textContent = "Sign In";
+      confirmPasswordInput.style.display = "block";
+      emailInput.style.display = "block";
+    } else {
+      modalTitle.textContent = "Student Sign In";
+      modalDesc.textContent = "Welcome back! Please enter your name and password:";
+      saveBtn.textContent = "Sign In";
+      switchLink.textContent = "Sign Up";
+      confirmPasswordInput.style.display = "none";
+      emailInput.style.display = "none";
+    }
+
+    lastnameInput.value = "";
+    firstnameInput.value = "";
+    middleinitialInput.value = "";
+    passwordInput.value = "";
+    confirmPasswordInput.value = "";
+  });
+
 function showConfirmModal(title, message, onConfirm, onCancel) {
   const modal = document.getElementById("confirmModal");
   const modalTitle = document.getElementById("confirmModalTitle");
