@@ -16,109 +16,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
-            authDomain: "mizuteku-3a441.firebaseapp.com",
-            projectId: "mizuteku-3a441",
-            storageBucket: "mizuteku-3a441.firebasestorage.app",
-            messagingSenderId: "473895456413",
-            appId: "1:473895456413:web:1452ef7b9860908dd78e74",
-            measurementId: "G-NTT38FCEKG"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        let isSignUp = true;
-
-        const modalTitle = document.getElementById("modalTitle");
-        const authBtn = document.getElementById("authBtn");
-        const switchMode = document.getElementById("switchMode");
-
-        const emailInput = document.getElementById("emailInput");
-        const lastnameInput = document.getElementById("lastnameInput");
-        const firstnameInput = document.getElementById("firstnameInput");
-        const passwordInput = document.getElementById("passwordInput");
-        const confirmPasswordInput = document.getElementById("confirmPasswordInput");
-
-        const studentPage = document.getElementById("studentPage");
-        const teacherPage = document.getElementById("teacherPage");
-
-        // ✅ Handle Sign Up or Sign In
-        authBtn.addEventListener("click", async () => {
-            const email = emailInput.value.trim();
-            const lastName = lastnameInput.value.trim();
-            const firstName = firstnameInput.value.trim();
-            const password = passwordInput.value.trim();
-            const confirmPassword = confirmPasswordInput.value.trim();
-
-            if (isSignUp) {
-            // --- STUDENT SIGN UP ---
-            if (!lastName || !firstName || !password || !confirmPassword) {
-                alert("Please fill in all fields!");
-                return;
-            }
-            if (password !== confirmPassword) {
-                alert("Passwords do not match!");
-                return;
-            }
-
-            const fakeEmail = `${lastName}_${firstName}@school.com`;
-
-            try {
-                const userCredential = await createUserWithEmailAndPassword(auth, fakeEmail, password);
-                const user = userCredential.user;
-
-                await setDoc(doc(db, "students", user.uid), {
-                lastName,
-                firstName,
-                verified: false,
-                createdAt: new Date()
-                });
-
-                alert("✅ Student registered! Awaiting teacher verification.");
-                document.getElementById("authModal").style.display = "none";
-                studentPage.style.display = "block";
-            } catch (err) {
-                alert("❌ " + err.message);
-            }
-            } else {
-            // --- SIGN IN ---
-            if (!email || !password) {
-                alert("Please enter your email and password!");
-                return;
-            }
-
-            try {
-                const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
-
-                // Check if the user is a teacher
-                const teacherDoc = await getDoc(doc(db, "teacher", user.uid));
-
-                if (teacherDoc.exists()) {
-                teacherPage.style.display = "block";
-                studentPage.style.display = "none";
-                alert("👩‍🏫 Welcome, Teacher!");
-                } else {
-                studentPage.style.display = "block";
-                teacherPage.style.display = "none";
-                alert("👋 Welcome, Student!");
-                }
-
-                document.getElementById("authModal").style.display = "none";
-            } catch (err) {
-                alert("❌ " + err.message);
-            }
-            }
-        });
-    </script>
 </head>
 <body>
 
@@ -671,6 +568,111 @@
     </div>
 
     <script src="script.js"></script>
+
+<script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
+            authDomain: "mizuteku-3a441.firebaseapp.com",
+            projectId: "mizuteku-3a441",
+            storageBucket: "mizuteku-3a441.firebasestorage.app",
+            messagingSenderId: "473895456413",
+            appId: "1:473895456413:web:1452ef7b9860908dd78e74",
+            measurementId: "G-NTT38FCEKG"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let isSignUp = true;
+
+        const modalTitle = document.getElementById("modalTitle");
+        const authBtn = document.getElementById("authBtn");
+        const switchMode = document.getElementById("switchMode");
+
+        const emailInput = document.getElementById("emailInput");
+        const lastnameInput = document.getElementById("lastnameInput");
+        const firstnameInput = document.getElementById("firstnameInput");
+        const passwordInput = document.getElementById("passwordInput");
+        const confirmPasswordInput = document.getElementById("confirmPasswordInput");
+
+        const studentPage = document.getElementById("studentPage");
+        const teacherPage = document.getElementById("teacherPage");
+
+        // ✅ Handle Sign Up or Sign In
+        authBtn.addEventListener("click", async () => {
+            const email = emailInput.value.trim();
+            const lastName = lastnameInput.value.trim();
+            const firstName = firstnameInput.value.trim();
+            const password = passwordInput.value.trim();
+            const confirmPassword = confirmPasswordInput.value.trim();
+
+            if (isSignUp) {
+            // --- STUDENT SIGN UP ---
+            if (!lastName || !firstName || !password || !confirmPassword) {
+                alert("Please fill in all fields!");
+                return;
+            }
+            if (password !== confirmPassword) {
+                alert("Passwords do not match!");
+                return;
+            }
+
+            const fakeEmail = `${lastName}_${firstName}@school.com`;
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, fakeEmail, password);
+                const user = userCredential.user;
+
+                await setDoc(doc(db, "students", user.uid), {
+                lastName,
+                firstName,
+                verified: false,
+                createdAt: new Date()
+                });
+
+                alert("✅ Student registered! Awaiting teacher verification.");
+                document.getElementById("authModal").style.display = "none";
+                studentPage.style.display = "block";
+            } catch (err) {
+                alert("❌ " + err.message);
+            }
+            } else {
+            // --- SIGN IN ---
+            if (!email || !password) {
+                alert("Please enter your email and password!");
+                return;
+            }
+
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                // Check if the user is a teacher
+                const teacherDoc = await getDoc(doc(db, "teacher", user.uid));
+
+                if (teacherDoc.exists()) {
+                teacherPage.style.display = "block";
+                studentPage.style.display = "none";
+                alert("👩‍🏫 Welcome, Teacher!");
+                } else {
+                studentPage.style.display = "block";
+                teacherPage.style.display = "none";
+                alert("👋 Welcome, Student!");
+                }
+
+                document.getElementById("authModal").style.display = "none";
+            } catch (err) {
+                alert("❌ " + err.message);
+            }
+            }
+        });
+    </script>
+
 </body>
 </html>
 
