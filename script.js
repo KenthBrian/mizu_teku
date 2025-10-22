@@ -1491,12 +1491,18 @@ function showConfirmModal(title, message, onConfirm, onCancel) {
   };
 }
 
-function initializeClearData() {
+// external.js
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+// Initialize Firebase Auth once at the top
+const auth = getAuth();
+
+export function initializeClearData(currentLanguage = "en") {
     const clearBtn = document.getElementById("clearDataBtn");
     if (!clearBtn) {
         console.error("❌ Clear Data button not found");
         return;
-    }   
+    }
 
     clearBtn.addEventListener("click", async () => {
         console.log("✅ Sign Out clicked");
@@ -1504,31 +1510,38 @@ function initializeClearData() {
         // Confirm before signing out
         showConfirmModal(
             currentLanguage === "en" ? "Sign Out?" : "Mag-sign out?",
-            currentLanguage === "en" ? "Do you really want to sign out of your account?" : "Gusto mo bang mag-sign out sa iyong account?",
+            currentLanguage === "en"
+                ? "Do you really want to sign out of your account?"
+                : "Gusto mo bang mag-sign out sa iyong account?",
             async () => {
                 try {
-                    // Use the auth instance you already created
-                    await signOut(auth);
+                    await signOut(auth); // ✅ auth is defined now
 
                     localStorage.removeItem("rememberedEmail");
 
                     showAlertModal(
-                        currentLanguage === "en" ? "Signed out successfully!" : "Matagumpay na naka-sign out!",
-                        currentLanguage === "en" ? "Redirecting to login..." : "Babalik sa login..."
+                        currentLanguage === "en"
+                            ? "Signed out successfully!"
+                            : "Matagumpay na naka-sign out!",
+                        currentLanguage === "en"
+                            ? "Redirecting to login..."
+                            : "Babalik sa login..."
                     );
 
                     setTimeout(() => {
                         location.reload();
                     }, 1000);
-
                 } catch (error) {
                     console.error("❌ Sign out failed:", error);
                     showAlertModal(
                         currentLanguage === "en" ? "Error" : "Error",
-                        currentLanguage === "en" ? "Failed to sign out. Please try again." : "Hindi nakapag-sign out. Subukang muli."
+                        currentLanguage === "en"
+                            ? "Failed to sign out. Please try again."
+                            : "Hindi nakapag-sign out. Subukang muli."
                     );
                 }
             }
         );
     });
 }
+
