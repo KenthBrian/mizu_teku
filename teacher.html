@@ -170,28 +170,6 @@
             });
         }
 
-        // --- Sign Out Handler ---
-        if (signOutBtn) {
-            signOutBtn.addEventListener("click", () => {
-                showConfirmModal(
-                    "Sign Out?",
-                    "Do you really want to sign out of your account?",
-                    async () => {
-                        try {
-                            await signOut(auth);
-                            localStorage.removeItem("rememberedEmail");
-                            showAlertModal("✅ Signed out", "Redirecting to login...", () => {
-                                window.location.href = "index.html";
-                            });
-                        } catch (err) {
-                            console.error("❌ Sign out failed:", err);
-                            showAlertModal("❌ Error", "Failed to sign out. Please try again.");
-                        }
-                    }
-                );
-            });
-        }
-
         // --- Page protection & auto-load ---
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
@@ -206,6 +184,12 @@
             }
         });
     </script>
-    <script type="module" src="script.js"></script>
+    <script type="module">
+    import { initializeClearData } from "./script.js";
+
+    // Optional: set current language
+    const currentLanguage = "en"; // or "tl"
+    initializeClearData(currentLanguage);
+    </script>
 </body>
 </html>
