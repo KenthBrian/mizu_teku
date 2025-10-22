@@ -1641,19 +1641,18 @@ function initializeClearData() {
     });
 }
 
-const navbar = document.getElementById("navbar"); // or the correct ID/class for your navbar
+const navbar = document.getElementById("navbar");
 
-// Hide navbar when modal opens (Sign In / Sign Up)
 window.addEventListener("load", () => {
   usernamemodal.classList.remove("hidden");
-  if (navbar) navbar.style.display = "none"; // 👈 hide navbar
+  if (navbar) navbar.style.display = "none";
 });
 
-// When user successfully logs in or signs up
 function onLoginSuccess() {
   usernamemodal.classList.add("hidden");
-  if (navbar) navbar.style.display = "flex"; // 👈 show navbar again
+  if (navbar) navbar.style.display = "flex";
 }
+
 
 
 
