@@ -163,14 +163,14 @@ body {
         transform: rotate(45deg) translate(-5px, -6px);
     }
 
-/* Username Popup */
+/* ===== Fullscreen Modal ===== */
 #usernameModal {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.6);
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #1e90ff, #2ecc71); /* full-screen gradient */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -182,16 +182,29 @@ body {
   display: none;
 }
 
+/* ===== Modal Content (centered box) ===== */
 #usernameModal .modal-content {
-  background: linear-gradient(135deg, #ffffff, #f0f9ff);
+  background: rgba(255, 255, 255, 0.95);
   padding: 2rem 2.5rem;
   border-radius: 25px;
   text-align: center;
-  width: 340px;
+  width: 420px;
   max-width: 90%;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
   animation: fadeInScale 0.3s ease;
   color: #2c3e50;
+}
+
+/* Animation for smooth entrance */
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 #usernameModal h2 {
@@ -306,18 +319,6 @@ body {
 
 #usernameModal a:hover {
   color: #2ecc71;
-}
-
-/* ===== Animation ===== */
-@keyframes fadeInScale {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
 }
 
 /* Hero Section */
