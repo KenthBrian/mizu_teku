@@ -272,7 +272,6 @@ body {
 }
 
 /* ===== Buttons ===== */
-#scanIdBtn,
 #saveUsername {
   display: block;
   width: 100%;
@@ -288,10 +287,31 @@ body {
   margin-bottom: 0.8rem;
 }
 
-#scanIdBtn:hover,
 #saveUsername:hover {
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+}
+
+/* ===== Remember Me styling ===== */
+#usernameModal #rememberInput,
+#usernameModal label[for="rememberInput"] {
+  display: inline-block;
+  width: auto;
+  margin: 0;
+  vertical-align: middle;
+}
+
+#usernameModal label[for="rememberInput"] {
+  margin-left: 6px;
+  color: #2c3e50;
+  font-size: 0.95rem;
+}
+
+/* Align the checkbox section to the left */
+#usernameModal .remember-wrapper {
+  text-align: left;
+  width: 100%;
+  margin-bottom: 1rem;
 }
 
 /* ===== OCR Result ===== */
