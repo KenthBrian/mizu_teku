@@ -802,7 +802,10 @@
         btn.addEventListener("click", async () => {
         const uid = btn.dataset.id;
         await updateDoc(doc(db, "students", uid), { verified: true });
-        alert("✅ Student verified!");
+        showAlertModal(
+        "Welcome",
+        `👩 Welcome back, Student!`
+    );
         loadStudents(); // reload list
         });
     });
@@ -813,7 +816,10 @@
     if (user) {
         if (user.email === "mizutekuteacher@gmail.com") {
         onLoginSuccess("teacher");
-        alert("👩‍🏫 Welcome back, Teacher!");
+        showAlertModal(
+        "Welcome",
+        "👩‍🏫 Welcome back, Teacher!"
+    );
         loadStudents();
         return;
         }
