@@ -1482,7 +1482,6 @@ const firebaseConfig = {
     const firstnameInput = document.getElementById("firstnameInput");
     const middleinitialInput = document.getElementById("middleinitialInput");
     const passwordInput = document.getElementById("passwordInput");
-    const idUpload = document.getElementById("idUpload");
     const dropboxLabel = document.getElementById("dropboxLabel");
     const filePreview = document.getElementById("filePreview");
 
@@ -1520,7 +1519,6 @@ const firebaseConfig = {
       const firstName = firstnameInput.value.trim();
       const middleInitial = middleinitialInput.value.trim();
       const password = passwordInput.value.trim();
-      const file = idUpload.files[0];
 
       if (!lastName || !firstName || !password) {
         alert("Please fill in all required fields!");
