@@ -1514,7 +1514,7 @@ const firebaseConfig = {
       lastnameInput.style.display = "none";
       middleinitialInput.style.display = "none";
       confirmPasswordInput.style.display = "none";
-      rememberInput.style.display = "block";
+      rememberInput.style.display = "none";
     }
 
     lastnameInput.value = "";
