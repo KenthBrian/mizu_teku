@@ -1456,31 +1456,15 @@ function downloadCertificate() {
     }
 }
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { 
-  getAuth, 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword, 
-  onAuthStateChanged, 
-  setPersistence, 
-  browserSessionPersistence,
-  signOut 
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
 const firebaseConfig = {
-  apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
-  authDomain: "mizuteku-3a441.firebaseapp.com",
-  projectId: "mizuteku-3a441",
-  storageBucket: "mizuteku-3a441.firebasestorage.app",
-  messagingSenderId: "473895456413",
-  appId: "1:473895456413:web:1452ef7b9860908dd78e74",
-  measurementId: "G-NTT38FCEKG",
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+    apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
+    authDomain: "mizuteku-3a441.firebaseapp.com",
+    projectId: "mizuteku-3a441",
+    storageBucket: "mizuteku-3a441.firebasestorage.app",
+    messagingSenderId: "473895456413",
+    appId: "1:473895456413:web:1452ef7b9860908dd78e74",
+    measurementId: "G-NTT38FCEKG"
+  };
 
 function showConfirmModal(title, message, onConfirm, onCancel) {
   const modal = document.getElementById("confirmModal");
@@ -1507,6 +1491,12 @@ function showConfirmModal(title, message, onConfirm, onCancel) {
   };
 }
 
+// external.js
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+// Initialize Firebase Auth once at the top
+const auth = getAuth();
+
 export function initializeClearData(currentLanguage = "en") {
     const clearBtn = document.getElementById("clearDataBtn");
     if (!clearBtn) {
@@ -1525,7 +1515,7 @@ export function initializeClearData(currentLanguage = "en") {
                 : "Gusto mo bang mag-sign out sa iyong account?",
             async () => {
                 try {
-                    await signOut(auth); // ✅ auth is defined
+                    await signOut(auth); // ✅ auth is defined now
 
                     localStorage.removeItem("rememberedEmail");
 
@@ -1538,11 +1528,9 @@ export function initializeClearData(currentLanguage = "en") {
                             : "Babalik sa login..."
                     );
 
-                    // Redirect to login page instead of reload
                     setTimeout(() => {
-                        window.location.href = 'index.html';
+                        location.reload();
                     }, 1000);
-
                 } catch (error) {
                     console.error("❌ Sign out failed:", error);
                     showAlertModal(
