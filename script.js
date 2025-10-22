@@ -1498,6 +1498,9 @@ const firebaseConfig = {
       modalDesc.textContent = "Please enter your details and upload your Student ID:";
       saveBtn.textContent = "Sign Up";
       switchLink.textContent = "Sign In";
+      firstnameInput.style.display = "block";
+      lastnameInput.style.display = "block";
+      middleinitialInput.style.display = "block";
       confirmPasswordInput.style.display = "block";
       emailInput.style.display = "block";
     } else {
