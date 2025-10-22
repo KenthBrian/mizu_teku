@@ -16,6 +16,41 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+    <script type="module">
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+
+        const firebaseConfig = {
+        apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
+        authDomain: "mizuteku-3a441.firebaseapp.com",
+        projectId: "mizuteku-3a441",
+        storageBucket: "mizuteku-3a441.firebasestorage.app",
+        messagingSenderId: "473895456413",
+        appId: "1:473895456413:web:1452ef7b9860908dd78e74",
+        measurementId: "G-NTT38FCEKG",
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Protect the page
+        onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+            // Not logged in → redirect
+            window.location.href = "index.html";
+        } else {
+            // Check if user is verified
+            const docRef = await getDoc(doc(db, "students", user.uid));
+            if (!docRef.exists() || !docRef.data().verified) {
+            alert("⏳ You are not verified yet or your account does not exist.");
+            await auth.signOut();
+            window.location.href = "index.html";
+            }
+        }
+        });
+    </script>
 </head>
 <body>
 
