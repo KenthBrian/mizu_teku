@@ -612,247 +612,261 @@
         </footer>
     </div>
     <script type="module">
-        import {
-            collection,
-            getDocs,
-            updateDoc,
-            query,
-            where,
-            getFirestore,
-            doc,
-            setDoc,
-            getDoc
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import {
+    collection,
+    getDocs,
+    updateDoc,
+    query,
+    where,
+    getFirestore,
+    doc,
+    setDoc,
+    getDoc
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        import {
-            initializeApp
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 
-        import {
-            getAuth,
-            createUserWithEmailAndPassword,
-            signInWithEmailAndPassword,
-            setPersistence,
-            browserLocalPersistence,
-            browserSessionPersistence,
-            onAuthStateChanged,
-            signOut
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import {
+    getAuth,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    setPersistence,
+    browserLocalPersistence,
+    browserSessionPersistence,
+    onAuthStateChanged,
+    signOut
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // --- Firebase Config ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
-            authDomain: "mizuteku-3a441.firebaseapp.com",
-            projectId: "mizuteku-3a441",
-            storageBucket: "mizuteku-3a441.firebasestorage.app",
-            messagingSenderId: "473895456413",
-            appId: "1:473895456413:web:1452ef7b9860908dd78e74",
-            measurementId: "G-NTT38FCEKG",
-        };
+    // --- Firebase Config ---
+    const firebaseConfig = {
+    apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
+    authDomain: "mizuteku-3a441.firebaseapp.com",
+    projectId: "mizuteku-3a441",
+    storageBucket: "mizuteku-3a441.firebasestorage.app",
+    messagingSenderId: "473895456413",
+    appId: "1:473895456413:web:1452ef7b9860908dd78e74",
+    measurementId: "G-NTT38FCEKG",
+    };
 
-        // --- Initialize Firebase ---
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+    // --- Initialize Firebase ---
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-        // --- Mode switch (Sign Up / Sign In) ---
-        let isSignUpMode = true;
-        const modalTitle = document.getElementById("modalTitle");
-        const modalDesc = document.getElementById("modalDesc");
-        const saveBtn = document.getElementById("saveUsername");
-        const switchLink = document.getElementById("switchToSignIn");
-        const rememberInput = document.getElementById("rememberInput");
-        const emailInput = document.getElementById("emailInput");
+    // --- Elements ---
+    const modalTitle = document.getElementById("modalTitle");
+    const modalDesc = document.getElementById("modalDesc");
+    const saveBtn = document.getElementById("saveUsername");
+    const switchLink = document.getElementById("switchToSignIn");
+    const rememberInput = document.getElementById("rememberInput");
+    const emailInput = document.getElementById("emailInput");
+    const usernamemodal = document.getElementById("usernameModal");
+    const navbar = document.getElementById("navbar");
 
-        switchLink.addEventListener("click", (e) => {
-            e.preventDefault();
-            isSignUpMode = !isSignUpMode;
+    // --- Hide navbar while sign up/sign in is visible ---
+    if (navbar) navbar.style.display = "none";
 
-            if (isSignUpMode) {
-                modalTitle.textContent = "Student Sign Up";
-                modalDesc.textContent = "Please enter your details and upload your Student ID:";
-                saveBtn.textContent = "Sign Up";
-                switchLink.textContent = "Sign In";
-            } else {
-                modalTitle.textContent = "Sign In";
-                modalDesc.textContent = "Enter your email and password to log in:";
-                saveBtn.textContent = "Sign In";
-                switchLink.textContent = "Sign Up";
-            }
-        });
+    // --- Mode switch (Sign Up / Sign In) ---
+    let isSignUpMode = true;
 
-        // --- Sign Up / Sign In button ---
-        saveBtn.addEventListener("click", async () => {
-            const lastName = document.getElementById("lastnameInput").value.trim();
-            const firstName = document.getElementById("firstnameInput").value.trim();
-            const middleInitial = document.getElementById("middleinitialInput").value.trim();
-            const email = document.getElementById("emailInput").value.trim();
-            const password = document.getElementById("passwordInput").value.trim();
-            const confirmPassword = document.getElementById("confirmPasswordInput").value.trim();
+    switchLink.addEventListener("click", (e) => {
+    e.preventDefault();
+    isSignUpMode = !isSignUpMode;
 
-            // 🧩 SIGN UP
-            if (isSignUpMode) {
-                if (!lastName || !firstName || !password) {
-                    alert("⚠️ Please fill in all required fields!");
-                    return;
-                }
-                if (password !== confirmPassword) {
-                    alert("⚠️ Passwords do not match!");
-                    return;
-                }
+    if (isSignUpMode) {
+        modalTitle.textContent = "Student Sign Up";
+        modalDesc.textContent = "Please enter your details and upload your Student ID:";
+        saveBtn.textContent = "Sign Up";
+        switchLink.textContent = "Sign In";
+    } else {
+        modalTitle.textContent = "Sign In";
+        modalDesc.textContent = "Enter your email and password to log in:";
+        saveBtn.textContent = "Sign In";
+        switchLink.textContent = "Sign Up";
+    }
+    });
 
-                try {
-                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                    const user = userCredential.user;
+    // --- Sign Up / Sign In button ---
+    saveBtn.addEventListener("click", async () => {
+    const lastName = document.getElementById("lastnameInput").value.trim();
+    const firstName = document.getElementById("firstnameInput").value.trim();
+    const middleInitial = document.getElementById("middleinitialInput").value.trim();
+    const email = document.getElementById("emailInput").value.trim();
+    const password = document.getElementById("passwordInput").value.trim();
+    const confirmPassword = document.getElementById("confirmPasswordInput").value.trim();
 
-                    await setDoc(doc(db, "students", user.uid), {
-                        lastName,
-                        firstName,
-                        middleInitial,
-                        email,
-                        verified: false,
-                        createdAt: new Date(),
-                    });
-
-                    alert("✅ Student sign-up successful! Waiting for teacher verification.");
-                    document.getElementById("usernameModal").style.display = "none";
-                } catch (err) {
-                    alert("❌ " + err.message);
-                }
-            }
-
-            // 🧩 SIGN IN
-            else {
-                if (!email || !password) {
-                    alert("⚠️ Please enter your email and password.");
-                    return;
-                }
-
-                try {
-                    // ✅ Set persistence based on Remember Me
-                    if (rememberInput.checked) {
-                        await setPersistence(auth, browserLocalPersistence); // stay logged in even after browser close
-                    } else {
-                        await setPersistence(auth, browserSessionPersistence); // logs out when closed
-                    }
-
-                    // Teacher login
-                    if (email === "mizutekuteacher@gmail.com") {
-                        const teacherCredential = await signInWithEmailAndPassword(auth, email, password);
-                        document.getElementById("usernameModal").style.display = "none";
-                        document.getElementById("teacherPage").style.display = "block";
-                        alert("👩‍🏫 Welcome, Teacher!");
-                        loadStudents();
-                        return;
-                    }
-
-                    // Student login
-                    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                    const user = userCredential.user;
-                    const docRef = await getDoc(doc(db, "students", user.uid));
-
-                    if (!docRef.exists()) {
-                        alert("❌ Student record not found!");
-                        return;
-                    }
-
-                    const data = docRef.data();
-                    if (data.verified) {
-                        document.getElementById("usernameModal").style.display = "none";
-                        document.getElementById("studentPage").style.display = "block";
-                        alert(`🎓 Welcome back, ${data.firstName}!`);
-                    } else {
-                        alert("⏳ Your account is still pending teacher verification.");
-                    }
-                } catch (err) {
-                    alert("❌ " + err.message);
-                }
-            }
-        });
-
-        // --- Load students for teacher ---
-        async function loadStudents() {
-            const studentList = document.getElementById("studentList");
-            studentList.innerHTML = "Loading students...";
-
-            const q = query(collection(db, "students"), where("verified", "==", false));
-            const snapshot = await getDocs(q);
-
-            if (snapshot.empty) {
-                studentList.innerHTML = "<li>🎉 All students are verified!</li>";
-                return;
-            }
-
-            studentList.innerHTML = "";
-            snapshot.forEach((docSnap) => {
-                const data = docSnap.data();
-                const li = document.createElement("li");
-                li.innerHTML = `
-                    ${data.firstName} ${data.lastName} (${data.middleInitial}) 
-                    - <button class="verifyBtn" data-id="${docSnap.id}">Verify</button>
-                `;
-                studentList.appendChild(li);
-            });
-
-            // Add event listener to each button
-            document.querySelectorAll(".verifyBtn").forEach((btn) => {
-                btn.addEventListener("click", async () => {
-                    const uid = btn.dataset.id;
-                    await updateDoc(doc(db, "students", uid), { verified: true });
-                    alert("✅ Student verified!");
-                    loadStudents(); // reload list
-                });
-            });
+    // 🧩 SIGN UP
+    if (isSignUpMode) {
+        if (!lastName || !firstName || !password) {
+        alert("⚠️ Please fill in all required fields!");
+        return;
+        }
+        if (password !== confirmPassword) {
+        alert("⚠️ Passwords do not match!");
+        return;
         }
 
-        // --- Auto-login on refresh or reopen ---
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                if (user.email === "mizutekuteacher@gmail.com") {
-                    document.getElementById("teacherPage").style.display = "block";
-                    document.getElementById("usernameModal").style.display = "none";
-                    alert("👩‍🏫 Welcome back, Teacher!");
-                    loadStudents();
-                    return;
-                }
+        try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
 
-                const docRef = await getDoc(doc(db, "students", user.uid));
-                if (docRef.exists()) {
-                    const data = docRef.data();
-                    if (data.verified) {
-                        document.getElementById("studentPage").style.display = "block";
-                        document.getElementById("usernameModal").style.display = "none";
-                        alert(`🎓 Welcome back, ${data.firstName}!`);
-                    }
-                }
-            }
+        await setDoc(doc(db, "students", user.uid), {
+            lastName,
+            firstName,
+            middleInitial,
+            email,
+            verified: false,
+            createdAt: new Date(),
         });
 
-        // --- Log out function ---
-        window.logout = async function() {
-            await signOut(auth);
-            document.getElementById("teacherPage").style.display = "none";
-            document.getElementById("studentPage").style.display = "none";
-            document.getElementById("usernameModal").style.display = "block";
-            alert("👋 Logged out successfully.");
-        };
+        alert("✅ Student sign-up successful! Waiting for teacher verification.");
+        usernamemodal.style.display = "none";
+        } catch (err) {
+        alert("❌ " + err.message);
+        }
+    }
 
-        // --- Remember email (optional convenience) ---
-        window.addEventListener("load", () => {
-            const savedEmail = localStorage.getItem("rememberedEmail");
-            if (savedEmail) {
-                emailInput.value = savedEmail;
-                rememberInput.checked = true;
-            }
-        });
+    // 🧩 SIGN IN
+    else {
+        if (!email || !password) {
+        alert("⚠️ Please enter your email and password.");
+        return;
+        }
 
-        rememberInput.addEventListener("change", () => {
-            if (rememberInput.checked) {
-                localStorage.setItem("rememberedEmail", emailInput.value);
-            } else {
-                localStorage.removeItem("rememberedEmail");
-            }
+        try {
+        // ✅ Set persistence based on Remember Me
+        if (rememberInput.checked) {
+            await setPersistence(auth, browserLocalPersistence); // stay logged in even after browser close
+        } else {
+            await setPersistence(auth, browserSessionPersistence); // logs out when closed
+        }
+
+        // Teacher login
+        if (email === "mizutekuteacher@gmail.com") {
+            const teacherCredential = await signInWithEmailAndPassword(auth, email, password);
+            onLoginSuccess("teacher");
+            alert("👩‍🏫 Welcome, Teacher!");
+            loadStudents();
+            return;
+        }
+
+        // Student login
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        const docRef = await getDoc(doc(db, "students", user.uid));
+
+        if (!docRef.exists()) {
+            alert("❌ Student record not found!");
+            return;
+        }
+
+        const data = docRef.data();
+        if (data.verified) {
+            onLoginSuccess("student");
+            alert(`🎓 Welcome back, ${data.firstName}!`);
+        } else {
+            alert("⏳ Your account is still pending teacher verification.");
+        }
+        } catch (err) {
+        alert("❌ " + err.message);
+        }
+    }
+    });
+
+    // --- Load students for teacher ---
+    async function loadStudents() {
+    const studentList = document.getElementById("studentList");
+    studentList.innerHTML = "Loading students...";
+
+    const q = query(collection(db, "students"), where("verified", "==", false));
+    const snapshot = await getDocs(q);
+
+    if (snapshot.empty) {
+        studentList.innerHTML = "<li>🎉 All students are verified!</li>";
+        return;
+    }
+
+    studentList.innerHTML = "";
+    snapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        const li = document.createElement("li");
+        li.innerHTML = `
+        ${data.firstName} ${data.lastName} (${data.middleInitial}) 
+        - <button class="verifyBtn" data-id="${docSnap.id}">Verify</button>
+        `;
+        studentList.appendChild(li);
+    });
+
+    // Add event listener to each button
+    document.querySelectorAll(".verifyBtn").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+        const uid = btn.dataset.id;
+        await updateDoc(doc(db, "students", uid), { verified: true });
+        alert("✅ Student verified!");
+        loadStudents(); // reload list
         });
+    });
+    }
+
+    // --- Auto-login on refresh or reopen ---
+    onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        if (user.email === "mizutekuteacher@gmail.com") {
+        onLoginSuccess("teacher");
+        alert("👩‍🏫 Welcome back, Teacher!");
+        loadStudents();
+        return;
+        }
+
+        const docRef = await getDoc(doc(db, "students", user.uid));
+        if (docRef.exists()) {
+        const data = docRef.data();
+        if (data.verified) {
+            onLoginSuccess("student");
+            alert(`🎓 Welcome back, ${data.firstName}!`);
+        }
+        }
+    }
+    });
+
+    // --- Log out function ---
+    window.logout = async function () {
+    await signOut(auth);
+    document.getElementById("teacherPage").style.display = "none";
+    document.getElementById("studentPage").style.display = "none";
+    usernamemodal.style.display = "block";
+    if (navbar) navbar.style.display = "none";
+    alert("👋 Logged out successfully.");
+    };
+
+    // --- Login Success Handler ---
+    function onLoginSuccess(role) {
+    usernamemodal.style.display = "none";
+    if (navbar) navbar.style.display = "flex";
+
+    if (role === "teacher") {
+        document.getElementById("teacherPage").style.display = "block";
+    } else if (role === "student") {
+        document.getElementById("studentPage").style.display = "block";
+    }
+    }
+
+    // --- Remember email ---
+    window.addEventListener("load", () => {
+    const savedEmail = localStorage.getItem("rememberedEmail");
+    if (savedEmail) {
+        emailInput.value = savedEmail;
+        rememberInput.checked = true;
+    }
+    });
+
+    rememberInput.addEventListener("change", () => {
+    if (rememberInput.checked) {
+        localStorage.setItem("rememberedEmail", emailInput.value);
+    } else {
+        localStorage.removeItem("rememberedEmail");
+    }
+    });
     </script>
     <script src="script.js"></script>
 </body>

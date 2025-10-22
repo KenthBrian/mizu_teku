@@ -1524,7 +1524,6 @@ const firebaseConfig = {
     confirmPasswordInput.value = "";
   });
 
-// When teacher logs in successfully:
         function openTeacherPage() {
             document.getElementById('usernameModal').classList.add('hidden'); // Hide modal
             document.getElementById('teacherPage').style.display = 'block';   // Show data page
@@ -1567,7 +1566,6 @@ function showConfirmModal(title, message, onConfirm, onCancel) {
   modalMessage.textContent = message;
   modal.style.display = "flex";
 
-  // Remove old listeners to prevent stacking
   yesBtn.onclick = null;
   noBtn.onclick = null;
 
@@ -1602,15 +1600,12 @@ function initializeClearData() {
                 : "Gusto mo bang mag-sign out sa iyong account?",
             async () => {
                 try {
-                    // ✅ Firebase sign out
                     const { getAuth, signOut } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js");
                     const auth = getAuth();
                     await signOut(auth);
 
-                    // ✅ Clear remembered email (if used)
                     localStorage.removeItem("rememberedEmail");
 
-                    // ✅ Notify user
                     showAlertModal(
                         currentLanguage === "en"
                             ? "Signed out successfully!"
@@ -1620,9 +1615,8 @@ function initializeClearData() {
                             : "Babalik sa login..."
                     );
 
-                    // ✅ Return to login modal
                     setTimeout(() => {
-                        location.reload(); // reloads to show login again
+                        location.reload();
                     }, 1000);
 
                 } catch (error) {
@@ -1652,28 +1646,3 @@ function onLoginSuccess() {
   usernamemodal.classList.add("hidden");
   if (navbar) navbar.style.display = "flex";
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
