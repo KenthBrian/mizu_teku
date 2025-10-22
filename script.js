@@ -1467,81 +1467,6 @@ const firebaseConfig = {
   };
 
 
-  // ====== Elements ======
-const modalTitle = document.getElementById("modalTitle") || document.getElementById("formTitle");
-const modalDesc = document.getElementById("modalDesc") || document.getElementById("formDesc");
-const saveBtn = document.getElementById("saveUsername");
-const switchLink = document.getElementById("toggleForm"); // toggle link
-const lastnameInput = document.getElementById("lastnameInput");
-const firstnameInput = document.getElementById("firstnameInput");
-const middleinitialInput = document.getElementById("middleinitialInput");
-const emailInput = document.getElementById("emailInput");
-const passwordInput = document.getElementById("passwordInput");
-const confirmPasswordInput = document.getElementById("confirmPasswordInput");
-const rememberInput = document.getElementById("remember-wrapper");
-
-let isSignUpMode = false;
-
-// --- Fields for animation ---
-const signupFields = [lastnameInput, firstnameInput, middleinitialInput, confirmPasswordInput];
-
-// ===== Toggle Sign In / Sign Up =====
-switchLink.addEventListener("click", () => {
-  isSignUpMode = !isSignUpMode;
-
-  if (isSignUpMode) {
-    modalTitle.textContent = "Student Sign Up";
-    modalDesc.textContent = "Please enter your details to create an account:";
-    saveBtn.textContent = "Sign Up";
-    switchLink.textContent = "Sign In";
-    rememberInput.style.display = "none";
-
-    // Animate inputs
-    signupFields.forEach(input => {
-      input.style.display = "block";
-      setTimeout(() => input.classList.add("active"), 50); // small delay for animation
-    });
-  } else {
-    modalTitle.textContent = "Student Sign In";
-    modalDesc.textContent = "Welcome back! Please enter your email and password:";
-    saveBtn.textContent = "Sign In";
-    switchLink.textContent = "Sign Up";
-    rememberInput.style.display = "block";
-
-    // Hide Sign Up fields
-    signupFields.forEach(input => input.classList.remove("active"));
-  }
-
-  // Clear input values
-  [...signupFields, emailInput, passwordInput].forEach(input => input.value = "");
-  confirmPasswordInput.value = "";
-});
-
-function showConfirmModal(title, message, onConfirm, onCancel) {
-  const modal = document.getElementById("confirmModal");
-  const modalTitle = document.getElementById("confirmModalTitle");
-  const modalMessage = document.getElementById("confirmModalMessage");
-  const yesBtn = document.getElementById("confirmYesBtn");
-  const noBtn = document.getElementById("confirmNoBtn");
-
-  modalTitle.textContent = title;
-  modalMessage.textContent = message;
-  modal.style.display = "flex";
-
-  yesBtn.onclick = null;
-  noBtn.onclick = null;
-
-  yesBtn.onclick = () => {
-    modal.style.display = "none";
-    if (onConfirm) onConfirm();
-  };
-
-  noBtn.onclick = () => {
-    modal.style.display = "none";
-    if (onCancel) onCancel();
-  };
-}
-
 function initializeClearData() {
     const clearBtn = document.getElementById("clearDataBtn");
     if (!clearBtn) {
@@ -1554,27 +1479,18 @@ function initializeClearData() {
 
         // Confirm before signing out
         showConfirmModal(
-            currentLanguage === "en"
-                ? "Sign Out?"
-                : "Mag-sign out?",
-            currentLanguage === "en"
-                ? "Do you really want to sign out of your account?"
-                : "Gusto mo bang mag-sign out sa iyong account?",
+            currentLanguage === "en" ? "Sign Out?" : "Mag-sign out?",
+            currentLanguage === "en" ? "Do you really want to sign out of your account?" : "Gusto mo bang mag-sign out sa iyong account?",
             async () => {
                 try {
-                    const { getAuth, signOut } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js");
-                    const auth = getAuth();
+                    // Use the auth instance you already created
                     await signOut(auth);
 
                     localStorage.removeItem("rememberedEmail");
 
                     showAlertModal(
-                        currentLanguage === "en"
-                            ? "Signed out successfully!"
-                            : "Matagumpay na naka-sign out!",
-                        currentLanguage === "en"
-                            ? "Redirecting to login..."
-                            : "Babalik sa login..."
+                        currentLanguage === "en" ? "Signed out successfully!" : "Matagumpay na naka-sign out!",
+                        currentLanguage === "en" ? "Redirecting to login..." : "Babalik sa login..."
                     );
 
                     setTimeout(() => {
@@ -1584,12 +1500,8 @@ function initializeClearData() {
                 } catch (error) {
                     console.error("❌ Sign out failed:", error);
                     showAlertModal(
-                        currentLanguage === "en"
-                            ? "Error"
-                            : "Error",
-                        currentLanguage === "en"
-                            ? "Failed to sign out. Please try again."
-                            : "Hindi nakapag-sign out. Subukang muli."
+                        currentLanguage === "en" ? "Error" : "Error",
+                        currentLanguage === "en" ? "Failed to sign out. Please try again." : "Hindi nakapag-sign out. Subukang muli."
                     );
                 }
             }
