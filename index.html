@@ -763,7 +763,10 @@
         const data = docRef.data();
         if (data.verified) {
             onLoginSuccess("student");
-            alert(`🎓 Welcome back, ${data.firstName}!`);
+            showAlertModal(
+            "Welcome", // Modal title
+            `🎓 Welcome back, ${data.firstName}!` // Modal message
+        );
         } else {
             alert("⏳ Your account is still pending teacher verification.");
         }
