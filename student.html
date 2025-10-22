@@ -10,7 +10,6 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Chewy&display=swap" rel="stylesheet">
-    <script src="script.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
@@ -52,6 +51,7 @@
         }
         });
     </script>
+    <script src="script.js"></script>
 </head>
 <body>
 
@@ -565,6 +565,13 @@
                 </div>
             </div>
         </footer>
+    <script type="module">
+    import { initializeClearData } from "./script.js";
+
+    // Optional: set current language
+    const currentLanguage = "en"; // or "tl"
+    initializeClearData(currentLanguage);
+    </script>
 </body>
 </html>
 
