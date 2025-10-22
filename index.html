@@ -17,27 +17,10 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
     <script type="module">
-        // Import Firebase SDKs (v9+ modular)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import {
-            getAuth,
-            createUserWithEmailAndPassword,
-            signInWithEmailAndPassword
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import {
-            getFirestore,
-            doc,
-            setDoc,
-            getDoc
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import {
-            getStorage,
-            ref,
-            uploadBytes,
-            getDownloadURL
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // --- Firebase Config ---
         const firebaseConfig = {
             apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
             authDomain: "mizuteku-3a441.firebaseapp.com",
@@ -48,49 +31,100 @@
             measurementId: "G-NTT38FCEKG"
         };
 
-        // --- Initialize Firebase ---
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const storage = getStorage(app);
 
-        // --- Utility: Make valid email ---
-        const sanitize = (str) =>
-            str.trim().toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "");
+        let isSignUp = true;
 
-        // --- Sign Up Logic ---
-        const saveBtn = document.getElementById("saveUsername");
-        saveBtn.addEventListener("click", async () => {
-            const lastName = document.getElementById("lastnameInput").value.trim();
-            const firstName = document.getElementById("firstnameInput").value.trim();
-            const middleInitial = document.getElementById("middleinitialInput").value.trim();
-            const password = document.getElementById("passwordInput").value.trim();
+        const modalTitle = document.getElementById("modalTitle");
+        const authBtn = document.getElementById("authBtn");
+        const switchMode = document.getElementById("switchMode");
 
-            if (!lastName || !firstName || !password) {
-            alert("Please fill in all required fields!");
-            return;
+        const emailInput = document.getElementById("emailInput");
+        const lastnameInput = document.getElementById("lastnameInput");
+        const firstnameInput = document.getElementById("firstnameInput");
+        const passwordInput = document.getElementById("passwordInput");
+        const confirmPasswordInput = document.getElementById("confirmPasswordInput");
+
+        const studentPage = document.getElementById("studentPage");
+        const teacherPage = document.getElementById("teacherPage");
+
+        // 🔄 Switch between Sign Up and Sign In
+        switchMode.addEventListener("click", (e) => {
+            e.preventDefault();
+            isSignUp = !isSignUp;
+            modalTitle.textContent = isSignUp ? "Student Sign Up" : "Sign In";
+            authBtn.textContent = isSignUp ? "Sign Up" : "Sign In";
+            switchMode.textContent = isSignUp ? "Sign In" : "Sign Up";
+        });
+
+        // ✅ Handle Sign Up or Sign In
+        authBtn.addEventListener("click", async () => {
+            const email = emailInput.value.trim();
+            const lastName = lastnameInput.value.trim();
+            const firstName = firstnameInput.value.trim();
+            const password = passwordInput.value.trim();
+            const confirmPassword = confirmPasswordInput.value.trim();
+
+            if (isSignUp) {
+            // --- STUDENT SIGN UP ---
+            if (!lastName || !firstName || !password || !confirmPassword) {
+                alert("Please fill in all fields!");
+                return;
+            }
+            if (password !== confirmPassword) {
+                alert("Passwords do not match!");
+                return;
+            }
+
+            const fakeEmail = `${lastName}_${firstName}@school.com`;
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, fakeEmail, password);
+                const user = userCredential.user;
+
+                await setDoc(doc(db, "students", user.uid), {
+                lastName,
+                firstName,
+                verified: false,
+                createdAt: new Date()
+                });
+
+                alert("✅ Student registered! Awaiting teacher verification.");
+                document.getElementById("authModal").style.display = "none";
+                studentPage.style.display = "block";
+            } catch (err) {
+                alert("❌ " + err.message);
+            }
+            } else {
+            // --- SIGN IN ---
+            if (!email || !password) {
+                alert("Please enter your email and password!");
+                return;
             }
 
             try {
-            // ✅ Sanitize to form valid email
-            const fakeEmail = `${sanitize(lastName)}_${sanitize(firstName)}@school.com`;
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
 
-            // ✅ Create User in Firebase Auth
-            const userCredential = await createUserWithEmailAndPassword(auth, fakeEmail, password);
-            const user = userCredential.user;
+                // Check if the user is a teacher
+                const teacherDoc = await getDoc(doc(db, "teacher", user.uid));
 
-            // ✅ Save Student Info to Firestore
-            await setDoc(doc(db, "students", user.uid), {
-                lastName,
-                firstName,
-                middleInitial,
-                verified: false,
-                createdAt: new Date()
-            });
+                if (teacherDoc.exists()) {
+                teacherPage.style.display = "block";
+                studentPage.style.display = "none";
+                alert("👩‍🏫 Welcome, Teacher!");
+                } else {
+                studentPage.style.display = "block";
+                teacherPage.style.display = "none";
+                alert("👋 Welcome, Student!");
+                }
 
-            alert("✅ Sign-up successful! Waiting for teacher verification.");
+                document.getElementById("authModal").style.display = "none";
             } catch (err) {
-            alert("❌ " + err.message);
+                alert("❌ " + err.message);
+            }
             }
         });
     </script>
@@ -137,13 +171,10 @@
     </div>
 
     <!-- TEACHER PAGE -->
-    <div id="teacherPage" class="page">
-        <h2>Teacher Dashboard</h2>
-        <div id="studentList">Loading students...</div>
-        <br>
-        <button onclick="showPage('homePage')">Back</button>
+    <div id="teacherPage" style="display:none; padding:20px;">
+        <h2>Teacher Verification Dashboard</h2>
+        <div id="studentList">Loading...</div>
     </div>
-
 
     <!-- STUDENT PAGE -->
     <div id="studentPage" class="page">
