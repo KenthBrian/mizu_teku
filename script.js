@@ -1634,15 +1634,3 @@ function initializeClearData() {
         );
     });
 }
-
-const navbar = document.getElementById("navbar");
-
-window.addEventListener("load", () => {
-  usernamemodal.classList.remove("hidden");
-  if (navbar) navbar.style.display = "none";
-});
-
-function onLoginSuccess() {
-  usernamemodal.classList.add("hidden");
-  if (navbar) navbar.style.display = "flex";
-}
