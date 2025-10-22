@@ -10,111 +10,6 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Chewy&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f5f5f5;
-        }
-
-        /* Navbar styling */
-        .navbar {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 20px;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .nav-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .nav-logo img {
-            height: 40px;
-        }
-
-        .nav-menu {
-            list-style: none;
-            display: flex;
-            gap: 15px;
-            margin: 0;
-            padding: 0;
-        }
-
-        .nav-menu li a {
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .nav-menu li a:hover {
-            text-decoration: underline;
-        }
-
-        .nav-controls {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .lang-btn, .clear-btn {
-            background: white;
-            border: none;
-            border-radius: 4px;
-            padding: 5px 10px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .lang-btn.active {
-            background-color: #ffc107;
-            color: #000;
-        }
-
-        /* Teacher page content */
-        #teacherPage {
-            margin-top: 80px; /* leave space for fixed navbar */
-            padding: 20px;
-        }
-
-        #teacherPage h2 {
-            margin-bottom: 10px;
-        }
-
-        #studentList {
-            list-style: none;
-            padding: 0;
-        }
-
-        #studentList li {
-            background: white;
-            margin-bottom: 8px;
-            padding: 10px;
-            border-radius: 6px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        #studentList button {
-            padding: 5px 10px;
-            border: none;
-            background-color: #28a745;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        #studentList button:hover {
-            background-color: #218838;
-        }
-    </style>
 </head>
 <body>
 
@@ -203,7 +98,7 @@
         // Sign out
         signOutBtn.addEventListener("click", async () => {
             await signOut(auth);
-            window.location.href = "login.html"; // redirect to login
+            window.location.href = "index.html"; // redirect to login
         });
 
         // Auto-load students if teacher is logged in
@@ -211,7 +106,7 @@
             if (user && user.email === "mizutekuteacher@gmail.com") {
                 loadStudents();
             } else {
-                window.location.href = "login.html"; // redirect if not logged in
+                window.location.href = "index.html"; // redirect if not logged in
             }
         });
     </script>
