@@ -35,6 +35,27 @@
         </div>
     </nav>
 
+    <!-- Confirm Modal -->
+    <div id="confirmModal" class="modal">
+      <div class="modal-content">
+        <h2 id="confirmModalTitle">Are you sure?</h2>
+        <p id="confirmModalMessage">Do you want to proceed?</p>
+        <div class="modal-buttons">
+          <button id="confirmYesBtn" class="yes-btn">Yes</button>
+          <button id="confirmNoBtn" class="no-btn">No</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alert Modal -->
+    <div id="alertModal" class="hidden">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeAlert()">&times;</span>
+            <h2 id="alertModalTitle"></h2>
+            <p id="alertModalMessage"></p>
+        </div>
+    </div>
+
     <!-- Teacher Page -->
     <div id="teacherPage">
         <h2>👩‍🏫 Teacher Dashboard</h2>
@@ -67,6 +88,44 @@
         const studentList = document.getElementById("studentList");
         const signOutBtn = document.getElementById("clearDataBtn");
 
+        // --- Custom Modals ---
+        function showAlertModal(title = "", message = "", callback = null) {
+            const modal = document.getElementById("alertModal");
+            if (!modal) return;
+            modal.querySelector("#alertModalTitle").innerText = title;
+            modal.querySelector("#alertModalMessage").innerText = message;
+            modal.classList.remove("hidden");
+            modal._callback = callback;
+        }
+
+        function closeAlertModal() {
+            const modal = document.getElementById("alertModal");
+            if (!modal) return;
+            modal.classList.add("hidden");
+            if (typeof modal._callback === "function") modal._callback();
+            modal._callback = null;
+        }
+
+        function showConfirmModal(title, message, onConfirm, onCancel) {
+            const modal = document.getElementById("confirmModal");
+            if (!modal) return;
+            modal.querySelector("#confirmModalTitle").innerText = title;
+            modal.querySelector("#confirmModalMessage").innerText = message;
+            modal.style.display = "flex";
+
+            const yesBtn = modal.querySelector("#confirmYesBtn");
+            const noBtn = modal.querySelector("#confirmNoBtn");
+
+            yesBtn.onclick = () => {
+                modal.style.display = "none";
+                if (onConfirm) onConfirm();
+            };
+            noBtn.onclick = () => {
+                modal.style.display = "none";
+                if (onCancel) onCancel();
+            };
+        }
+
         // --- Load unverified students ---
         async function loadStudents() {
             if (!studentList) return;
@@ -92,55 +151,61 @@
             });
 
             document.querySelectorAll(".verifyBtn").forEach((btn) => {
-                btn.addEventListener("click", async () => {
+                btn.addEventListener("click", () => {
                     const uid = btn.dataset.id;
-                    try {
-                        await updateDoc(doc(db, "students", uid), { verified: true });
-                        alert(`✅ Verified ${btn.parentElement.textContent.trim()}`);
-                        loadStudents();
-                    } catch (err) {
-                        console.error("❌ Failed to verify student:", err);
-                        alert("❌ Failed to verify student. Try again.");
-                    }
+                    showConfirmModal(
+                        "Verify Student?",
+                        `Do you want to verify ${btn.parentElement.textContent.trim()}?`,
+                        async () => {
+                            try {
+                                await updateDoc(doc(db, "students", uid), { verified: true });
+                                showAlertModal("✅ Verified", `${btn.parentElement.textContent.trim()} is now verified`, loadStudents);
+                            } catch (err) {
+                                console.error("❌ Failed to verify student:", err);
+                                showAlertModal("❌ Error", "Failed to verify student. Please try again.");
+                            }
+                        }
+                    );
                 });
             });
         }
 
         // --- Sign Out Handler ---
         if (signOutBtn) {
-            signOutBtn.addEventListener("click", async () => {
-                const confirmed = confirm("Do you really want to sign out?");
-                if (!confirmed) return;
-
-                try {
-                    await signOut(auth);
-                    localStorage.removeItem("rememberedEmail");
-                    alert("✅ Signed out successfully!");
-                    window.location.href = "index.html";
-                } catch (err) {
-                    console.error("❌ Sign out failed:", err);
-                    alert("❌ Failed to sign out. Please try again.");
-                }
+            signOutBtn.addEventListener("click", () => {
+                showConfirmModal(
+                    "Sign Out?",
+                    "Do you really want to sign out of your account?",
+                    async () => {
+                        try {
+                            await signOut(auth);
+                            localStorage.removeItem("rememberedEmail");
+                            showAlertModal("✅ Signed out", "Redirecting to login...", () => {
+                                window.location.href = "index.html";
+                            });
+                        } catch (err) {
+                            console.error("❌ Sign out failed:", err);
+                            showAlertModal("❌ Error", "Failed to sign out. Please try again.");
+                        }
+                    }
+                );
             });
         }
 
         // --- Page protection & auto-load ---
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
-                // Not logged in, redirect
-                window.location.href = "index.html";
+                window.location.href = "index.html"; // Not logged in
                 return;
             }
 
             if (user.email === "mizutekuteacher@gmail.com") {
-                // Teacher account, load students
-                loadStudents();
+                loadStudents(); // Teacher loads students
             } else {
-                // Non-teacher trying to access, redirect
-                window.location.href = "index.html";
+                window.location.href = "index.html"; // Non-teacher access blocked
             }
         });
-        </script>
+    </script>
     <script type="module" src="script.js"></script>
 </body>
 </html>
