@@ -19,11 +19,25 @@
     <script type="module">
         // Import Firebase SDKs (v9+ modular)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+        import {
+            getAuth,
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import {
+            getFirestore,
+            doc,
+            setDoc,
+            getDoc
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import {
+            getStorage,
+            ref,
+            uploadBytes,
+            getDownloadURL
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
-        // --- Firebase config ---
+        // --- Firebase Config ---
         const firebaseConfig = {
             apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
             authDomain: "mizuteku-3a441.firebaseapp.com",
@@ -40,11 +54,16 @@
         const db = getFirestore(app);
         const storage = getStorage(app);
 
-        // --- Example: Sign up button logic ---
+        // --- Utility: Make valid email ---
+        const sanitize = (str) =>
+            str.trim().toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "");
+
+        // --- Sign Up Logic ---
         const saveBtn = document.getElementById("saveUsername");
         saveBtn.addEventListener("click", async () => {
             const lastName = document.getElementById("lastnameInput").value.trim();
             const firstName = document.getElementById("firstnameInput").value.trim();
+            const middleInitial = document.getElementById("middleinitialInput").value.trim();
             const password = document.getElementById("passwordInput").value.trim();
 
             if (!lastName || !firstName || !password) {
@@ -53,21 +72,23 @@
             }
 
             try {
-            const fakeEmail = `${lastName}_${firstName}@school.com`;
+            // ✅ Sanitize to form valid email
+            const fakeEmail = `${sanitize(lastName)}_${sanitize(firstName)}@school.com`;
 
-            // ✅ Correct Firebase v9 method
+            // ✅ Create User in Firebase Auth
             const userCredential = await createUserWithEmailAndPassword(auth, fakeEmail, password);
             const user = userCredential.user;
 
-            // Save student info
+            // ✅ Save Student Info to Firestore
             await setDoc(doc(db, "students", user.uid), {
                 lastName,
                 firstName,
+                middleInitial,
                 verified: false,
                 createdAt: new Date()
             });
 
-            alert("✅ Sign-up successful!");
+            alert("✅ Sign-up successful! Waiting for teacher verification.");
             } catch (err) {
             alert("❌ " + err.message);
             }
