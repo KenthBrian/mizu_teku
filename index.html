@@ -16,117 +16,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
-    <script type="module">
-        // Import Firebase SDKs (v9+ modular)
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import {
-            getAuth,
-            createUserWithEmailAndPassword,
-            signInWithEmailAndPassword
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import {
-            getFirestore,
-            doc,
-            setDoc,
-            getDoc
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import {
-            getStorage,
-            ref,
-            uploadBytes,
-            getDownloadURL
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
-
-        // --- Firebase Config ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
-            authDomain: "mizuteku-3a441.firebaseapp.com",
-            projectId: "mizuteku-3a441",
-            storageBucket: "mizuteku-3a441.firebasestorage.app",
-            messagingSenderId: "473895456413",
-            appId: "1:473895456413:web:1452ef7b9860908dd78e74",
-            measurementId: "G-NTT38FCEKG"
-        };
-
-        // --- Initialize Firebase ---
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const storage = getStorage(app);
-
-        // --- Utility: Make valid email ---
-        const sanitize = (str) =>
-            str.trim().toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "");
-
-        // --- Sign Up Logic ---
-        const saveBtn = document.getElementById("saveUsername");
-        saveBtn.addEventListener("click", async () => {
-            const lastName = document.getElementById("lastnameInput").value.trim();
-            const firstName = document.getElementById("firstnameInput").value.trim();
-            const middleInitial = document.getElementById("middleinitialInput").value.trim();
-            const password = document.getElementById("passwordInput").value.trim();
-
-            if (!lastName || !firstName || !password) {
-            alert("Please fill in all required fields!");
-            return;
-            }
-
-            try {
-            // ✅ Sanitize to form valid email
-            const fakeEmail = `${sanitize(lastName)}_${sanitize(firstName)}@school.com`;
-
-            // ✅ Create User in Firebase Auth
-            const userCredential = await createUserWithEmailAndPassword(auth, fakeEmail, password);
-            const user = userCredential.user;
-
-            // ✅ Save Student Info to Firestore
-            await setDoc(doc(db, "students", user.uid), {
-                lastName,
-                firstName,
-                middleInitial,
-                verified: false,
-                createdAt: new Date()
-            });
-
-            alert("✅ Sign-up successful! Waiting for teacher verification.");
-            } catch (err) {
-            alert("❌ " + err.message);
-            }
-
-            const teacherLoginBtn = document.getElementById("teacherLoginBtn");
-            teacherLoginBtn.addEventListener("click", async () => {
-            const email = document.getElementById("teacherEmail").value.trim();
-            const password = document.getElementById("teacherPassword").value.trim();
-
-            if (!email || !password) {
-                alert("⚠️ Please enter both email and password.");
-                return;
-            }
-
-            try {
-                // ✅ Sign in the teacher
-                const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
-
-                // ✅ Check if email is the authorized teacher account
-                if (email === "mizutekuteacher@gmail.com") {
-                const teacherPage = document.getElementById("teacherPage");
-                const loginSection = document.getElementById("teacherLoginSection");
-
-                loginSection.style.display = "none";
-                teacherPage.style.display = "block";
-
-                alert("👩‍🏫 Welcome, Teacher!");
-                // Here you can later load students for verification
-                } else {
-                alert("❌ Access denied. Only teacher accounts are allowed.");
-                }
-            } catch (err) {
-                alert("❌ " + err.message);
-            }
-            });
-        });
-    </script>
 </head>
 <body>
 
@@ -678,7 +567,117 @@
             </div>
         </footer>
     </div>
+<script type="module">
+        // Import Firebase SDKs (v9+ modular)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import {
+            getAuth,
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import {
+            getFirestore,
+            doc,
+            setDoc,
+            getDoc
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import {
+            getStorage,
+            ref,
+            uploadBytes,
+            getDownloadURL
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
+        // --- Firebase Config ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
+            authDomain: "mizuteku-3a441.firebaseapp.com",
+            projectId: "mizuteku-3a441",
+            storageBucket: "mizuteku-3a441.firebasestorage.app",
+            messagingSenderId: "473895456413",
+            appId: "1:473895456413:web:1452ef7b9860908dd78e74",
+            measurementId: "G-NTT38FCEKG"
+        };
+
+        // --- Initialize Firebase ---
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        // --- Utility: Make valid email ---
+        const sanitize = (str) =>
+            str.trim().toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "");
+
+        // --- Sign Up Logic ---
+        const saveBtn = document.getElementById("saveUsername");
+        saveBtn.addEventListener("click", async () => {
+            const lastName = document.getElementById("lastnameInput").value.trim();
+            const firstName = document.getElementById("firstnameInput").value.trim();
+            const middleInitial = document.getElementById("middleinitialInput").value.trim();
+            const password = document.getElementById("passwordInput").value.trim();
+
+            if (!lastName || !firstName || !password) {
+            alert("Please fill in all required fields!");
+            return;
+            }
+
+            try {
+            // ✅ Sanitize to form valid email
+            const fakeEmail = `${sanitize(lastName)}_${sanitize(firstName)}@school.com`;
+
+            // ✅ Create User in Firebase Auth
+            const userCredential = await createUserWithEmailAndPassword(auth, fakeEmail, password);
+            const user = userCredential.user;
+
+            // ✅ Save Student Info to Firestore
+            await setDoc(doc(db, "students", user.uid), {
+                lastName,
+                firstName,
+                middleInitial,
+                verified: false,
+                createdAt: new Date()
+            });
+
+            alert("✅ Sign-up successful! Waiting for teacher verification.");
+            } catch (err) {
+            alert("❌ " + err.message);
+            }
+
+            const teacherLoginBtn = document.getElementById("teacherLoginBtn");
+            teacherLoginBtn.addEventListener("click", async () => {
+            const email = document.getElementById("teacherEmail").value.trim();
+            const password = document.getElementById("teacherPassword").value.trim();
+
+            if (!email || !password) {
+                alert("⚠️ Please enter both email and password.");
+                return;
+            }
+
+            try {
+                // ✅ Sign in the teacher
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                // ✅ Check if email is the authorized teacher account
+                if (email === "mizutekuteacher@gmail.com") {
+                const teacherPage = document.getElementById("teacherPage");
+                const loginSection = document.getElementById("teacherLoginSection");
+
+                loginSection.style.display = "none";
+                teacherPage.style.display = "block";
+
+                alert("👩‍🏫 Welcome, Teacher!");
+                // Here you can later load students for verification
+                } else {
+                alert("❌ Access denied. Only teacher accounts are allowed.");
+                }
+            } catch (err) {
+                alert("❌ " + err.message);
+            }
+            });
+        });
+    </script>
     <script src="script.js"></script>
 </body>
 </html>
