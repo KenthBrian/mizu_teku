@@ -1505,8 +1505,10 @@ const firebaseConfig = {
       modalDesc.textContent = "Welcome back! Please enter your name and password:";
       saveBtn.textContent = "Sign In";
       switchLink.textContent = "Sign Up";
+      firstnameInput.style.display = "none";
+      lastnameInput.style.display = "none";
+      middleinitialInput.style.display = "none";
       confirmPasswordInput.style.display = "none";
-      emailInput.style.display = "none";
     }
 
     lastnameInput.value = "";
@@ -1515,6 +1517,38 @@ const firebaseConfig = {
     passwordInput.value = "";
     confirmPasswordInput.value = "";
   });
+
+// When teacher logs in successfully:
+        function openTeacherPage() {
+            document.getElementById('usernameModal').classList.add('hidden'); // Hide modal
+            document.getElementById('teacherPage').style.display = 'block';   // Show data page
+            loadStudents(); // Load Firestore data
+        }
+
+        async function loadStudents() {
+            const list = document.getElementById("studentList");
+            list.innerHTML = "Loading...";
+            const snapshot = await db.collection("students").get();
+            list.innerHTML = "";
+            snapshot.forEach(doc => {
+            const data = doc.data();
+            const div = document.createElement("div");
+            div.innerHTML = `
+                <p><strong>${data.lastname}, ${data.firstname}</strong></p>
+                Verified: ${data.verified ? '✅' : '❌'}
+                <button onclick="verifyStudent('${doc.id}', ${data.verified})">
+                ${data.verified ? 'Unverify' : 'Verify'}
+                </button>
+                <hr>
+            `;
+            list.appendChild(div);
+            });
+        }
+
+        async function verifyStudent(uid, verified) {
+            await db.collection("students").doc(uid).update({ verified: !verified });
+            loadStudents();
+        }
 
 function showConfirmModal(title, message, onConfirm, onCancel) {
   const modal = document.getElementById("confirmModal");
