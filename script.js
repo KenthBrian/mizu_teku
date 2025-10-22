@@ -1467,93 +1467,55 @@ const firebaseConfig = {
   };
 
 
-  const usernamemodal = document.getElementById("usernameModal");
-  const modalTitle = document.getElementById("modalTitle");
-  const modalDesc = document.getElementById("modalDesc");
-  const saveBtn = document.getElementById("saveUsername");
-  const switchLink = document.getElementById("switchToSignIn");
+  // ====== Elements ======
+const modalTitle = document.getElementById("modalTitle") || document.getElementById("formTitle");
+const modalDesc = document.getElementById("modalDesc") || document.getElementById("formDesc");
+const saveBtn = document.getElementById("saveUsername");
+const switchLink = document.getElementById("toggleForm"); // toggle link
+const lastnameInput = document.getElementById("lastnameInput");
+const firstnameInput = document.getElementById("firstnameInput");
+const middleinitialInput = document.getElementById("middleinitialInput");
+const emailInput = document.getElementById("emailInput");
+const passwordInput = document.getElementById("passwordInput");
+const confirmPasswordInput = document.getElementById("confirmPasswordInput");
+const rememberInput = document.getElementById("remember-wrapper");
 
-  const lastnameInput = document.getElementById("lastnameInput");
-  const firstnameInput = document.getElementById("firstnameInput");
-  const middleinitialInput = document.getElementById("middleinitialInput");
-  const emailInput = document.getElementById("emailInput");
-  const passwordInput = document.getElementById("passwordInput");
-  const confirmPasswordInput = document.getElementById("confirmPasswordInput");
-  const rememberInput = document.getElementById("remember-wrapper");
+let isSignUpMode = false;
 
-  let isSignUpMode = true;
-  let selectedFile = null;
+// --- Fields for animation ---
+const signupFields = [lastnameInput, firstnameInput, middleinitialInput, confirmPasswordInput];
 
-  // === Show modal when page loads ===
-  window.addEventListener("load", () => {
-    usernamemodal.classList.remove("hidden");
-  });
+// ===== Toggle Sign In / Sign Up =====
+switchLink.addEventListener("click", () => {
+  isSignUpMode = !isSignUpMode;
 
-  // === Switch between Sign Up and Sign In ===
-  switchLink.addEventListener("click", (e) => {
-    e.preventDefault();
-    isSignUpMode = !isSignUpMode;
+  if (isSignUpMode) {
+    modalTitle.textContent = "Student Sign Up";
+    modalDesc.textContent = "Please enter your details to create an account:";
+    saveBtn.textContent = "Sign Up";
+    switchLink.textContent = "Sign In";
+    rememberInput.style.display = "none";
 
-    if (isSignUpMode) {
-      modalTitle.textContent = "Student Sign Up";
-      modalDesc.textContent = "Please enter your details and upload your Student ID:";
-      saveBtn.textContent = "Sign Up";
-      switchLink.textContent = "Sign In";
-      firstnameInput.style.display = "block";
-      lastnameInput.style.display = "block";
-      middleinitialInput.style.display = "block";
-      confirmPasswordInput.style.display = "block";
-      emailInput.style.display = "block";
-      rememberInput.style.display = "none";
-    } else {
-      modalTitle.textContent = "Student Sign In";
-      modalDesc.textContent = "Welcome back! Please enter your name and password:";
-      saveBtn.textContent = "Sign In";
-      switchLink.textContent = "Sign Up";
-      firstnameInput.style.display = "none";
-      lastnameInput.style.display = "none";
-      middleinitialInput.style.display = "none";
-      confirmPasswordInput.style.display = "none";
-      rememberInput.style.display = "block";
-    }
+    // Animate inputs
+    signupFields.forEach(input => {
+      input.style.display = "block";
+      setTimeout(() => input.classList.add("active"), 50); // small delay for animation
+    });
+  } else {
+    modalTitle.textContent = "Student Sign In";
+    modalDesc.textContent = "Welcome back! Please enter your email and password:";
+    saveBtn.textContent = "Sign In";
+    switchLink.textContent = "Sign Up";
+    rememberInput.style.display = "block";
 
-    lastnameInput.value = "";
-    firstnameInput.value = "";
-    middleinitialInput.value = "";
-    passwordInput.value = "";
-    confirmPasswordInput.value = "";
-  });
+    // Hide Sign Up fields
+    signupFields.forEach(input => input.classList.remove("active"));
+  }
 
-        function openTeacherPage() {
-            document.getElementById('usernameModal').classList.add('hidden'); // Hide modal
-            document.getElementById('teacherPage').style.display = 'block';   // Show data page
-            loadStudents(); // Load Firestore data
-        }
-
-        async function loadStudents() {
-            const list = document.getElementById("studentList");
-            list.innerHTML = "Loading...";
-            const snapshot = await db.collection("students").get();
-            list.innerHTML = "";
-            snapshot.forEach(doc => {
-            const data = doc.data();
-            const div = document.createElement("div");
-            div.innerHTML = `
-                <p><strong>${data.lastname}, ${data.firstname}</strong></p>
-                Verified: ${data.verified ? '✅' : '❌'}
-                <button onclick="verifyStudent('${doc.id}', ${data.verified})">
-                ${data.verified ? 'Unverify' : 'Verify'}
-                </button>
-                <hr>
-            `;
-            list.appendChild(div);
-            });
-        }
-
-        async function verifyStudent(uid, verified) {
-            await db.collection("students").doc(uid).update({ verified: !verified });
-            loadStudents();
-        }
+  // Clear input values
+  [...signupFields, emailInput, passwordInput].forEach(input => input.value = "");
+  confirmPasswordInput.value = "";
+});
 
 function showConfirmModal(title, message, onConfirm, onCancel) {
   const modal = document.getElementById("confirmModal");
