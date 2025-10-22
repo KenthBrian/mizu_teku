@@ -568,17 +568,17 @@
         </footer>
     </div>
     <script type="module">
-    // Import Firebase SDKs (v9+ modular)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import {
         getAuth,
         createUserWithEmailAndPassword,
-        signInWithEmailAndPassword
+        signInWithEmailAndPassword,
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import {
         getFirestore,
         doc,
-        setDoc
+        setDoc,
+        getDoc,
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     // --- Firebase Config ---
@@ -589,7 +589,7 @@
         storageBucket: "mizuteku-3a441.firebasestorage.app",
         messagingSenderId: "473895456413",
         appId: "1:473895456413:web:1452ef7b9860908dd78e74",
-        measurementId: "G-NTT38FCEKG"
+        measurementId: "G-NTT38FCEKG",
     };
 
     // --- Initialize Firebase ---
@@ -597,23 +597,51 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // --- Utility: Make valid email ---
+    // --- Helper ---
     const sanitize = (str) =>
         str.trim().toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "");
 
-    // ==============================
-    // 🧑‍🎓 STUDENT SIGN-UP LOGIC
-    // ==============================
+    // --- Mode switch (Sign Up / Sign In) ---
+    let isSignUpMode = true;
+    const modalTitle = document.getElementById("modalTitle");
+    const modalDesc = document.getElementById("modalDesc");
     const saveBtn = document.getElementById("saveUsername");
-    if (saveBtn) {
-        saveBtn.addEventListener("click", async () => {
+    const switchLink = document.getElementById("switchToSignIn");
+
+    switchLink.addEventListener("click", (e) => {
+        e.preventDefault();
+        isSignUpMode = !isSignUpMode;
+
+        if (isSignUpMode) {
+        modalTitle.textContent = "Student Sign Up";
+        modalDesc.textContent = "Please enter your details and upload your Student ID:";
+        saveBtn.textContent = "Sign Up";
+        switchLink.textContent = "Sign In";
+        } else {
+        modalTitle.textContent = "Sign In";
+        modalDesc.textContent = "Enter your email and password to log in:";
+        saveBtn.textContent = "Sign In";
+        switchLink.textContent = "Sign Up";
+        }
+    });
+
+    // --- Sign Up / Sign In button ---
+    saveBtn.addEventListener("click", async () => {
         const lastName = document.getElementById("lastnameInput").value.trim();
         const firstName = document.getElementById("firstnameInput").value.trim();
         const middleInitial = document.getElementById("middleinitialInput").value.trim();
+        const email = document.getElementById("emailInput").value.trim();
         const password = document.getElementById("passwordInput").value.trim();
+        const confirmPassword = document.getElementById("confirmPasswordInput").value.trim();
 
+        // 🧩 SIGN UP
+        if (isSignUpMode) {
         if (!lastName || !firstName || !password) {
             alert("⚠️ Please fill in all required fields!");
+            return;
+        }
+        if (password !== confirmPassword) {
+            alert("⚠️ Passwords do not match!");
             return;
         }
 
@@ -627,52 +655,56 @@
             firstName,
             middleInitial,
             verified: false,
-            createdAt: new Date()
+            createdAt: new Date(),
             });
 
-            alert("✅ Sign-up successful! Waiting for teacher verification.");
+            alert("✅ Student sign-up successful! Waiting for teacher verification.");
+            document.getElementById("usernameModal").style.display = "none";
         } catch (err) {
             alert("❌ " + err.message);
         }
-        });
-    }
+        }
 
-    // ==============================
-    // 👩‍🏫 TEACHER LOGIN LOGIC
-    // ==============================
-    const teacherLoginBtn = document.getElementById("teacherLoginBtn");
-    if (teacherLoginBtn) {
-        teacherLoginBtn.addEventListener("click", async () => {
-        const email = document.getElementById("teacherEmail").value.trim();
-        const password = document.getElementById("teacherPassword").value.trim();
-
+        // 🧩 SIGN IN
+        else {
         if (!email || !password) {
-            alert("⚠️ Please enter both email and password.");
+            alert("⚠️ Please enter your email and password.");
             return;
         }
 
         try {
-            const userCredential = await signInWithEmailAndPassword(auth, email, password);
-            const user = userCredential.user;
-
+            // Teacher login
             if (email === "mizutekuteacher@gmail.com") {
-            const teacherPage = document.getElementById("teacherPage");
-            const loginSection = document.getElementById("teacherLoginSection");
-
-            if (loginSection && teacherPage) {
-                loginSection.style.display = "none";
-                teacherPage.style.display = "block";
+            const teacherCredential = await signInWithEmailAndPassword(auth, email, password);
+            document.getElementById("usernameModal").style.display = "none";
+            document.getElementById("teacherPage").style.display = "block";
+            alert("👩‍🏫 Welcome, Teacher!");
+            return;
             }
 
-            alert("👩‍🏫 Welcome, Teacher!");
+            // Student login
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+            const docRef = await getDoc(doc(db, "students", user.uid));
+
+            if (!docRef.exists()) {
+            alert("❌ Student record not found!");
+            return;
+            }
+
+            const data = docRef.data();
+            if (data.verified) {
+            document.getElementById("usernameModal").style.display = "none";
+            document.getElementById("studentPage").style.display = "block";
+            alert(`🎓 Welcome back, ${data.firstName}!`);
             } else {
-            alert("❌ Access denied. Only teacher accounts are allowed.");
+            alert("⏳ Your account is still pending teacher verification.");
             }
         } catch (err) {
             alert("❌ " + err.message);
         }
-        });
-    }
+        }
+    });
     </script>
     <script src="script.js"></script>
 </body>
