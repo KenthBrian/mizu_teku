@@ -3,6 +3,9 @@ html {
     overflow-x: hidden;
 }
 
+.page { display: none; padding: 20px; }
+    .active { display: block; }
+
 button {
     font-family: 'Chewy', sans-serif;
 }
