@@ -529,6 +529,51 @@
                 </div>
             </div>
         </footer>
+    <script>
+        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        function initializeClearData() {
+            const clearBtn = document.getElementById("clearDataBtn");
+            if (!clearBtn) {
+                console.error("❌ Clear Data button not found");
+                return;
+            }   
+
+            const auth = getAuth(); // make sure auth is initialized
+
+            clearBtn.addEventListener("click", async () => {
+                console.log("✅ Sign Out clicked");
+
+                // Confirm before signing out
+                showConfirmModal(
+                    currentLanguage === "en" ? "Sign Out?" : "Mag-sign out?",
+                    currentLanguage === "en" ? "Do you really want to sign out of your account?" : "Gusto mo bang mag-sign out sa iyong account?",
+                    async () => {
+                        try {
+                            await signOut(auth); // now signOut is defined
+
+                            localStorage.removeItem("rememberedEmail");
+
+                            showAlertModal(
+                                currentLanguage === "en" ? "Signed out successfully!" : "Matagumpay na naka-sign out!",
+                                currentLanguage === "en" ? "Redirecting to login..." : "Babalik sa login..."
+                            );
+
+                            setTimeout(() => {
+                                location.reload();
+                            }, 1000);
+
+                        } catch (error) {
+                            console.error("❌ Sign out failed:", error);
+                            showAlertModal(
+                                currentLanguage === "en" ? "Error" : "Error",
+                                currentLanguage === "en" ? "Failed to sign out. Please try again." : "Hindi nakapag-sign out. Subukang muli."
+                            );
+                        }
+                    }
+                );
+            });
+        }
+    </script>
     <script src="script.js"></script>
 </body>
 </html>
