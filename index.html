@@ -32,7 +32,7 @@
     </div>
 
     <!-- Username Popup -->
-    <div id="usernameModal" class="modal hidden">
+    <div id="usernameModal" class="modal hidden" style="display:none">
       <div class="modal-content">
         <h2 id="modalTitle">Student Sign Up</h2>
         <p id="modalDesc">Please enter your details and upload your Student ID:</p>
@@ -835,7 +835,34 @@
     document.getElementById("teacherPage").style.display = "none";
     document.getElementById("studentPage").style.display = "none";
     usernamemodal.style.display = "block";
+    usernamemodal.style.display = "none"; // hide modal initially
     if (navbar) navbar.style.display = "none";
+
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            // user is logged in
+            if (user.email === "mizutekuteacher@gmail.com") {
+                onLoginSuccess("teacher");
+                loadStudents();
+                return;
+            }
+
+            const docRef = await getDoc(doc(db, "students", user.uid));
+            if (docRef.exists()) {
+                const data = docRef.data();
+                if (data.verified) {
+                    onLoginSuccess("student");
+                } else {
+                    usernamemodal.style.display = "block"; // show modal if not verified
+                }
+            } else {
+                usernamemodal.style.display = "block"; // show modal if student record not found
+            }
+        } else {
+            // no user logged in
+            usernamemodal.style.display = "block";
+        }
+    });
     alert("👋 Logged out successfully.");
     };
 
