@@ -842,7 +842,7 @@
     // --- Login Success Handler ---
     function onLoginSuccess(role) {
     usernamemodal.style.display = "none";
-    if (navbar) navbar.style.display = "flex";
+    if (navbar) navbar.style.display = "block";
 
     if (role === "teacher") {
         document.getElementById("teacherPage").style.display = "block";
