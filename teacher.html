@@ -47,6 +47,7 @@
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, collection, getDocs, query, where, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+        // --- Firebase Config ---
         const firebaseConfig = {
             apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
             authDomain: "mizuteku-3a441.firebaseapp.com",
@@ -57,14 +58,19 @@
             measurementId: "G-NTT38FCEKG",
         };
 
+        // --- Initialize Firebase ---
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // --- DOM Elements ---
         const studentList = document.getElementById("studentList");
         const signOutBtn = document.getElementById("clearDataBtn");
 
+        // --- Load unverified students ---
         async function loadStudents() {
+            if (!studentList) return;
+
             studentList.innerHTML = "Loading students...";
             const q = query(collection(db, "students"), where("verified", "==", false));
             const snapshot = await getDocs(q);
@@ -88,27 +94,53 @@
             document.querySelectorAll(".verifyBtn").forEach((btn) => {
                 btn.addEventListener("click", async () => {
                     const uid = btn.dataset.id;
-                    await updateDoc(doc(db, "students", uid), { verified: true });
-                    alert(`✅ Verified ${btn.parentElement.textContent.trim()}`);
-                    loadStudents();
+                    try {
+                        await updateDoc(doc(db, "students", uid), { verified: true });
+                        alert(`✅ Verified ${btn.parentElement.textContent.trim()}`);
+                        loadStudents();
+                    } catch (err) {
+                        console.error("❌ Failed to verify student:", err);
+                        alert("❌ Failed to verify student. Try again.");
+                    }
                 });
             });
         }
 
-        // Sign out
-        signOutBtn.addEventListener("click", async () => {
-            await signOut(auth);
-            window.location.href = "index.html"; // redirect to login
-        });
+        // --- Sign Out Handler ---
+        if (signOutBtn) {
+            signOutBtn.addEventListener("click", async () => {
+                const confirmed = confirm("Do you really want to sign out?");
+                if (!confirmed) return;
 
-        // Auto-load students if teacher is logged in
+                try {
+                    await signOut(auth);
+                    localStorage.removeItem("rememberedEmail");
+                    alert("✅ Signed out successfully!");
+                    window.location.href = "index.html";
+                } catch (err) {
+                    console.error("❌ Sign out failed:", err);
+                    alert("❌ Failed to sign out. Please try again.");
+                }
+            });
+        }
+
+        // --- Page protection & auto-load ---
         onAuthStateChanged(auth, async (user) => {
-            if (user && user.email === "mizutekuteacher@gmail.com") {
+            if (!user) {
+                // Not logged in, redirect
+                window.location.href = "index.html";
+                return;
+            }
+
+            if (user.email === "mizutekuteacher@gmail.com") {
+                // Teacher account, load students
                 loadStudents();
             } else {
-                window.location.href = "index.html"; // redirect if not logged in
+                // Non-teacher trying to access, redirect
+                window.location.href = "index.html";
             }
         });
-    </script>
+        </script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
