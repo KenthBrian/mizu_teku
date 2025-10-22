@@ -1609,7 +1609,23 @@ const firebaseConfig = {
         const user = userCredential.user;
 
         if (db) {
-          const doc = await db.collection("students").doc(user.uid).get();
+        const doc = await db.collection("students").doc(user.uid).get();
+
+        // Hide main navigation while the signup/signin page is visible
+        const navEl =
+            document.querySelector('nav') ||
+            document.querySelector('.navbar') ||
+            document.querySelector('.nav-right') ||
+            document.querySelector('.header');
+
+        if (signupPage && signupPage.style.display !== 'none') {
+            if (navEl) navEl.style.display = 'none';
+        }
+
+        // If the user is already verified (successful sign-in), restore the nav immediately
+        if (doc.exists && doc.data().verified) {
+            if (navEl) navEl.style.display = ''; // restore to stylesheet default
+        }
 
           if (doc.exists && doc.data().verified) {
             alert(`✅ Welcome ${doc.data().firstName}! You are verified.`);
