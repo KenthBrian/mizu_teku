@@ -170,7 +170,6 @@ body {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: linear-gradient(135deg, #1e90ff, #2ecc71); /* full-screen gradient */
   display: flex;
   justify-content: center;
   align-items: center;
