@@ -1456,15 +1456,31 @@ function downloadCertificate() {
     }
 }
 
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { 
+  getAuth, 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword, 
+  onAuthStateChanged, 
+  setPersistence, 
+  browserSessionPersistence,
+  signOut 
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
 const firebaseConfig = {
-    apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
-    authDomain: "mizuteku-3a441.firebaseapp.com",
-    projectId: "mizuteku-3a441",
-    storageBucket: "mizuteku-3a441.firebasestorage.app",
-    messagingSenderId: "473895456413",
-    appId: "1:473895456413:web:1452ef7b9860908dd78e74",
-    measurementId: "G-NTT38FCEKG"
-  };
+  apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
+  authDomain: "mizuteku-3a441.firebaseapp.com",
+  projectId: "mizuteku-3a441",
+  storageBucket: "mizuteku-3a441.firebasestorage.app",
+  messagingSenderId: "473895456413",
+  appId: "1:473895456413:web:1452ef7b9860908dd78e74",
+  measurementId: "G-NTT38FCEKG",
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
 function showConfirmModal(title, message, onConfirm, onCancel) {
   const modal = document.getElementById("confirmModal");
@@ -1490,12 +1506,6 @@ function showConfirmModal(title, message, onConfirm, onCancel) {
     if (onCancel) onCancel();
   };
 }
-
-// external.js
-import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-
-// Initialize Firebase Auth once at the top
-const auth = getAuth();
 
 export function initializeClearData(currentLanguage = "en") {
     const clearBtn = document.getElementById("clearDataBtn");
