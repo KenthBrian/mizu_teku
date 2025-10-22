@@ -62,7 +62,7 @@
                         <div class="language-switcher">
                             <button id="lang-en" class="lang-btn active">EN</button>
                             <button id="lang-tl" class="lang-btn">TL</button>
-                            <button id="clearDataBtn" class="clear-btn">Sign Out</button>
+                            <button id="clearDataBtn" class="clear-btn" onclick="initializeClearData()">Sign Out</button>
                         </div>
                     </div>
                 </div>
@@ -530,7 +530,9 @@
             </div>
         </footer>
     <script type="module">
+
         import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
         function initializeClearData() {
             const clearBtn = document.getElementById("clearDataBtn");
             if (!clearBtn) {
