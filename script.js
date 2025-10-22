@@ -1182,44 +1182,58 @@ const tipsData = {
     }
 };
 
-function showHomeTips(type = "home") {
-  const lang = (typeof currentLanguage !== "undefined" && currentLanguage === "tl") ? "tl" : "en";
+// Wait for the DOM to be fully loaded
+window.addEventListener("DOMContentLoaded", () => {
 
-  if (!tipsData[type]) return;
-
-  const tips = tipsData[type][lang];
-  const title = tipsData[type].title[lang];
-
-  document.getElementById("tipsTitle").innerHTML = title;
-
+  const modal = document.getElementById("homeTipsModal");
+  const tipsTitle = document.getElementById("tipsTitle");
   const tipsList = document.getElementById("tipsList");
-  tipsList.innerHTML = "";
-  tips.forEach(item => {
-    const li = document.createElement("li");
-    li.textContent = item;
-    tipsList.appendChild(li);
+
+  if (!modal || !tipsTitle || !tipsList) return;
+
+  // Function to show tips
+  function showHomeTips(type = "home") {
+    const lang = (typeof currentLanguage !== "undefined" && currentLanguage === "tl") ? "tl" : "en";
+    if (!tipsData[type]) return;
+
+    const tips = tipsData[type][lang];
+    const title = tipsData[type].title[lang];
+
+    tipsTitle.textContent = title;
+
+    tipsList.innerHTML = "";
+    tips.forEach(item => {
+      const li = document.createElement("li");
+      li.textContent = item;
+      tipsList.appendChild(li);
+    });
+
+    modal.classList.remove("hidden");
+  }
+
+  // Function to close tips
+  function closeHomeTips() {
+    modal.classList.add("hidden");
+  }
+
+  // Close modal when clicking outside content
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal) closeHomeTips();
   });
 
-  document.getElementById("homeTipsModal").classList.remove("hidden");
-}
+  // Attach to all info buttons
+  document.querySelectorAll(".info-button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const type = btn.dataset.type || "home"; // read data-type
+      showHomeTips(type);
+    });
+  });
 
-window.showHomeTips = showHomeTips;
+  // Expose globally if needed
+  window.showHomeTips = showHomeTips;
+  window.closeHomeTips = closeHomeTips;
 
-function closeHomeTips() {
-  document.getElementById("homeTipsModal").classList.add("hidden");
-}
-
-const modal = document.getElementById("homeTipsModal");
-
-modal.addEventListener("click", function (event) {
-    // Only close if clicked outside the modal content
-    if (event.target === modal) {
-        closeHomeTips();
-    }
 });
-
-window.closeHomeTips = closeHomeTips;
-
 
 const handwashingVideos = {
     step1: { 
