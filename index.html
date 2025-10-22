@@ -50,15 +50,6 @@
         const studentPage = document.getElementById("studentPage");
         const teacherPage = document.getElementById("teacherPage");
 
-        // 🔄 Switch between Sign Up and Sign In
-        switchMode.addEventListener("click", (e) => {
-            e.preventDefault();
-            isSignUp = !isSignUp;
-            modalTitle.textContent = isSignUp ? "Student Sign Up" : "Sign In";
-            authBtn.textContent = isSignUp ? "Sign Up" : "Sign In";
-            switchMode.textContent = isSignUp ? "Sign In" : "Sign Up";
-        });
-
         // ✅ Handle Sign Up or Sign In
         authBtn.addEventListener("click", async () => {
             const email = emailInput.value.trim();
