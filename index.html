@@ -633,22 +633,22 @@
 
     // --- Sign Up / Sign In button ---
     saveBtn.addEventListener("click", async () => {
-        const lastName = document.getElementById("lastnameInput").value.trim();
-        const firstName = document.getElementById("firstnameInput").value.trim();
-        const middleInitial = document.getElementById("middleinitialInput").value.trim();
-        const email = document.getElementById("emailInput").value.trim();
-        const password = document.getElementById("passwordInput").value.trim();
-        const confirmPassword = document.getElementById("confirmPasswordInput").value.trim();
+    const lastName = document.getElementById("lastnameInput").value.trim();
+    const firstName = document.getElementById("firstnameInput").value.trim();
+    const middleInitial = document.getElementById("middleinitialInput").value.trim();
+    const email = document.getElementById("emailInput").value.trim();
+    const password = document.getElementById("passwordInput").value.trim();
+    const confirmPassword = document.getElementById("confirmPasswordInput").value.trim();
 
-        // 🧩 SIGN UP
-        if (isSignUpMode) {
+    // 🧩 SIGN UP
+    if (isSignUpMode) {
         if (!lastName || !firstName || !password) {
-            alert("⚠️ Please fill in all required fields!");
-            return;
+        alert("⚠️ Please fill in all required fields!");
+        return;
         }
         if (password !== confirmPassword) {
-            alert("⚠️ Passwords do not match!");
-            return;
+        alert("⚠️ Passwords do not match!");
+        return;
         }
 
         try {
@@ -669,18 +669,25 @@
         } catch (err) {
         alert("❌ " + err.message);
         }
-        }
+    }
 
-        // SIGN IN
-        else {
+    // 🧩 SIGN IN
+    else {
         if (!email || !password) {
-            alert("⚠️ Please enter your email and password.");
-            return;
+        alert("⚠️ Please enter your email and password.");
+        return;
         }
 
         try {
-            // Teacher login
-            if (email === "mizutekuteacher@gmail.com") {
+        // Remember Me
+        if (rememberInput.checked) {
+            localStorage.setItem("rememberedEmail", email);
+        } else {
+            localStorage.removeItem("rememberedEmail");
+        }
+
+        // Teacher login
+        if (email === "mizutekuteacher@gmail.com") {
             const teacherCredential = await signInWithEmailAndPassword(auth, email, password);
             document.getElementById("usernameModal").style.display = "none";
             document.getElementById("teacherPage").style.display = "block";
@@ -721,69 +728,42 @@
             };
             loadStudents();
             return;
-            }
+        }
 
-            // Student login
-            const userCredential = await signInWithEmailAndPassword(auth, email, password);
-            const user = userCredential.user;
-            const docRef = await getDoc(doc(db, "students", user.uid));
+        // Student login
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        const docRef = await getDoc(doc(db, "students", user.uid));
 
-            if (!docRef.exists()) {
+        if (!docRef.exists()) {
             alert("❌ Student record not found!");
             return;
-            }
+        }
 
-            const data = docRef.data();
-            if (data.verified) {
+        const data = docRef.data();
+        if (data.verified) {
             document.getElementById("usernameModal").style.display = "none";
             document.getElementById("studentPage").style.display = "block";
             alert(`🎓 Welcome back, ${data.firstName}!`);
-            } else {
+        } else {
             alert("⏳ Your account is still pending teacher verification.");
-            }
+        }
         } catch (err) {
-            alert("❌ " + err.message);
-        }
-        }
-    });
-
-        const rememberWrapper = document.getElementById("remember-wrapper");
-        const rememberInput = document.getElementById("rememberInput");
-        const emailInput = document.getElementById("emailInput");
-
-        // === Load saved email if "Remember Me" was used before ===
-        window.addEventListener("load", () => {
-        const savedEmail = localStorage.getItem("rememberedEmail");
-        if (savedEmail) {
-            emailInput.value = savedEmail;
-            rememberInput.checked = true;
-        }
-        });
-
-        // === Inside your sign-in logic ===
-        // For example, after successful sign-in:
-        async function signInStudent() {
-        const email = emailInput.value;
-        const password = passwordInput.value;
-
-        try {
-            const userCredential = await signInWithEmailAndPassword(auth, email, password);
-            const user = userCredential.user;
-
-            // ✅ Remember email if checked
-            if (rememberInput.checked) {
-            localStorage.setItem("rememberedEmail", email);
-            } else {
-            localStorage.removeItem("rememberedEmail");
-            }
-
-            alert("✅ Sign in successful!");
-            document.getElementById("usernameModal").style.display = "none";
-
-        } catch (err) {
-            alert("❌ " + err.message);
+        alert("❌ " + err.message);
         }
     }
+    });
+
+    const rememberInput = document.getElementById("rememberInput");
+    const emailInput = document.getElementById("emailInput");
+
+    window.addEventListener("load", () => {
+    const savedEmail = localStorage.getItem("rememberedEmail");
+    if (savedEmail) {
+        emailInput.value = savedEmail;
+        rememberInput.checked = true;
+    }
+    });
     </script>
     <script src="script.js"></script>
 </body>
