@@ -451,8 +451,6 @@ function initializeDirtyGlassGame() {
     generateGlasses();
 }
 
-initializeDirtyGlassGame();
-
 // Quiz Game (Drag and Drop)
 function initializeQuiz() {
     let scenarios = document.querySelectorAll('.scenario-card');
