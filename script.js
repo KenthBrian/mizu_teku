@@ -1585,7 +1585,7 @@ function initializeClearData() {
     if (!clearBtn) {
         console.error("❌ Clear Data button not found");
         return;
-    }
+    }   
 
     clearBtn.addEventListener("click", async () => {
         console.log("✅ Sign Out clicked");
