@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+
+        /* Navbar styling */
+        .navbar {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo img {
+            height: 40px;
+        }
+
+        .nav-menu {
+            list-style: none;
+            display: flex;
+            gap: 15px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-menu li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .nav-menu li a:hover {
+            text-decoration: underline;
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .lang-btn, .clear-btn {
+            background: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .lang-btn.active {
+            background-color: #ffc107;
+            color: #000;
+        }
+
+        /* Teacher page content */
+        #teacherPage {
+            margin-top: 80px; /* leave space for fixed navbar */
+            padding: 20px;
+        }
+
+        #teacherPage h2 {
+            margin-bottom: 10px;
+        }
+
+        #studentList {
+            list-style: none;
+            padding: 0;
+        }
+
+        #studentList li {
+            background: white;
+            margin-bottom: 8px;
+            padding: 10px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #studentList button {
+            padding: 5px 10px;
+            border: none;
+            background-color: #28a745;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #studentList button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="attached_assets/images/logo_text2.png" alt="Logo">
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home" data-en="Home" data-tl="Tahanan">Home</a></li>
+                <li><a href="#clean-water" data-en="Why" data-tl="Bakit">Why</a></li>
+                <li><a href="#handwashing" data-en="Handwashing" data-tl="Hugas Kamay">Handwashing</a></li>
+                <li><a href="#games" data-en="Games" data-tl="Mga Laro">Games</a></li>
+                <li><a href="#resources" data-en="Resources" data-tl="Mga Liham">Resources</a></li>
+                <li><a href="#about_us" data-en="About Us" data-tl="Tungkol sa Amin">About Us</a></li>
+            </ul>
+            <div class="nav-controls">
+                <button id="lang-en" class="lang-btn active">EN</button>
+                <button id="lang-tl" class="lang-btn">TL</button>
+                <button id="clearDataBtn" class="clear-btn">Sign Out</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Teacher Page -->
+    <div id="teacherPage">
+        <h2>👩‍🏫 Teacher Dashboard</h2>
+        <p>Pending student verifications:</p>
+        <ul id="studentList"></ul>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs, query, where, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
+            authDomain: "mizuteku-3a441.firebaseapp.com",
+            projectId: "mizuteku-3a441",
+            storageBucket: "mizuteku-3a441.firebasestorage.app",
+            messagingSenderId: "473895456413",
+            appId: "1:473895456413:web:1452ef7b9860908dd78e74",
+            measurementId: "G-NTT38FCEKG",
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const studentList = document.getElementById("studentList");
+        const signOutBtn = document.getElementById("clearDataBtn");
+
+        async function loadStudents() {
+            studentList.innerHTML = "Loading students...";
+            const q = query(collection(db, "students"), where("verified", "==", false));
+            const snapshot = await getDocs(q);
+
+            if (snapshot.empty) {
+                studentList.innerHTML = "<li>🎉 All students are verified!</li>";
+                return;
+            }
+
+            studentList.innerHTML = "";
+            snapshot.forEach((docSnap) => {
+                const data = docSnap.data();
+                const li = document.createElement("li");
+                li.innerHTML = `
+                    ${data.firstName} ${data.lastName} (${data.middleInitial})
+                    <button class="verifyBtn" data-id="${docSnap.id}">Verify</button>
+                `;
+                studentList.appendChild(li);
+            });
+
+            document.querySelectorAll(".verifyBtn").forEach((btn) => {
+                btn.addEventListener("click", async () => {
+                    const uid = btn.dataset.id;
+                    await updateDoc(doc(db, "students", uid), { verified: true });
+                    alert(`✅ Verified ${btn.parentElement.textContent.trim()}`);
+                    loadStudents();
+                });
+            });
+        }
+
+        // Sign out
+        signOutBtn.addEventListener("click", async () => {
+            await signOut(auth);
+            window.location.href = "login.html"; // redirect to login
+        });
+
+        // Auto-load students if teacher is logged in
+        onAuthStateChanged(auth, async (user) => {
+            if (user && user.email === "mizutekuteacher@gmail.com") {
+                loadStudents();
+            } else {
+                window.location.href = "login.html"; // redirect if not logged in
+            }
+        });
+    </script>
+</body>
+</html>
