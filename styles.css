@@ -308,7 +308,7 @@ body {
 }
 
 /* Align the checkbox section to the left */
-#usernameModal .remember-wrapper {
+#usernameModal #remember-wrapper {
   text-align: left;
   width: 100%;
   margin-bottom: 1rem;
