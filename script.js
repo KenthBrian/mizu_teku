@@ -1491,12 +1491,16 @@ function showConfirmModal(title, message, onConfirm, onCancel) {
   };
 }
 
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
 function initializeClearData() {
     const clearBtn = document.getElementById("clearDataBtn");
     if (!clearBtn) {
         console.error("❌ Clear Data button not found");
         return;
     }   
+
+    const auth = getAuth(); // make sure auth is initialized
 
     clearBtn.addEventListener("click", async () => {
         console.log("✅ Sign Out clicked");
@@ -1507,8 +1511,7 @@ function initializeClearData() {
             currentLanguage === "en" ? "Do you really want to sign out of your account?" : "Gusto mo bang mag-sign out sa iyong account?",
             async () => {
                 try {
-                    // Use the auth instance you already created
-                    await signOut(auth);
+                    await signOut(auth); // now signOut is defined
 
                     localStorage.removeItem("rememberedEmail");
 
@@ -1532,3 +1535,4 @@ function initializeClearData() {
         );
     });
 }
+
