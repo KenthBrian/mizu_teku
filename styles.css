@@ -219,6 +219,8 @@ body {
 #usernameModal input[type="password"]:focus {
   border-color: #2ecc71;
   box-shadow: 0 0 6px rgba(46, 204, 113, 0.5);
+  display: inline;
+  margin-right: 10px;
 }
 
 /* ===== Dropbox (upload area) ===== */
