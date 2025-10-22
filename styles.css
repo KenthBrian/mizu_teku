@@ -1139,9 +1139,6 @@ body {
         border-color: #3498db;
     }
 
-.certificate-display {
-}
-
 #certificate-inner {
     width: 100%;
     height: 100%;
@@ -1780,23 +1777,3 @@ body {
 .modal-buttons .no-btn:hover {
   background: #d32f2f;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
