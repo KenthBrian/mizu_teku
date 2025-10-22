@@ -1456,168 +1456,151 @@ function downloadCertificate() {
     }
 }
 
-window.addEventListener("load", () => {
-  const modal = document.getElementById("usernameModal");
-  const modalTitle = document.getElementById("modalTitle");
-  const modalDesc = document.getElementById("modalDesc");
-  const saveBtn = document.getElementById("saveUsername");
-  const switchLink = document.getElementById("switchToSignIn");
+const firebaseConfig = {
+    apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
+    authDomain: "mizuteku-3a441.firebaseapp.com",
+    projectId: "mizuteku-3a441",
+    storageBucket: "mizuteku-3a441.firebasestorage.app",
+    messagingSenderId: "473895456413",
+    appId: "1:473895456413:web:1452ef7b9860908dd78e74",
+    measurementId: "G-NTT38FCEKG"
+  };
 
-  const usernameInput = document.getElementById("usernameInput");
-  const passwordInput = document.getElementById("passwordInput");
-  const scanBtn = document.getElementById("scanIdBtn");
-  const resultEl = document.getElementById("ocrResult");
-  const idUpload = document.getElementById("idUpload");
-  const dropboxLabel = document.getElementById("dropboxLabel");
-  const filePreview = document.getElementById("filePreview");
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+  const storage = firebase.storage();
 
-  let isSignUpMode = true;
+  window.addEventListener("load", () => {
+    const modal = document.getElementById("usernameModal");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalDesc = document.getElementById("modalDesc");
+    const saveBtn = document.getElementById("saveUsername");
+    const switchLink = document.getElementById("switchToSignIn");
 
-  // Show modal if no user is logged in
-  if (!localStorage.getItem("currentUser")) {
+    const lastnameInput = document.getElementById("lastnameInput");
+    const firstnameInput = document.getElementById("firstnameInput");
+    const middleinitialInput = document.getElementById("middleinitialInput");
+    const passwordInput = document.getElementById("passwordInput");
+    const idUpload = document.getElementById("idUpload");
+    const dropboxLabel = document.getElementById("dropboxLabel");
+    const filePreview = document.getElementById("filePreview");
+
+    let isSignUpMode = true;
+
+    // Show modal when page loads
     modal.classList.remove("hidden");
-    usernameInput.focus();
-  } else {
-    updateGreeting();
-  }
 
-  // Switch between Sign Up and Sign In
-  switchLink.addEventListener("click", (e) => {
-    e.preventDefault();
-    isSignUpMode = !isSignUpMode;
+    // === Switch between Sign Up and Sign In ===
+    switchLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      isSignUpMode = !isSignUpMode;
 
-    if (isSignUpMode) {
-      modalTitle.textContent = "Student Sign Up";
-      modalDesc.textContent = "Please enter your details and upload your Student ID:";
-      saveBtn.textContent = "Sign Up";
-      switchLink.textContent = "Sign In";
-      scanBtn.style.display = "inline-block";
-      dropboxLabel.style.display = "block";
-      idUpload.style.display = "none";
-      filePreview.style.display = "block";
-      resultEl.style.display = "block";
-    } else {
-      modalTitle.textContent = "Student Sign In";
-      modalDesc.textContent = "Welcome back! Please enter your username and password:";
-      saveBtn.textContent = "Sign In";
-      switchLink.textContent = "Sign Up";
-      scanBtn.style.display = "none";
-      dropboxLabel.style.display = "none";
-      idUpload.style.display = "none";
-      filePreview.style.display = "none";
-      resultEl.style.display = "none";
-    }
-
-    // Reset inputs
-    usernameInput.value = "";
-    passwordInput.value = "";
-    resultEl.textContent = "";
-  });
-
-  // File upload preview
-  idUpload.addEventListener("change", () => {
-    const file = idUpload.files[0];
-    if (file) {
-      dropboxLabel.textContent = "✅ ID uploaded: " + file.name;
-      const reader = new FileReader();
-      reader.onload = function () {
-      filePreview.innerHTML = `<p style="color:#2ecc71; font-weight:bold; margin-top:10px;">
-        ✅ Image uploaded successfully!
-      </p>`;
-    };
-      reader.readAsDataURL(file);
-    } else {
-      dropboxLabel.textContent = "📁 Drop your ID here or click to upload";
-      filePreview.innerHTML = "";
-    }
-  });
-
-  // OCR Scan
-  scanBtn.addEventListener("click", async () => {
-    const file = idUpload.files[0];
-    if (!file) return alert("Please upload your Student ID first!");
-    resultEl.textContent = "🔍 Scanning your ID... Please wait.";
-
-    try {
-      const { data: { text } } = await Tesseract.recognize(file, "eng");
-      const lowerText = text.toLowerCase().replace(/\s+/g, " ");
-
-      const isGradeOK =
-        lowerText.includes("grade 1") ||
-        lowerText.includes("grade 2") ||
-        lowerText.includes("grade 3") ||
-        lowerText.includes(" i ") ||
-        lowerText.includes(" ii ") ||
-        lowerText.includes(" iii ");
-
-      const isYearOK = lowerText.includes("2025") && lowerText.includes("2026");
-
-      if (isGradeOK && isYearOK) {
-        resultEl.textContent = "✅ Verified: Grade 1–3, SY 2025–2026";
-        resultEl.dataset.verified = "true";
+      if (isSignUpMode) {
+        modalTitle.textContent = "Student Sign Up";
+        modalDesc.textContent = "Please enter your details and upload your Student ID:";
+        saveBtn.textContent = "Sign Up";
+        switchLink.textContent = "Sign In";
+        dropboxLabel.style.display = "block";
+        idUpload.style.display = "block";
+        filePreview.style.display = "block";
       } else {
-        let msg = "❌ Verification failed. ";
-        if (!isGradeOK) msg += "Student is not in Grade 1–3. ";
-        if (!isYearOK) msg += "ID not valid for SY 2025–2026.";
-        resultEl.textContent = msg;
-        resultEl.dataset.verified = "false";
+        modalTitle.textContent = "Student Sign In";
+        modalDesc.textContent = "Welcome back! Please enter your name and password:";
+        saveBtn.textContent = "Sign In";
+        switchLink.textContent = "Sign Up";
+        dropboxLabel.style.display = "none";
+        idUpload.style.display = "none";
+        filePreview.style.display = "none";
       }
-    } catch (err) {
-      resultEl.textContent = "❌ OCR failed: " + err.message;
-    }
-  });
 
-  // Sign Up / Sign In logic
-  saveBtn.addEventListener("click", () => {
-    const username = usernameInput.value.trim();
-    const password = passwordInput.value.trim();
+      lastnameInput.value = "";
+      firstnameInput.value = "";
+      middleinitialInput.value = "";
+      passwordInput.value = "";
+    });
 
-    if (!username || !password) {
-      alert("Please enter both username and password!");
-      return;
-    }
+    // === File upload preview ===
+    idUpload.addEventListener("change", () => {
+      const file = idUpload.files[0];
+      if (file) {
+        dropboxLabel.textContent = "✅ ID uploaded: " + file.name;
+        filePreview.innerHTML = `<p style="color:#2ecc71; font-weight:bold; margin-top:10px;">✅ Image uploaded successfully!</p>`;
+      } else {
+        dropboxLabel.textContent = "📁 Drop your ID here or click to upload";
+        filePreview.innerHTML = "";
+      }
+    });
 
-    if (isSignUpMode) {
-      const verified = resultEl.dataset.verified === "true";
-      if (!verified) return alert("Please complete ID verification first!");
+    // === SIGN UP ===
+    saveBtn.addEventListener("click", async () => {
+      const lastName = lastnameInput.value.trim();
+      const firstName = firstnameInput.value.trim();
+      const middleInitial = middleinitialInput.value.trim();
+      const password = passwordInput.value.trim();
+      const file = idUpload.files[0];
 
-      const users = JSON.parse(localStorage.getItem("users") || "[]");
-      if (users.find(u => u.username === username)) {
-        alert("Username already exists! Please sign in instead.");
+      if (!lastName || !firstName || !password) {
+        alert("Please fill in all required fields!");
         return;
       }
 
-      users.push({ username, password });
-      localStorage.setItem("users", JSON.stringify(users));
-      localStorage.setItem("currentUser", username);
+      // SIGN UP MODE
+      if (isSignUpMode) {
+        try {
+          // Fake email trick
+          const fakeEmail = `${lastName}_${firstName}@school.com`;
 
-      alert("✅ Sign Up successful! Welcome, " + username);
-      modal.classList.add("hidden");
-      updateGreeting();
+          // Create account in Firebase Auth
+          const userCredential = await auth.createUserWithEmailAndPassword(fakeEmail, password);
+          const user = userCredential.user;
 
-    } else {
-      // Sign In
-      const users = JSON.parse(localStorage.getItem("users") || "[]");
-      const user = users.find(u => u.username === username && u.password === password);
+          // Upload ID to Firebase Storage
+          let idUrl = "";
+          if (file) {
+            const ref = storage.ref(`studentIDs/${user.uid}-${file.name}`);
+            await ref.put(file);
+            idUrl = await ref.getDownloadURL();
+          }
 
-      if (user) {
-        localStorage.setItem("currentUser", username);
-        alert("✅ Sign In successful! Welcome back, " + username);
-        modal.classList.add("hidden");
-        updateGreeting();
+          // Save student info to Firestore
+          await db.collection("students").doc(user.uid).set({
+            lastName,
+            firstName,
+            middleInitial,
+            idUrl,
+            verified: false,
+            createdAt: new Date()
+          });
+
+          alert("✅ Sign-up successful! Waiting for teacher verification.");
+          modal.classList.add("hidden");
+        } catch (err) {
+          alert("❌ " + err.message);
+        }
       } else {
-        alert("❌ Invalid username or password!");
-      }
-    }
-  });
-});
+        // === SIGN IN ===
+        try {
+          const fakeEmail = `${lastName}_${firstName}@school.com`;
+          const userCredential = await auth.signInWithEmailAndPassword(fakeEmail, password);
+          const user = userCredential.user;
 
-function updateGreeting() {
-  const currentUser = localStorage.getItem("currentUser");
-  if (currentUser) {
-    console.log("Welcome, " + currentUser + "!");
-  }
-}
+          const doc = await db.collection("students").doc(user.uid).get();
+
+          if (doc.exists && doc.data().verified) {
+            alert(`✅ Welcome ${doc.data().firstName}! You are verified.`);
+            modal.classList.add("hidden");
+            // Redirect if needed:
+            // window.location.href = "student_dashboard.html";
+          } else {
+            alert("⏳ Your account is pending teacher verification.");
+          }
+        } catch (err) {
+          alert("❌ " + err.message);
+        }
+      }
+    });
+  });
 
 
 function showConfirmModal(title, message, onConfirm, onCancel) {
