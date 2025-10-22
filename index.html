@@ -59,9 +59,10 @@
     </div>
 
     <!-- TEACHER PAGE -->
-    <div id="teacherPage" class="page">
-        <h2>Teacher Dashboard</h2>
-        <div id="studentList">Loading students...</div>
+    <div id="teacherPage" style="display: none;">
+        <h2>👩‍🏫 Teacher Dashboard</h2>
+        <p>Pending student verifications:</p>
+        <ul id="studentList"></ul>
     </div>
 
 
@@ -568,6 +569,7 @@
         </footer>
     </div>
     <script type="module">
+    import { collection, getDocs, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import {
         getAuth,
@@ -646,26 +648,26 @@
         }
 
         try {
-            const fakeEmail = `${sanitize(lastName)}_${sanitize(firstName)}@school.com`;
-            const userCredential = await createUserWithEmailAndPassword(auth, fakeEmail, password);
-            const user = userCredential.user;
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
 
-            await setDoc(doc(db, "students", user.uid), {
+        await setDoc(doc(db, "students", user.uid), {
             lastName,
             firstName,
             middleInitial,
+            email,
             verified: false,
             createdAt: new Date(),
-            });
+        });
 
-            alert("✅ Student sign-up successful! Waiting for teacher verification.");
-            document.getElementById("usernameModal").style.display = "none";
+        alert("✅ Student sign-up successful! Waiting for teacher verification.");
+        document.getElementById("usernameModal").style.display = "none";
         } catch (err) {
-            alert("❌ " + err.message);
+        alert("❌ " + err.message);
         }
         }
 
-        // 🧩 SIGN IN
+        // SIGN IN
         else {
         if (!email || !password) {
             alert("⚠️ Please enter your email and password.");
@@ -679,6 +681,41 @@
             document.getElementById("usernameModal").style.display = "none";
             document.getElementById("teacherPage").style.display = "block";
             alert("👩‍🏫 Welcome, Teacher!");
+
+            const loadStudents = async () => {
+            const studentList = document.getElementById("studentList");
+            studentList.innerHTML = "Loading students...";
+
+            const q = query(collection(db, "students"), where("verified", "==", false));
+            const snapshot = await getDocs(q);
+
+            if (snapshot.empty) {
+                studentList.innerHTML = "<li>🎉 All students are verified!</li>";
+                return;
+            }
+
+            studentList.innerHTML = "";
+            snapshot.forEach((docSnap) => {
+                const data = docSnap.data();
+                const li = document.createElement("li");
+                li.innerHTML = `
+                ${data.firstName} ${data.lastName} (${data.middleInitial}) 
+                - <button class="verifyBtn" data-id="${docSnap.id}">Verify</button>
+                `;
+                studentList.appendChild(li);
+            });
+
+            // Add event listener to each button
+            document.querySelectorAll(".verifyBtn").forEach((btn) => {
+                btn.addEventListener("click", async () => {
+                const uid = btn.dataset.id;
+                await updateDoc(doc(db, "students", uid), { verified: true });
+                alert("✅ Student verified!");
+                loadStudents(); // reload list
+                });
+            });
+            };
+            loadStudents();
             return;
             }
 
