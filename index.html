@@ -17,10 +17,61 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
     <script type="module">
+        // Import Firebase SDKs (v9+ modular)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getStorage } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+
+        // --- Firebase config ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
+            authDomain: "mizuteku-3a441.firebaseapp.com",
+            projectId: "mizuteku-3a441",
+            storageBucket: "mizuteku-3a441.firebasestorage.app",
+            messagingSenderId: "473895456413",
+            appId: "1:473895456413:web:1452ef7b9860908dd78e74",
+            measurementId: "G-NTT38FCEKG"
+        };
+
+        // --- Initialize Firebase ---
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        // --- Example: Sign up button logic ---
+        const saveBtn = document.getElementById("saveUsername");
+        saveBtn.addEventListener("click", async () => {
+            const lastName = document.getElementById("lastnameInput").value.trim();
+            const firstName = document.getElementById("firstnameInput").value.trim();
+            const password = document.getElementById("passwordInput").value.trim();
+
+            if (!lastName || !firstName || !password) {
+            alert("Please fill in all required fields!");
+            return;
+            }
+
+            try {
+            const fakeEmail = `${lastName}_${firstName}@school.com`;
+
+            // ✅ Correct Firebase v9 method
+            const userCredential = await createUserWithEmailAndPassword(auth, fakeEmail, password);
+            const user = userCredential.user;
+
+            // Save student info
+            await setDoc(doc(db, "students", user.uid), {
+                lastName,
+                firstName,
+                verified: false,
+                createdAt: new Date()
+            });
+
+            alert("✅ Sign-up successful!");
+            } catch (err) {
+            alert("❌ " + err.message);
+            }
+        });
     </script>
 </head>
 <body>
