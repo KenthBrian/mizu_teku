@@ -1504,7 +1504,6 @@ const firebaseConfig = {
       middleinitialInput.style.display = "block";
       confirmPasswordInput.style.display = "block";
       emailInput.style.display = "block";
-      rememberInput.style.display = "none";
     } else {
       modalTitle.textContent = "Student Sign In";
       modalDesc.textContent = "Welcome back! Please enter your name and password:";
@@ -1514,7 +1513,6 @@ const firebaseConfig = {
       lastnameInput.style.display = "none";
       middleinitialInput.style.display = "none";
       confirmPasswordInput.style.display = "none";
-      rememberInput.style.display = "none";
     }
 
     lastnameInput.value = "";
