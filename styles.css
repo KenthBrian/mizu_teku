@@ -163,74 +163,78 @@ body {
         transform: rotate(45deg) translate(-5px, -6px);
     }
 
-/* ===== FULLSCREEN SIGNUP PAGE ===== */
-#signupPage {
+/* Username Popup */
+#usernameModal {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: linear-gradient(135deg, #ffffff, #e8f6ff);
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6); /* semi-transparent backdrop */
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1100;
   font-family: 'Chewy', sans-serif;
-  z-index: 1000;
 }
 
-/* Inner container */
-#signupPage .content {
-  background: white;
-  padding: 2.5rem 3rem;
-  border-radius: 20px;
-  width: 380px;
-  width: min(420px, 92%);
-  max-width: 90%;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+#usernameModal.hidden {
+  display: none;
+}
+
+#usernameModal .modal-content {
+  background: linear-gradient(135deg, #ffffff, #f0f9ff);
+  padding: 2rem 2.5rem;
+  border-radius: 25px;
   text-align: center;
+  width: 340px;
+  max-width: 90%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  animation: fadeInScale 0.3s ease;
   color: #2c3e50;
 }
 
-/* Title and description */
-#signupPage h2 {
+#usernameModal h2 {
   color: #3498db;
   margin-bottom: 0.5rem;
-  font-size: 1.8rem;
+  font-size: 1.7rem;
 }
 
-#signupPage p {
-  font-size: 1rem;
-  margin-bottom: 1.2rem;
+#usernameModal p {
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
 }
 
 /* ===== Inputs ===== */
-#signupPage input[type="text"],
-#signupPage input[type="password"] {
+#usernameModal input[type="text"],
+#usernameModal input[type="password"] {
   width: 100%;
   padding: 0.8rem;
   margin-bottom: 1rem;
   border: 2px solid #3498db;
-  border-radius: 10px;
+  border-radius: 12px;
   font-size: 1rem;
   outline: none;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  transition: border 0.3s ease, box-shadow 0.3s ease;
 }
 
-#signupPage input:focus {
+#usernameModal input[type="text"]:focus,
+#usernameModal input[type="password"]:focus {
   border-color: #2ecc71;
   box-shadow: 0 0 6px rgba(46, 204, 113, 0.5);
+  display: inline;
+  margin-right: 10px;
 }
 
 /* ===== Dropbox (upload area) ===== */
 .dropbox {
   display: block;
   border: 2px dashed #3498db;
-  border-radius: 12px;
-  padding: 1rem;
+  border-radius: 15px;
+  padding: 1.2rem;
   color: #3498db;
   cursor: pointer;
+  font-weight: bold;
   background-color: #f8fbff;
   transition: background-color 0.3s ease, border-color 0.3s ease;
   margin-bottom: 1rem;
@@ -241,14 +245,22 @@ body {
   border-color: #2ecc71;
 }
 
+#idUpload {
+  display: none; /* hidden actual input */
+}
+
+/* Preview area */
 #filePreview img {
   max-width: 100%;
   margin-top: 10px;
   border-radius: 10px;
+  border: 2px solid #d1ecf1;
 }
 
 /* ===== Buttons ===== */
-button {
+#scanIdBtn,
+#saveUsername {
+  display: block;
   width: 100%;
   background: linear-gradient(135deg, #3498db, #2ecc71);
   color: white;
@@ -262,21 +274,50 @@ button {
   margin-bottom: 0.8rem;
 }
 
-button:hover {
+#scanIdBtn:hover,
+#saveUsername:hover {
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
 }
 
+/* ===== OCR Result ===== */
+#ocrResult {
+  font-weight: bold;
+  margin-top: 0.8rem;
+  min-height: 1.2rem;
+  transition: color 0.3s ease;
+}
+
+#ocrResult[data-verified="true"] {
+  color: #27ae60; /* green */
+}
+
+#ocrResult[data-verified="false"] {
+  color: #e74c3c; /* red */
+}
+
 /* ===== Switch link ===== */
-#signupPage a {
+#usernameModal a {
   color: #3498db;
   text-decoration: none;
   font-weight: bold;
   transition: color 0.3s ease;
 }
 
-#signupPage a:hover {
+#usernameModal a:hover {
   color: #2ecc71;
+}
+
+/* ===== Animation ===== */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 /* Hero Section */
@@ -293,6 +334,8 @@ button:hover {
     overflow: hidden;
     border-radius: 20px;
 }
+
+
 
 .hero-title {
     font-size: 3.5rem;

@@ -451,6 +451,8 @@ function initializeDirtyGlassGame() {
     generateGlasses();
 }
 
+initializeDirtyGlassGame();
+
 // Quiz Game (Drag and Drop)
 function initializeQuiz() {
     let scenarios = document.querySelectorAll('.scenario-card');
@@ -1470,121 +1472,98 @@ const firebaseConfig = {
   const storage = firebase.storage();
 
   window.addEventListener("load", () => {
-  // Use the visible signup page instead of a non-existent modal ID
-  const signupPage = document.getElementById("signupPage");
-  if (!signupPage) {
-    console.warn("Signup page not found — skipping signup/signin initialization");
-    return;
-  }
+    const modal = document.getElementById("usernameModal");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalDesc = document.getElementById("modalDesc");
+    const saveBtn = document.getElementById("saveUsername");
+    const switchLink = document.getElementById("switchToSignIn");
 
-  const heading = signupPage.querySelector("h2");
-  const desc = signupPage.querySelector("p");
-  const saveBtn = document.getElementById("saveUsername");
-  const switchLink = document.getElementById("switchToSignIn");
+    const lastnameInput = document.getElementById("lastnameInput");
+    const firstnameInput = document.getElementById("firstnameInput");
+    const middleinitialInput = document.getElementById("middleinitialInput");
+    const passwordInput = document.getElementById("passwordInput");
+    const idUpload = document.getElementById("idUpload");
+    const dropboxLabel = document.getElementById("dropboxLabel");
+    const filePreview = document.getElementById("filePreview");
 
-  const lastnameInput = document.getElementById("lastnameInput");
-  const firstnameInput = document.getElementById("firstnameInput");
-  const middleinitialInput = document.getElementById("middleinitialInput");
-  const passwordInput = document.getElementById("passwordInput");
-  const idUpload = document.getElementById("idUpload");
-  const dropboxLabel = document.querySelector(".dropbox");
-  const filePreview = document.getElementById("filePreview");
+    let isSignUpMode = true;
 
-  if (!saveBtn || !switchLink || !lastnameInput || !firstnameInput || !passwordInput) {
-    console.warn("Signup/signin elements missing — aborting signup init");
-    return;
-  }
+    // Show modal when page loads
+    modal.classList.remove("hidden");
 
-  let isSignUpMode = true;
+    // === Switch between Sign Up and Sign In ===
+    switchLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      isSignUpMode = !isSignUpMode;
 
-  // Make sure signup page is visible (page may already be visible in HTML)
-  signupPage.style.display = "block";
+      if (isSignUpMode) {
+        modalTitle.textContent = "Student Sign Up";
+        modalDesc.textContent = "Please enter your details and upload your Student ID:";
+        saveBtn.textContent = "Sign Up";
+        switchLink.textContent = "Sign In";
+        dropboxLabel.style.display = "block";
+        idUpload.style.display = "block";
+        filePreview.style.display = "block";
+      } else {
+        modalTitle.textContent = "Student Sign In";
+        modalDesc.textContent = "Welcome back! Please enter your name and password:";
+        saveBtn.textContent = "Sign In";
+        switchLink.textContent = "Sign Up";
+        dropboxLabel.style.display = "none";
+        idUpload.style.display = "none";
+        filePreview.style.display = "none";
+      }
 
-  // Initialize UI text (keeps existing content if present)
-  function setSignUpUI() {
-    if (heading) heading.textContent = "Student Sign Up";
-    if (desc) desc.textContent = "Please enter your details and upload your Student ID:";
-    saveBtn.textContent = "Sign Up";
-    switchLink.textContent = "Sign In";
-    if (dropboxLabel) dropboxLabel.style.display = "block";
-    if (idUpload) idUpload.style.display = "block";
-    if (filePreview) filePreview.style.display = "block";
-  }
+      lastnameInput.value = "";
+      firstnameInput.value = "";
+      middleinitialInput.value = "";
+      passwordInput.value = "";
+    });
 
-  function setSignInUI() {
-    if (heading) heading.textContent = "Student Sign In";
-    if (desc) desc.textContent = "Welcome back! Please enter your name and password:";
-    saveBtn.textContent = "Sign In";
-    switchLink.textContent = "Sign Up";
-    if (dropboxLabel) dropboxLabel.style.display = "none";
-    if (idUpload) idUpload.style.display = "none";
-    if (filePreview) filePreview.style.display = "none";
-  }
-
-  setSignUpUI();
-
-  // Switch between Sign Up and Sign In
-  switchLink.addEventListener("click", (e) => {
-    e.preventDefault();
-    isSignUpMode = !isSignUpMode;
-
-    // Clear fields
-    lastnameInput.value = "";
-    firstnameInput.value = "";
-    middleinitialInput.value = "";
-    passwordInput.value = "";
-    if (idUpload) idUpload.value = "";
-    if (dropboxLabel) dropboxLabel.textContent = "📁 Drop your ID here or click to upload";
-    if (filePreview) filePreview.innerHTML = "";
-
-    if (isSignUpMode) setSignUpUI(); else setSignInUI();
-  });
-
-  // File upload preview
-  if (idUpload) {
+    // === File upload preview ===
     idUpload.addEventListener("change", () => {
       const file = idUpload.files[0];
       if (file) {
-        if (dropboxLabel) dropboxLabel.textContent = "✅ ID uploaded: " + file.name;
-        if (filePreview)
-          filePreview.innerHTML = `<p style="color:#2ecc71; font-weight:bold; margin-top:10px;">✅ Image uploaded successfully!</p>`;
+        dropboxLabel.textContent = "✅ ID uploaded: " + file.name;
+        filePreview.innerHTML = `<p style="color:#2ecc71; font-weight:bold; margin-top:10px;">✅ Image uploaded successfully!</p>`;
       } else {
-        if (dropboxLabel) dropboxLabel.textContent = "📁 Drop your ID here or click to upload";
-        if (filePreview) filePreview.innerHTML = "";
+        dropboxLabel.textContent = "📁 Drop your ID here or click to upload";
+        filePreview.innerHTML = "";
       }
     });
-  }
 
-  // SIGN UP / SIGN IN handler
-  saveBtn.addEventListener("click", async () => {
-    const lastName = lastnameInput.value.trim();
-    const firstName = firstnameInput.value.trim();
-    const middleInitial = middleinitialInput.value.trim();
-    const password = passwordInput.value.trim();
-    const file = idUpload ? idUpload.files[0] : null;
+    // === SIGN UP ===
+    saveBtn.addEventListener("click", async () => {
+      const lastName = lastnameInput.value.trim();
+      const firstName = firstnameInput.value.trim();
+      const middleInitial = middleinitialInput.value.trim();
+      const password = passwordInput.value.trim();
+      const file = idUpload.files[0];
 
-    if (!lastName || !firstName || !password) {
-      alert("Please fill in all required fields!");
-      return;
-    }
+      if (!lastName || !firstName || !password) {
+        alert("Please fill in all required fields!");
+        return;
+      }
 
-    if (isSignUpMode) {
-      try {
-        const fakeEmail = `${lastName}_${firstName}@school.com`;
+      // SIGN UP MODE
+      if (isSignUpMode) {
+        try {
+          // Fake email trick
+          const fakeEmail = `${lastName}_${firstName}@school.com`;
 
-        const userCredential = await auth.createUserWithEmailAndPassword(fakeEmail, password);
-        const user = userCredential.user;
+          // Create account in Firebase Auth
+          const userCredential = await auth.createUserWithEmailAndPassword(fakeEmail, password);
+          const user = userCredential.user;
 
-        // Upload ID to Firebase Storage (if provided)
-        let idUrl = "";
-        if (file && storage) {
-          const ref = storage.ref(`studentIDs/${user.uid}-${file.name}`);
-          await ref.put(file);
-          idUrl = await ref.getDownloadURL();
-        }
+          // Upload ID to Firebase Storage
+          let idUrl = "";
+          if (file) {
+            const ref = storage.ref(`studentIDs/${user.uid}-${file.name}`);
+            await ref.put(file);
+            idUrl = await ref.getDownloadURL();
+          }
 
-        // Save student info to Firestore
-        if (db) {
+          // Save student info to Firestore
           await db.collection("students").doc(user.uid).set({
             lastName,
             firstName,
@@ -1593,56 +1572,36 @@ const firebaseConfig = {
             verified: false,
             createdAt: new Date()
           });
+
+          alert("✅ Sign-up successful! Waiting for teacher verification.");
+          modal.classList.add("hidden");
+        } catch (err) {
+          alert("❌ " + err.message);
         }
+      } else {
+        // === SIGN IN ===
+        try {
+          const fakeEmail = `${lastName}_${firstName}@school.com`;
+          const userCredential = await auth.signInWithEmailAndPassword(fakeEmail, password);
+          const user = userCredential.user;
 
-        alert("✅ Sign-up successful! Waiting for teacher verification.");
-        // Hide signup area after success
-        signupPage.style.display = "none";
-      } catch (err) {
-        alert("❌ " + (err && err.message ? err.message : String(err)));
-      }
-    } else {
-      // SIGN IN
-      try {
-        const fakeEmail = `${lastName}_${firstName}@school.com`;
-        const userCredential = await auth.signInWithEmailAndPassword(fakeEmail, password);
-        const user = userCredential.user;
-
-        if (db) {
-        const doc = await db.collection("students").doc(user.uid).get();
-
-        // Hide main navigation while the signup/signin page is visible
-        const navEl =
-            document.querySelector('nav') ||
-            document.querySelector('.navbar') ||
-            document.querySelector('.nav-right') ||
-            document.querySelector('.header');
-
-        if (signupPage && signupPage.style.display !== 'none') {
-            if (navEl) navEl.style.display = 'none';
-        }
-
-        // If the user is already verified (successful sign-in), restore the nav immediately
-        if (doc.exists && doc.data().verified) {
-            if (navEl) navEl.style.display = ''; // restore to stylesheet default
-        }
+          const doc = await db.collection("students").doc(user.uid).get();
 
           if (doc.exists && doc.data().verified) {
             alert(`✅ Welcome ${doc.data().firstName}! You are verified.`);
-            signupPage.style.display = "none";
+            modal.classList.add("hidden");
+            // Redirect if needed:
+            // window.location.href = "student_dashboard.html";
           } else {
             alert("⏳ Your account is pending teacher verification.");
           }
-        } else {
-          alert("✅ Signed in (no Firestore available to check verification).");
-          signupPage.style.display = "none";
+        } catch (err) {
+          alert("❌ " + err.message);
         }
-      } catch (err) {
-        alert("❌ " + (err && err.message ? err.message : String(err)));
       }
-    }
+    });
   });
-});
+
 
 function showConfirmModal(title, message, onConfirm, onCancel) {
   const modal = document.getElementById("confirmModal");
