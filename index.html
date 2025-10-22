@@ -31,6 +31,35 @@
       </div>
     </div>
 
+    <!-- LOG IN PAGE -->
+    <div id="signupPage">
+        <h2>Student Sign Up</h2>
+        <p>Please enter your details and upload your Student ID:</p>
+
+        <input type="text" id="lastnameInput" placeholder="Enter your last name">
+        <input type="text" id="firstnameInput" placeholder="Enter your first name">
+        <input type="text" id="middleinitialInput" placeholder="Enter your middle initial">
+        <input type="password" id="passwordInput" placeholder="Enter your password">
+
+        <label for="idUpload" class="dropbox">📁 Drop your ID here or click to upload</label>
+        <input type="file" id="idUpload" accept="image/*" hidden>
+        <div id="filePreview"></div>
+
+        <button id="verifyBtn">Verify ID</button>
+        <button id="saveUsername">Sign Up</button>
+
+        <p>Already have an account? <a href="#" id="switchToSignIn">Sign In</a></p>
+    </div>
+
+    <!-- TEACHER PAGE -->
+    <div id="teacherPage" class="page">
+        <h2>Teacher Dashboard</h2>
+        <div id="studentList">Loading students...</div>
+        <br>
+        <button onclick="showPage('homePage')">Back</button>
+    </div>
+
+    <!-- STUDENT PAGE -->
     <!-- Navigation Bar -->
     <nav class="navbar">
         <div class="nav-container">
@@ -69,57 +98,6 @@
         </div>
     </nav>
 
-    <!-- LOG IN PAGE -->
-    <div id="homePage" class="page active">
-        <button onclick="showPage('studentPage')">Student</button>
-        <button onclick="showPage('teacherPage')">Teacher</button>
-
-        <!-- Username Popup -->
-        <div id="usernameModal" class="modal hidden">
-        <div class="modal-content">
-        <h2 id="modalTitle">Student Sign Up</h2>
-        <p id="modalDesc">Please enter your details and upload your Student ID:</p>
-    
-        <!-- Username input -->
-        <input type="text" id="lastnameInput" placeholder="Enter your last name">
-        <input type="text" id="firstnameInput" placeholder="Enter your first name">
-        <input type="text" id="middleinitialInput" placeholder="Enter your middle initial">
-    
-        <!-- Password input -->
-        <input type="password" id="passwordInput" placeholder="Enter your password">
-    
-        <!-- ID upload area -->
-        <label for="idUpload" id="dropboxLabel" class="dropbox">📁 Drop your ID here or click to upload</label>
-        <input type="file" id="idUpload" accept="image/*" hidden>
-        <div id="filePreview"></div>
-    
-        <!-- OCR scan + status -->
-        <button id="scanIdBtn">Verify ID</button>
-        <p id="ocrResult"></p>
-    
-        <!-- Save user -->
-        <button id="saveUsername">Sign Up</button>
-    
-        <!-- Switch link -->
-        <p style="margin-top:10px;">
-          Already have an account?
-          <a href="#" id="switchToSignIn">Sign In</a>
-        </p>
-      </div>
-    </div>
-
-    </div>
-
-    <!-- TEACHER PAGE -->
-    <div id="teacherPage" class="page">
-        <h2>Teacher Dashboard</h2>
-        <div id="studentList">Loading students...</div>
-        <br>
-        <button onclick="showPage('homePage')">Back</button>
-    </div>
-
-
-    <!-- STUDENT PAGE -->
     <div id="studentPage" class="page">
         <!-- Home Section -->
         <section id="home" class="hero-section">
