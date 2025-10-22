@@ -199,7 +199,6 @@ document.addEventListener("DOMContentLoaded", function () {
     initializeHamburgerMenu();
     initializeGameResets();
     initializeBadges();
-    initializeClearData();
 });
 
 function initializeLanguageSwitcher() {
