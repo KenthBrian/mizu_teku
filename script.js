@@ -1525,7 +1525,7 @@ export function initializeClearData(currentLanguage = "en") {
                 : "Gusto mo bang mag-sign out sa iyong account?",
             async () => {
                 try {
-                    await signOut(auth); // ✅ auth is defined now
+                    await signOut(auth); // ✅ auth is defined
 
                     localStorage.removeItem("rememberedEmail");
 
@@ -1538,9 +1538,11 @@ export function initializeClearData(currentLanguage = "en") {
                             : "Babalik sa login..."
                     );
 
+                    // Redirect to login page instead of reload
                     setTimeout(() => {
-                        location.reload();
+                        window.location.href = 'index.html';
                     }, 1000);
+
                 } catch (error) {
                     console.error("❌ Sign out failed:", error);
                     showAlertModal(
