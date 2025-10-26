@@ -235,7 +235,7 @@ export function switchLanguage(lang) {
 }
 
 // Facts Slider
-export function initializeFactsSlider() {
+function initializeFactsSlider() {
     const factCards = document.querySelectorAll('.fact-card');
     
     setInterval(() => {
@@ -1487,7 +1487,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-export function showConfirmModal(title, message, onConfirm, onCancel) {
+function showConfirmModal(title, message, onConfirm, onCancel) {
   const modal = document.getElementById("confirmModal");
   const modalTitle = document.getElementById("confirmModalTitle");
   const modalMessage = document.getElementById("confirmModalMessage");

@@ -220,6 +220,7 @@ loginBtn.addEventListener("click", async () => {
   const password = passwordInput.value.trim();
 
   if (isSignUpMode) {
+    // --- SIGN UP MODE ---
     const lastName = lastnameInput.value.trim();
     const firstName = firstnameInput.value.trim();
     const middleInitial = middleinitialInput.value.trim();
@@ -236,21 +237,11 @@ loginBtn.addEventListener("click", async () => {
     }
 
     try {
-      // Create user
+      // --- Create Firebase Auth user ---
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // Save student data
-      await setDoc(doc(collection(db, "verificationRequests")), {
-        studentId: user.uid,
-        firstName: firstName,
-        middleInitial: middleInitial,
-        lastName: lastName,
-        status: "pending",
-        createdAt: new Date()
-      });
-
-      // --- Send verification request to teacher collection ---
+      // --- Add verification request only ---
       await addDoc(collection(db, "verificationRequests"), {
         studentId: user.uid,
         lastName,
@@ -262,12 +253,13 @@ loginBtn.addEventListener("click", async () => {
       });
 
       alert("✅ Sign-up successful! Your verification request has been sent to the teacher.");
-      toggleLink.click(); // Switch to Sign In
+      toggleLink.click(); // Switch to Sign In form
     } catch (err) {
       alert("❌ " + err.message);
     }
+
   } else {
-    // --- Sign In Logic ---
+    // --- SIGN IN MODE ---
     if (!email || !password) {
       alert("⚠️ Please enter your email and password.");
       return;
@@ -278,12 +270,16 @@ loginBtn.addEventListener("click", async () => {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
+      // --- Teacher Login ---
       if (email === "mizutekuteacher@gmail.com") {
         window.location.href = "teacher.html";
         return;
       }
 
-      const studentDoc = await getDoc(doc(db, "students", user.uid));
+      // --- Student Login ---
+      const studentRef = doc(db, "students", user.uid);
+      const studentDoc = await getDoc(studentRef);
+
       if (studentDoc.exists()) {
         const data = studentDoc.data();
         if (data.verified) {
@@ -292,7 +288,8 @@ loginBtn.addEventListener("click", async () => {
           alert("⏳ Your account is still waiting for teacher verification.");
         }
       } else {
-        alert("❌ Student record not found!");
+        // Not verified yet
+        alert("⏳ Your account has not been verified by the teacher yet.");
       }
     } catch (err) {
       alert("❌ " + err.message);
