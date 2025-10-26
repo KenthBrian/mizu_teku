@@ -249,7 +249,7 @@ header {
     studentList.innerHTML = "Loading verification requests...";
     
     // Load all pending verification requests
-    const q = query(collection(db, "verificationRequests"), where("status", "==", "pending"));
+    const q = query(collection(db, "verificationRequests"), where("status", "==", "pending"))
     const snapshot = await getDocs(q);
 
     if (snapshot.empty) {

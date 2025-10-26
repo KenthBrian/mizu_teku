@@ -241,13 +241,13 @@ loginBtn.addEventListener("click", async () => {
       const user = userCredential.user;
 
       // Save student data
-      await setDoc(doc(db, "students", user.uid), {
-        lastName,
-        firstName,
-        middleInitial,
-        email,
-        verified: false,
-        createdAt: serverTimestamp(),
+      await setDoc(doc(collection(db, "verificationRequests")), {
+        studentId: user.uid,
+        firstName: firstName,
+        middleInitial: middleInitial,
+        lastName: lastName,
+        status: "pending",
+        createdAt: new Date()
       });
 
       // --- Send verification request to teacher collection ---
