@@ -17,7 +17,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
 </head>
-<body>
+<body data-page="student">
 
     <!-- Confirm Modal -->
     <div id="confirmModal" class="modal">
@@ -68,6 +68,11 @@
                 </div>
             </div>
         </nav>
+
+        <div id="mascot-container">
+            <div id="mascot-tip"></div> <!-- Tip above mascot -->
+            <img id="mascot-img" src="attached_assets/images/aquaneutral.png" alt="Mascot">
+        </div>
 
         <!-- Home Section -->
         <section id="home" class="hero-section">
@@ -529,8 +534,10 @@
                 </div>
             </div>
         </footer>
-    <script type="module" src="script.js"></script>
-    <script type="module">
+    <script type="module" src="script.js">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    </script>
+    <script type="module" defer>
         
     import { initializeClearData, 
         initializeLanguageSwitcher,
@@ -542,7 +549,10 @@
     initializeNavigation,
     initializeHamburgerMenu,
     initializeGameResets,
-    initializeBadges,
+    initializeBadges, showVideo, 
+    closeVideo, downloadPoster, 
+    downloadWorksheet, downloadCertificate, 
+    generateCertificate,
      } from "./script.js";
 
     // Optional: set current language

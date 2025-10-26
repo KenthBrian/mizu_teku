@@ -1,12 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Teacher Dashboard</title>
-  <link rel="icon" href="attached_assets/images/logo.png" type="image/x-icon" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MizuTeku - Teacher Dashboard</title>
+    <link rel="icon" href="attached_assets/images/logo.png" type="image/x-icon">
+    <link rel="shortcut icon" href="attached_assets/images/logo.png" type="image/x-icon">
+    <link rel="apple-touch-icon" href="attached_assets/images/logo.png">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
   <style>
     ::-webkit-scrollbar {
     display: none;
@@ -301,10 +310,246 @@
         font-size: 1.2rem;
     }
   }
+
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,123,255,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: #e6f7ff;
+    border: 3px solid #00aaff;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 480px;
+    padding: 25px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    animation: fadeIn 0.3s ease-in-out;
+    font-family: 'Chewy', sans-serif;
+    position: relative;
+}
+
+.close-btn {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #005577;
+}
+
+    .close-btn:hover {
+        color: #ff4444;
+    }
+
+#tipsTitle {
+    font-size: 22px;
+    color: #005577;
+    margin-bottom: 15px;
+}
+
+.tips-body ul {
+    list-style-type: "🧼 ";
+    padding-left: 15px;
+    text-align: left;
+}
+
+.tips-body li {
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: #003344;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+#alertModal.hidden {
+    display: none;
+}
+
+#alertModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 123, 255, 0.25); /* backdrop */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+#alertModal .modal-content {
+    background: linear-gradient(135deg, #ffffff, #f0f9ff); /* soft gradient */
+    padding: 2rem;
+    border-radius: 20px;
+    text-align: center;
+    width: 320px;
+    max-width: 90%;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    font-family: 'Chewy', sans-serif;
+    color: #2c3e50;
+    animation: fadeInScale 0.3s ease;
+    position: relative;
+}
+
+#alertModal .modal-content h2 {
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+    color: #3498db;
+}
+
+#alertModal .modal-content p {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+#alertModal .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #3498db;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+#alertModal .close-btn:hover {
+    color: #e74c3c;
+    transform: scale(1.2);
+}
+
+/* Smooth popup animation */
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Confirm Modal (same style as Alert) */
+#confirmModal {
+  display: none; /* hidden by default */
+  position: fixed;
+  z-index: 1100;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+}
+
+#confirmModal .modal-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  width: 320px;
+  max-width: 90%;
+  text-align: center;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+}
+
+#confirmModal h2 {
+  margin-top: 0;
+  font-size: 1.3rem;
+  color: #333;
+}
+
+#confirmModal p {
+  margin: 12px 0;
+  font-size: 1rem;
+  color: #555;
+}
+
+.modal-buttons {
+  margin-top: 16px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.modal-buttons .yes-btn,
+.modal-buttons .no-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background 0.2s ease-in-out;
+}
+
+.modal-buttons .yes-btn {
+  background: #4caf50;
+  color: #fff;
+}
+
+.modal-buttons .yes-btn:hover {
+  background: #45a049;
+}
+
+.modal-buttons .no-btn {
+  background: #f44336;
+  color: #fff;
+}
+
+.modal-buttons .no-btn:hover {
+  background: #d32f2f;
+}
   </style>
 </head>
 
-<body>
+<body data-page="teacher">
+
+  <!-- Confirm Modal -->
+    <div id="confirmModal" class="modal">
+      <div class="modal-content">
+        <h2 id="confirmModalTitle">Are you sure?</h2>
+        <p id="confirmModalMessage">Do you want to proceed?</p>
+        <div class="modal-buttons">
+          <button id="confirmYesBtn" class="yes-btn">Yes</button>
+          <button id="confirmNoBtn" class="no-btn">No</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alert Modal -->
+      <div id="alertModal" class="hidden">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeAlert()">&times;</span>
+            <h2 id="alertModalTitle"></h2>
+            <p id="alertModalMessage"></p>
+        </div>
+      </div>
 
 <!-- Navigation Bar -->
         <nav class="navbar">
@@ -325,8 +570,8 @@
                 <div class="nav-right">
                     <ul class="nav-menu" id="nav-menu">
                         <li><a href="#home" data-en="Home" data-tl="Tahanan">Home</a></li>
-                        <li><a href="#students" data-en="Students" data-tl="Mga Mag-aaral">Students</a></li>
-                        <li><a href="#reports" data-en="Reports" data-tl="Mga Ulat">Reports</a></li>
+                        <li><a href="#verification" data-en="Verification" data-tl="Mga Mag-aaral">Students</a></li>
+                        <li><a href="#students" data-en="Students" data-tl="Mga Ulat">Reports</a></li>
                         <li><a href="#settings" data-en="Settings" data-tl="Mga Setting">Settings</a></li>
                         <li><a href="#about" data-en="About" data-tl="Tungkol">About</a></li>
                     </ul>
@@ -352,8 +597,8 @@
       </p>
     </section>
 
-    <!-- STUDENTS SECTION -->
-    <section id="students">
+    <!-- VERIFICATION SECTION -->
+    <section id="verification">
       <h2>Students for Verification</h2>
       <table class="student-list">
         <thead>
@@ -370,15 +615,29 @@
       </table>
     </section>
 
+    <!-- STUDENTS SECTION -->
+    <section id="students">
+      <h2>Verified Students</h2>
+      <table id="studentTable" border="1" style="border-collapse: collapse; width: 100%;">
+        <thead>
+          <tr>
+            <th>First Name</th>
+            <th>Middle Initial</th>
+            <th>Last Name</th>
+            <th>Email</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="4">Loading...</td>
+          </tr>
+        </tbody>
+      </table>
+</section>
+
     <!-- REPORTS SECTION -->
     <section id="reports">
       <h2>Reports</h2>
-      <p>Future feature: View verification logs, activity summaries, and statistics here.</p>
-    </section>
-
-    <!-- SETTINGS SECTION -->
-    <section id="settings">
-      <h2>Settings</h2>
       <p>Configure dashboard preferences or teacher account options.</p>
     </section>
 
@@ -388,189 +647,352 @@
       <p>This dashboard is designed for teachers to manage student verifications easily and securely.</p>
     </section>
   </main>
-
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, collection, getDocs, query, where, updateDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { 
+    getAuth, 
+    onAuthStateChanged, 
+    signOut 
+  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { 
+    getFirestore, 
+    collection, 
+    getDocs, 
+    getDoc, 
+    setDoc,
+    query, 
+    where, 
+    updateDoc, 
+    deleteDoc, 
+    doc,
+    serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // Firebase Config
-    const firebaseConfig = {
-      apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
-      authDomain: "mizuteku-3a441.firebaseapp.com",
-      projectId: "mizuteku-3a441",
-      storageBucket: "mizuteku-3a441.firebasestorage.app",
-      messagingSenderId: "473895456413",
-      appId: "1:473895456413:web:1452ef7b9860908dd78e74",
-      measurementId: "G-NTT38FCEKG"
+  // --- Firebase Config ---
+  const firebaseConfig = {
+    apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
+    authDomain: "mizuteku-3a441.firebaseapp.com",
+    projectId: "mizuteku-3a441",
+    storageBucket: "mizuteku-3a441.firebasestorage.app",
+    messagingSenderId: "473895456413",
+    appId: "1:473895456413:web:1452ef7b9860908dd78e74",
+    measurementId: "G-NTT38FCEKG"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  const studentTable = document.getElementById("studentTable");
+
+  document.addEventListener("DOMContentLoaded", () => {
+    initializeHamburgerMenu();
+    initializeNavigation();
+    initializeLanguageSwitcher();
+  });
+
+  // --- Navigation Scroll ---
+  function initializeNavigation() {
+    const navLinks = document.querySelectorAll(".nav-menu a");
+    navLinks.forEach(link => {
+      link.addEventListener("click", e => {
+        e.preventDefault();
+        const targetId = link.getAttribute("href");
+        const targetElement = document.querySelector(targetId);
+        if (targetElement) {
+          targetElement.scrollIntoView({ behavior: "smooth" });
+        }
+      });
+    });
+  }
+
+  // --- Hamburger Menu ---
+  function initializeHamburgerMenu() {
+    const hamburger = document.getElementById("hamburger");
+    const navRight = document.querySelector(".nav-right");
+    const navLinks = document.querySelectorAll(".nav-menu a");
+    
+    hamburger.addEventListener("click", () => {
+      hamburger.classList.toggle("active");
+      navRight.classList.toggle("active");
+    });
+    
+    navLinks.forEach(link => {
+      link.addEventListener("click", () => {
+        hamburger.classList.remove("active");
+        navRight.classList.remove("active");
+      });
+    });
+    
+    document.addEventListener("click", (e) => {
+      if (!hamburger.contains(e.target) && !navRight.contains(e.target)) {
+        hamburger.classList.remove("active");
+        navRight.classList.remove("active");
+      }
+    });
+  }
+
+  function showConfirmModal(title, message, onConfirm, onCancel) {
+    const modal = document.getElementById("confirmModal");
+    const modalTitle = document.getElementById("confirmModalTitle");
+    const modalMessage = document.getElementById("confirmModalMessage");
+    const yesBtn = document.getElementById("confirmYesBtn");
+    const noBtn = document.getElementById("confirmNoBtn");
+
+    modalTitle.textContent = title;
+    modalMessage.textContent = message;
+    modal.style.display = "flex";
+
+    yesBtn.onclick = null;
+    noBtn.onclick = null;
+
+    yesBtn.onclick = () => {
+      modal.style.display = "none";
+      if (onConfirm) onConfirm();
     };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    noBtn.onclick = () => {
+      modal.style.display = "none";
+      if (onCancel) onCancel();
+    };
+  }
 
-    const studentTable = document.getElementById("studentTable");
-    const signOutBtn = document.getElementById("clearDataBtn");
+  let _alertQueue = [];
+  let _isAlertOpen = false;
 
-    document.addEventListener('DOMContentLoaded', initializeHamburgerMenu);
-
-    function initializeNavigation() {
-        const ctaButton = document.querySelector('.cta-button');
-        const navLinks = document.querySelectorAll('.nav-menu a');
-        
-        ctaButton.addEventListener('click', () => {
-            document.getElementById('home').scrollIntoView({ behavior: 'smooth' });
-            document.getElementById('students').scrollIntoView({ behavior: 'smooth' });
-            document.getElementById('reports').scrollIntoView({ behavior: 'smooth' });
-            document.getElementById('settings').scrollIntoView({ behavior: 'smooth' });
-            document.getElementById('about').scrollIntoView({ behavior: 'smooth' });
-        });
-        
-        navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const targetId = link.getAttribute('href');
-                const targetElement = document.querySelector(targetId);
-                if (targetElement) {
-                    targetElement.scrollIntoView({ behavior: 'smooth' });
-                }
-            });
-        });
+  function showAlertModal(title = '', message = '', callback = null) {
+    const modal = document.getElementById('alertModal');
+    if (!modal) {
+      console.warn('showAlertModal: #alertModal not found');
+      if (callback) callback();
+      return;
     }
 
-    // Hamburger Menu
-    function initializeHamburgerMenu() {
-        const hamburger = document.getElementById('hamburger');
-        const navRight = document.querySelector('.nav-right');
-        const navLinks = document.querySelectorAll('.nav-menu a');
-        
-        hamburger.addEventListener('click', () => {
-            hamburger.classList.toggle('active');
-            navRight.classList.toggle('active');
-        });
-        
-        navLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                hamburger.classList.remove('active');
-                navRight.classList.remove('active');
-            });
-        });
-        
-        document.addEventListener('click', (e) => {
-            if (!hamburger.contains(e.target) && !navRight.contains(e.target)) {
-                hamburger.classList.remove('active');
-                navRight.classList.remove('active');
-            }
-        });
+    // If another alert is open, enqueue this one
+    if (_isAlertOpen) {
+      _alertQueue.push({ title, message, callback });
+      console.log('showAlertModal: queued:', title);
+      return;
     }
 
-    // Load Students
-    async function loadStudents() {
-      studentTable.innerHTML = `<tr><td colspan="4" style="text-align:center;">Loading...</td></tr>`;
-      const q = query(collection(db, "verificationRequests"), where("status", "==", "pending"));
+    console.log('showAlertModal: showing:', title);
+    // Fill contents
+    const titleEl = document.getElementById('alertModalTitle');
+    const msgEl = document.getElementById('alertModalMessage');
+    if (titleEl) titleEl.innerText = title;
+    if (msgEl) msgEl.innerText = message;
+
+    // Attach callback to modal instance
+    modal._alertCallback = typeof callback === 'function' ? callback : null;
+
+    // Show
+    modal.classList.remove('hidden');
+    modal.setAttribute('aria-hidden', 'false');
+    _isAlertOpen = true;
+
+    // optional: focus close button for accessibility
+    const closeBtn = modal.querySelector('.close-btn');
+    if (closeBtn) closeBtn.focus();
+  }
+
+  function closeAlert() {
+    const modal = document.getElementById('alertModal');
+    if (!modal) return;
+
+    // hide modal first (so UI updates)
+    modal.classList.add('hidden');
+    modal.setAttribute('aria-hidden', 'true');
+
+    // run callback if provided
+    const cb = modal._alertCallback;
+    modal._alertCallback = null;
+    _isAlertOpen = false;
+
+    if (typeof cb === 'function') {
+      try {
+        console.log('closeAlert: running callback');
+        cb();
+      } catch (err) {
+        console.error('closeAlert: callback error', err);
+      }
+    }
+
+    if (_alertQueue.length > 0) {
+      const next = _alertQueue.shift();
+      setTimeout(() => {
+        showAlertModal(next.title, next.message, next.callback);
+      }, 120);
+    }
+  }
+
+  window.addEventListener('click', function (event) {
+    const modal = document.getElementById('alertModal');
+    if (!modal) return;
+    if (event.target === modal) closeAlert();
+  });
+
+  window.addEventListener('keydown', function (e) {
+    const modal = document.getElementById('alertModal');
+    if (!modal || modal.classList.contains('hidden')) return;
+    if (e.key === 'Escape') closeAlert();
+  });
+
+  // --- Load Students ---
+  async function loadStudents() {
+    studentTable.innerHTML = `<tr><td colspan="4" style="text-align:center;">Loading...</td></tr>`;
+    const q = query(collection(db, "verificationRequests"), where("status", "==", "pending"));
+    const snapshot = await getDocs(q);
+
+    if (snapshot.empty) {
+      studentTable.innerHTML = `<tr><td colspan="4" style="text-align:center;">🎉 No pending verification requests!</td></tr>`;
+      return;
+    }
+
+    studentTable.innerHTML = "";
+    snapshot.forEach((docSnap) => {
+      const data = docSnap.data();
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${data.firstName} ${data.middleInitial || ""}. ${data.lastName}</td>
+        <td>${data.grade || "N/A"}</td>
+        <td class="status">Pending</td>
+        <td>
+          <button class="verify-btn" data-id="${data.studentId}" data-req="${docSnap.id}">Verify</button>
+          <button class="reject-btn" data-id="${data.studentId}" data-req="${docSnap.id}">Reject</button>
+        </td>`;
+      studentTable.appendChild(row);
+    });
+
+    // --- Verify Logic ---
+    document.querySelectorAll(".verify-btn").forEach(btn => {
+      btn.onclick = async () => {
+        const studentId = btn.dataset.id;
+        const requestId = btn.dataset.req;
+
+        try {
+          const requestRef = doc(db, "verificationRequests", requestId);
+          const requestSnap = await getDoc(requestRef);
+
+          if (!requestSnap.exists()) {
+            alert("❌ Verification request not found.");
+            return;
+          }
+
+          const requestData = requestSnap.data();
+
+          await setDoc(doc(db, "students", studentId), {
+            studentId,
+            firstName: requestData.firstName,
+            middleInitial: requestData.middleInitial,
+            lastName: requestData.lastName,
+            email: requestData.email,
+            verified: true,
+            createdAt: requestData.requestedAt || serverTimestamp(),
+            verifiedAt: serverTimestamp()
+          });
+
+          await updateDoc(requestRef, { status: "approved" });
+
+          alert("✅ Student verified and added to the students collection.");
+          loadStudents();
+        } catch (err) {
+          console.error(err);
+          alert("❌ Failed to verify student: " + err.message);
+        }
+      };
+    });
+
+    // --- Reject Logic ---
+    document.querySelectorAll(".reject-btn").forEach(btn => {
+      btn.onclick = async () => {
+        const studentId = btn.dataset.id;
+        const requestId = btn.dataset.req;
+        try {
+          await updateDoc(doc(db, "verificationRequests", requestId), { status: "rejected" });
+          await deleteDoc(doc(db, "students", studentId));
+          alert("❌ Student request rejected.");
+          loadStudents();
+        } catch (err) {
+          console.error(err);
+          alert("❌ Failed to reject student: " + err.message);
+        }
+      };
+    });
+  }
+
+  // --- Language Switcher ---
+  function initializeLanguageSwitcher() {
+    const enBtn = document.getElementById("lang-en");
+    const tlBtn = document.getElementById("lang-tl");
+
+    enBtn.addEventListener("click", () => switchLanguage("en"));
+    tlBtn.addEventListener("click", () => switchLanguage("tl"));
+  }
+
+  function switchLanguage(lang) {
+    document.getElementById("lang-en").classList.toggle("active", lang === "en");
+    document.getElementById("lang-tl").classList.toggle("active", lang === "tl");
+
+    document.querySelectorAll("[data-en]").forEach(el => {
+      const text = el.getAttribute(`data-${lang}`);
+      if (text) el.textContent = text;
+    });
+  }
+
+  // --- Auth State ---
+  onAuthStateChanged(auth, (user) => {
+    if (!user || user.email !== "mizutekuteacher@gmail.com") {
+      window.location.href = "index.html";
+    } else {
+      loadStudents();
+    }
+  });
+
+  const studentTableBody = document.querySelector("#studentTable tbody");
+
+  // --- Fetch Verified Students ---
+  async function loadVerifiedStudents() {
+    studentTableBody.innerHTML = '<tr><td colspan="4">Loading...</td></tr>';
+    try {
+      const q = query(collection(db, "students"), where("verified", "==", true));
       const snapshot = await getDocs(q);
 
       if (snapshot.empty) {
-        studentTable.innerHTML = `<tr><td colspan="4" style="text-align:center;">🎉 No pending verification requests!</td></tr>`;
+        studentTableBody.innerHTML = '<tr><td colspan="4">No verified students yet.</td></tr>';
         return;
       }
 
-      studentTable.innerHTML = "";
-      snapshot.forEach((docSnap) => {
-        const data = docSnap.data();
+      studentTableBody.innerHTML = "";
+      snapshot.forEach((doc) => {
+        const data = doc.data();
         const row = document.createElement("tr");
         row.innerHTML = `
-          <td>${data.firstName} ${data.middleInitial || ""}. ${data.lastName}</td>
-          <td>${data.grade || "N/A"}</td>
-          <td class="status">Pending</td>
-          <td>
-            <button class="verify-btn" data-id="${data.studentId}" data-req="${docSnap.id}">Verify</button>
-            <button class="reject-btn" data-id="${data.studentId}" data-req="${docSnap.id}">Reject</button>
-          </td>`;
-        studentTable.appendChild(row);
+          <td>${data.firstName || ""}</td>
+          <td>${data.middleInitial || ""}</td>
+          <td>${data.lastName || ""}</td>
+          <td>${data.email || ""}</td>
+        `;
+        studentTableBody.appendChild(row);
       });
-
-      document.querySelectorAll(".verify-btn").forEach(btn => {
-        btn.onclick = async () => {
-          const studentId = btn.dataset.id;
-          const requestId = btn.dataset.req;
-          try {
-            await updateDoc(doc(db, "students", studentId), { verified: true });
-            await updateDoc(doc(db, "verificationRequests", requestId), { status: "approved" });
-            alert("✅ Student verified successfully.");
-            loadStudents();
-          } catch (err) {
-            console.error(err);
-            alert("❌ Failed to verify student.");
-          }
-        };
-      });
-
-      document.querySelectorAll(".reject-btn").forEach(btn => {
-        btn.onclick = async () => {
-          const studentId = btn.dataset.id;
-          const requestId = btn.dataset.req;
-          try {
-            await updateDoc(doc(db, "verificationRequests", requestId), { status: "rejected" });
-            await deleteDoc(doc(db, "students", studentId));
-            alert("❌ Student request rejected.");
-            loadStudents();
-          } catch (err) {
-            console.error(err);
-            alert("❌ Failed to reject student.");
-          }
-        };
-      });
+    } catch (error) {
+      console.error("Error fetching students:", error);
+      studentTableBody.innerHTML = '<tr><td colspan="4">Failed to load students.</td></tr>';
     }
-// js/language.js
-
-let currentLanguage = 'en';
-
-export function initializeLanguageSwitcher() {
-  const enBtn = document.getElementById('lang-en');
-  const tlBtn = document.getElementById('lang-tl');
-
-  enBtn.addEventListener('click', () => switchLanguage('en'));
-  tlBtn.addEventListener('click', () => switchLanguage('tl'));
-}
-
-export function switchLanguage(lang) {
-  currentLanguage = lang;
-
-  document.getElementById('lang-en').classList.toggle('active', lang === 'en');
-  document.getElementById('lang-tl').classList.toggle('active', lang === 'tl');
-
-  document.querySelectorAll('[data-en]').forEach(element => {
-    const text = element.getAttribute(`data-${lang}`);
-    if (text) element.textContent = text;
-  });
-
-  const nameInput = document.getElementById('child-name');
-  if (nameInput) {
-    nameInput.placeholder = lang === 'en'
-      ? "Enter child's name"
-      : "Ilagay ang pangalan ng bata";
   }
-}
 
-    // Sign Out
-    signOutBtn.onclick = async () => {
-      await signOut(auth);
-      window.location.href = "index.html";
-    };
+  // --- Load on page load ---
+  loadVerifiedStudents();
 
-    // Auth
-    onAuthStateChanged(auth, (user) => {
-      if (!user || user.email !== "mizutekuteacher@gmail.com") {
-        window.location.href = "index.html";
-      } else {
-        loadStudents();
-      }
-    });
-  </script>
-  <script type="module">
-    import { initializeLanguageSwitcher } from '/language.js';
+</script>
+    <script type="module">
+        
+    import { initializeClearData, 
+        initializeLanguageSwitcher,
+     } from "./script.js";
+
+    const currentLanguage = "en"; // or "tl"
+    initializeClearData(currentLanguage);
     initializeLanguageSwitcher();
-  </script>
+    </script>
 </body>
 </html>

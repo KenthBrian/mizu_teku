@@ -191,17 +191,21 @@ let canFlip = true;
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 
 document.addEventListener("DOMContentLoaded", function () {
-    initializeLanguageSwitcher();
-    initializeFactsSlider();
-    initializeDirtyGlassGame();
-    initializeQuiz();
-    initializePuzzleGame();
-    initializeMemoryGame();
-    initializeNavigation();
-    initializeHamburgerMenu();
-    initializeGameResets();
-    initializeBadges();
-    initializeClearData();
+    const page = document.body.dataset.page || "";
+
+    if (page === "student") {
+        initializeLanguageSwitcher();
+        initializeFactsSlider();
+        initializeDirtyGlassGame();
+        initializeQuiz();
+        initializePuzzleGame();
+        initializeMemoryGame();
+        initializeNavigation();
+        initializeHamburgerMenu();
+        initializeGameResets();
+        initializeBadges();
+        initializeClearData();
+    }
 });
 
 export function initializeLanguageSwitcher() {
@@ -235,7 +239,7 @@ export function switchLanguage(lang) {
 }
 
 // Facts Slider
-function initializeFactsSlider() {
+export function initializeFactsSlider() {
     const factCards = document.querySelectorAll('.fact-card');
     
     setInterval(() => {
@@ -361,6 +365,8 @@ export function closeAlert() {
   }
 }
 
+window.closeAlert = closeAlert;
+
 window.addEventListener('click', function (event) {
   const modal = document.getElementById('alertModal');
   if (!modal) return;
@@ -453,8 +459,6 @@ export function initializeDirtyGlassGame() {
     generateGlasses();
 }
 
-initializeDirtyGlassGame();
-
 // Quiz Game (Drag and Drop)
 export function initializeQuiz() {
     let scenarios = document.querySelectorAll('.scenario-card');
@@ -523,8 +527,6 @@ export function initializeQuiz() {
             if (!isDraggingFrame) {
                 isDraggingFrame = true;
                 requestAnimationFrame(() => {
-                    // Only visual feedback
-                    draggedElement.style.transform = `translate(${dx}px, ${dy}px)`;
 
                     // Check drop zone
                     let target = document.elementFromPoint(touch.clientX, touch.clientY);
@@ -959,7 +961,6 @@ export function downloadPoster() {
     return;
 }
 
-
     const link = document.createElement('a');
     link.href = `./files/${file}`;
     link.target = "_blank";
@@ -967,6 +968,8 @@ export function downloadPoster() {
     link.click();
     document.body.removeChild(link);
 }
+
+window.downloadPoster = downloadPoster;
 
 export function downloadWorksheet() {
     const file = document.getElementById("worksheetSelect").value;
@@ -986,6 +989,8 @@ export function downloadWorksheet() {
     link.click();
     document.body.removeChild(link);
 }
+
+window.downloadWorksheet = downloadWorksheet;
 
 
 const tipsEN = [
@@ -1209,7 +1214,6 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("homeTipsModal").classList.add("hidden");
     }
 
-    // Attach globally so inline onclick works
     window.showHomeTips = showHomeTips;
     window.closeHomeTips = closeHomeTips;
 
@@ -1328,11 +1332,15 @@ export function showVideo(step) {
     document.head.appendChild(style);
 }
 
+window.showVideo = showVideo;
+
 export function closeVideo() {
     const videoContainer = document.getElementById("videoContainer");
     videoContainer.innerHTML = "";
     document.getElementById("videoModal").classList.add("hidden");
 }
+
+window.closeVideo = closeVideo;
 
 window.onclick = function (event) {
     const modal = document.getElementById("videoModal");
@@ -1446,6 +1454,8 @@ export function generateCertificate() {
     });
 }
 
+window.generateCertificate = generateCertificate;
+
 export function downloadCertificate() {
     if (generatedPDF) {
         const name = document.getElementById('child-name').value.trim() || "certificate";
@@ -1461,6 +1471,8 @@ export function downloadCertificate() {
         );
     }
 }
+
+window.downloadCertificate = downloadCertificate;
 
 import { 
   getAuth, 
@@ -1534,15 +1546,6 @@ export function initializeClearData(currentLanguage = "en") {
 
                     localStorage.removeItem("rememberedEmail");
 
-                    showAlertModal(
-                        currentLanguage === "en"
-                            ? "Signed out successfully!"
-                            : "Matagumpay na naka-sign out!",
-                        currentLanguage === "en"
-                            ? "Redirecting to login..."
-                            : "Babalik sa login..."
-                    );
-
                     // Redirect to login page instead of reload
                     setTimeout(() => {
                         window.location.href = 'index.html';
@@ -1562,3 +1565,81 @@ export function initializeClearData(currentLanguage = "en") {
     });
 }
 
+const mascotTipEl = document.getElementById("mascot-tip");
+const mascotImg = document.getElementById("mascot-img");
+
+// Reminders in English and Tagalog
+const reminders = {
+  en: [
+    "Did you wash your hands?",
+    "Remember to drink water regularly!",
+    "Clean water keeps you healthy!",
+    "Wash your hands for at least 20 seconds!",
+    "Keep your environment clean!",
+    "Did you cover your mouth when coughing?",
+    "Did you throw trash in the bin?",
+    "Remember to stay hydrated!",
+    "Time to take a short hand-washing break!",
+    "Keep surfaces around you clean!"
+  ],
+  tl: [
+    "Nahugas ka na ba ng kamay?",
+    "Uminom ka ba ng tubig ngayon?",
+    "Ang malinis na tubig ay nakakaiwas sa sakit!",
+    "Maghugas ng kamay ng hindi bababa sa 20 segundo!",
+    "Panatilihing malinis ang kapaligiran!",
+    "Nagtakip ka ba ng bibig habang umuubo?",
+    "Ipinatapon mo ba sa basurahan ang iyong basura?",
+    "Uminom ka ng tubig para manatiling hydrated!",
+    "Panahon na para maghugas ng kamay!",
+    "Panatilihing malinis ang mga paligid mo!"
+  ]
+};
+
+
+let tipIndex = 0;
+let imgToggle = true;
+
+// Duration each tip is visible
+const tipDuration = 7800; // 7.8s
+
+function showNextTip() {
+  const currentReminders = reminders[currentLanguage];
+
+  // set tip text
+  mascotTipEl.textContent = currentReminders[tipIndex];
+
+  // alternate mascot images
+  mascotImg.src = imgToggle
+    ? "attached_assets/images/aquaneutral.png"
+    : "attached_assets/images/aquawave.png";
+  imgToggle = !imgToggle;
+
+  // update tip index for next
+  tipIndex = (tipIndex + 1) % currentReminders.length;
+
+  // show tip with pop-float animation
+  mascotTipEl.style.opacity = "1";
+  mascotTipEl.classList.remove("pop-float");
+  void mascotTipEl.offsetWidth; // restart animation
+  mascotTipEl.classList.add("pop-float");
+
+  // animate mascot slightly
+  mascotImg.classList.remove("pop-float");
+  void mascotImg.offsetWidth;
+  mascotImg.classList.add("pop-float");
+
+  // hide tip after duration
+  setTimeout(() => {
+    mascotTipEl.style.opacity = "0";
+  }, tipDuration);
+}
+
+// start immediately
+showNextTip();
+
+// automatically show next tip after each duration
+setInterval(showNextTip, tipDuration);
+
+// manual click to show next tip instantly
+mascotImg.addEventListener("click", showNextTip);
