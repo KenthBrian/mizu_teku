@@ -1,347 +1,576 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teacher Dashboard</title>
-    <link rel="icon" href="attached_assets/images/logo.png" type="image/x-icon">
-    <link rel="shortcut icon" href="attached_assets/images/logo.png" type="image/x-icon">
-    <link rel="apple-touch-icon" href="attached_assets/images/logo.png">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Chewy&display=swap" rel="stylesheet">
-    <style>
-body {
-  font-family: 'Poppins', sans-serif;
-  background: linear-gradient(to bottom right, #c9f1ff, #f2fcfe);
-  margin: 0;
-  padding: 0;
-  color: #333;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Teacher Dashboard</title>
+  <link rel="icon" href="attached_assets/images/logo.png" type="image/x-icon" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    ::-webkit-scrollbar {
+    display: none;
+    }
+
+    section {
+      scroll-margin-top: 120px;
+    }
+
+
+    html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(to bottom right, #c9f1ff, #f2fcfe);
+        margin: 0;
+        padding: 0;
+        color: #333;
+        scroll-behavior: smooth;
+    }
+
+/* Navigation */
+.navbar {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 1rem 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
 }
 
-header {
-  background: linear-gradient(to right, #00b4db, #0083b0);
-  color: white;
-  text-align: center;
-  padding: 1.5rem 0;
-  font-size: 1.8rem;
-  font-weight: 600;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
 }
 
-.dashboard {
-  max-width: 900px;
-  margin: 40px auto;
-  background: white;
-  border-radius: 20px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-  padding: 30px 25px;
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 }
 
-.dashboard h2 {
-  text-align: center;
-  margin-bottom: 25px;
-  color: #0083b0;
-  font-weight: 700;
+.nav-logo img {
+    height: 40px;
 }
 
-.student-list {
-  width: 100%;
-  border-collapse: collapse;
-  border-radius: 12px;
-  overflow: hidden;
+
+
+.nav-menu {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
 }
 
-.student-list th, .student-list td {
-  padding: 14px 16px;
-  text-align: left;
+    .nav-menu a {
+        text-decoration: none;
+        color: #2c3e50;
+        font-weight: 600;
+        padding: 0.5rem 1rem;
+        border-radius: 25px;
+        transition: all 0.3s ease;
+    }
+
+        .nav-menu a:hover {
+            background: #3498db;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+.language-switcher {
+    display: flex;
+    gap: 0.5rem;
 }
 
-.student-list th {
-  background: #00b4db;
-  color: white;
-  font-weight: 600;
-  font-size: 1rem;
-  letter-spacing: 0.5px;
+.lang-btn {
+    padding: 0.5rem 1rem;
+    border: 2px solid #3498db;
+    background: transparent;
+    color: #3498db;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
 }
 
-.student-list tr:nth-child(even) {
-  background: #f9f9f9;
+    .lang-btn.active {
+        background: #3498db;
+        color: white;
+    }
+
+    .lang-btn:hover {
+        background: #3498db;
+        color: white;
+    }
+
+.clear-btn {
+    padding: 0.5rem 1rem;
+    border: 2px solid #e74c3c;
+    background: transparent;
+    color: #e74c3c;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    margin-left: 0.5rem;
 }
 
-.student-list tr:hover {
-  background: #e8f8ff;
-  transition: 0.3s;
+    .clear-btn:hover {
+        background: #e74c3c;
+        color: white;
+    }
+
+/* Hamburger Menu */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    padding: 0.5rem;
+    z-index: 1001;
+    transform: scale(1.75);
 }
 
-.status {
-  font-weight: 600;
-  color: #ff9f00;
-}
+    .hamburger .bar {
+        width: 25px;
+        height: 3px;
+        background-color: #2c3e50;
+        margin: 3px 0;
+        transition: 0.3s;
+        border-radius: 2px;
+    }
 
-.verified {
-  color: #28a745;
-  font-weight: bold;
-}
+    .hamburger.active .bar:nth-child(1) {
+        transform: rotate(-45deg) translate(-5px, 6px);
+    }
 
-.verify-btn {
-  background: linear-gradient(to right, #00b4db, #0083b0);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 14px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
+    .hamburger.active .bar:nth-child(2) {
+        opacity: 0;
+    }
 
-.verify-btn:hover {
-  background: linear-gradient(to right, #009ac1, #007095);
-  transform: translateY(-2px);
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
-}
+    .hamburger.active .bar:nth-child(3) {
+        transform: rotate(45deg) translate(-5px, -6px);
+    }
 
-@media (max-width: 600px) {
-  header {
-    font-size: 1.4rem;
-    padding: 1rem;
+  /* Prevent content from hiding behind navbar */
+  body {
+    padding-top: 90px;
   }
 
-  .dashboard {
-    margin: 15px;
-    padding: 15px;
-  }
 
-  .student-list th, .student-list td {
-    font-size: 14px;
-    padding: 10px;
-  }
+    /* ---------- SECTIONS ---------- */
+    main {
+        margin-top: 30px; /* pushes content below navbar */
+    }
 
-  .verify-btn {
-    padding: 6px 10px;
-    font-size: 13px;
+    section {
+        padding: 50px 25px;
+        max-width: 1000px;
+        margin: 0 auto 50px auto;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    section h2 {
+        text-align: center;
+        color: #0077a3;
+        margin-bottom: 20px;
+        font-weight: 700;
+    }
+
+    section p {
+        text-align: center;
+        color: #555;
+        margin-bottom: 30px;
+    }
+
+    /* ---------- TABLE ---------- */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    th, td {
+        padding: 14px 16px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+    }
+
+    th {
+        background: linear-gradient(to right, #00b4db, #0083b0);
+        color: white;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+    }
+
+    tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    tr:hover {
+        background-color: #e8f8ff;
+        transition: 0.2s;
+    }
+
+    .status {
+        font-weight: 600;
+        color: #ff9f00;
+    }
+
+    .verify-btn, .reject-btn {
+        border: none;
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: 0.3s;
+        color: white;
+    }
+
+    .verify-btn {
+        background-color: #4caf50;
+        margin-right: 8px;
+    }
+
+    .verify-btn:hover {
+        background-color: #43a047;
+    }
+
+    .reject-btn {
+        background-color: #f44336;
+    }
+
+    .reject-btn:hover {
+        background-color: #e53935;
+    }
+
+    /* Responsive Design */
+@media (max-width: 1100px) {
+    .hamburger {
+        display: flex;
+    }
+
+    .nav-right {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 100%;
+        height: 100vh;
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(20px);
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 3rem;
+        transition: right 0.3s ease;
+        z-index: 1000;
+    }
+
+        .nav-right.active {
+            right: 0;
+        }
+
+    .nav-menu {
+        flex-direction: column;
+        gap: 2rem;
+        text-align: center;
+    }
+
+        .nav-menu a {
+            font-size: 1.5rem;
+            padding: 1rem 2rem;
+        }
+
+    .language-switcher {
+        gap: 1rem;
+    }
+
+    .lang-btn {
+        padding: 1rem 1.5rem;
+        font-size: 1.2rem;
+    }
   }
-}
-</style>
+  </style>
 </head>
+
 <body>
-  <header>
-    <h1>Teacher Dashboard</h1>
-    <button id="clearDataBtn" class="signout-btn">Sign Out</button>
-  </header>
 
-  <div class="dashboard">
-    <h2>Students for Verification</h2>
+<!-- Navigation Bar -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <span class="logo-text">
+                        <img src="attached_assets/images/logo_text2.png" />
+                    </span>
+                </div>
 
-    <table class="student-list">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Grade</th>
-          <th>Status</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody id="studentTable">
-        <tr>
-          <td colspan="4" style="text-align:center;">Loading students...</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+                <!-- Hamburger Menu Button -->
+                <div class="hamburger" id="hamburger">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
 
-    <!-- Confirm Modal -->
-    <div id="confirmModal" class="modal">
-      <div class="modal-content">
-        <h2 id="confirmModalTitle">Are you sure?</h2>
-        <p id="confirmModalMessage">Do you want to proceed?</p>
-        <div class="modal-buttons">
-          <button id="confirmYesBtn" class="yes-btn">Yes</button>
-          <button id="confirmNoBtn" class="no-btn">No</button>
-        </div>
-      </div>
-    </div>
+                <div class="nav-right">
+                    <ul class="nav-menu" id="nav-menu">
+                        <li><a href="#home" data-en="Home" data-tl="Tahanan">Home</a></li>
+                        <li><a href="#students" data-en="Students" data-tl="Mga Mag-aaral">Students</a></li>
+                        <li><a href="#reports" data-en="Reports" data-tl="Mga Ulat">Reports</a></li>
+                        <li><a href="#settings" data-en="Settings" data-tl="Mga Setting">Settings</a></li>
+                        <li><a href="#about" data-en="About" data-tl="Tungkol">About</a></li>
+                    </ul>
 
-    <!-- Alert Modal -->
-    <div id="alertModal" class="hidden">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeAlert()">&times;</span>
-            <h2 id="alertModalTitle"></h2>
-            <p id="alertModalMessage"></p>
-        </div>
-    </div>
-    <script type="module">
+                    <!-- Right-side controls -->
+                    <div class="nav-controls">
+                        <div class="language-switcher">
+                            <button id="lang-en" class="lang-btn active">EN</button>
+                            <button id="lang-tl" class="lang-btn">TL</button>
+                            <button id="clearDataBtn" class="clear-btn">Sign Out</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+  <!-- HOME SECTION -->
+  <main>
+    <section id="home">
+      <h2>Welcome to Teacher Dashboard</h2>
+      <p>
+        This is your main control panel. Manage student verification, view reports, and configure settings — all in one place.
+      </p>
+    </section>
+
+    <!-- STUDENTS SECTION -->
+    <section id="students">
+      <h2>Students for Verification</h2>
+      <table class="student-list">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Grade</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="studentTable">
+          <tr><td colspan="4" style="text-align:center;">Loading students...</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- REPORTS SECTION -->
+    <section id="reports">
+      <h2>Reports</h2>
+      <p>Future feature: View verification logs, activity summaries, and statistics here.</p>
+    </section>
+
+    <!-- SETTINGS SECTION -->
+    <section id="settings">
+      <h2>Settings</h2>
+      <p>Configure dashboard preferences or teacher account options.</p>
+    </section>
+
+    <!-- ABOUT SECTION -->
+    <section id="about">
+      <h2>About</h2>
+      <p>This dashboard is designed for teachers to manage student verifications easily and securely.</p>
+    </section>
+  </main>
+
+  <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { 
-    getFirestore, 
-    collection, 
-    getDocs, 
-    query, 
-    where, 
-    updateDoc, 
-    doc, 
-    deleteDoc 
-    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, query, where, updateDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // --- Firebase Config ---
+    // Firebase Config
     const firebaseConfig = {
-    apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
-    authDomain: "mizuteku-3a441.firebaseapp.com",
-    projectId: "mizuteku-3a441",
-    storageBucket: "mizuteku-3a441.firebasestorage.app",
-    messagingSenderId: "473895456413",
-    appId: "1:473895456413:web:1452ef7b9860908dd78e74",
-    measurementId: "G-NTT38FCEKG",
+      apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
+      authDomain: "mizuteku-3a441.firebaseapp.com",
+      projectId: "mizuteku-3a441",
+      storageBucket: "mizuteku-3a441.firebasestorage.app",
+      messagingSenderId: "473895456413",
+      appId: "1:473895456413:web:1452ef7b9860908dd78e74",
+      measurementId: "G-NTT38FCEKG"
     };
 
-    // --- Initialize Firebase ---
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // --- DOM Elements ---
-    const studentList = document.getElementById("studentList");
+    const studentTable = document.getElementById("studentTable");
     const signOutBtn = document.getElementById("clearDataBtn");
 
-    // --- Custom Modals ---
-    function showAlertModal(title = "", message = "", callback = null) {
-    const modal = document.getElementById("alertModal");
-    if (!modal) return;
-    modal.querySelector("#alertModalTitle").innerText = title;
-    modal.querySelector("#alertModalMessage").innerText = message;
-    modal.classList.remove("hidden");
-    modal._callback = callback;
+    document.addEventListener('DOMContentLoaded', initializeHamburgerMenu);
+
+    function initializeNavigation() {
+        const ctaButton = document.querySelector('.cta-button');
+        const navLinks = document.querySelectorAll('.nav-menu a');
+        
+        ctaButton.addEventListener('click', () => {
+            document.getElementById('home').scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('students').scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('reports').scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('settings').scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('about').scrollIntoView({ behavior: 'smooth' });
+        });
+        
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
     }
 
-    function closeAlertModal() {
-    const modal = document.getElementById("alertModal");
-    if (!modal) return;
-    modal.classList.add("hidden");
-    if (typeof modal._callback === "function") modal._callback();
-    modal._callback = null;
+    // Hamburger Menu
+    function initializeHamburgerMenu() {
+        const hamburger = document.getElementById('hamburger');
+        const navRight = document.querySelector('.nav-right');
+        const navLinks = document.querySelectorAll('.nav-menu a');
+        
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navRight.classList.toggle('active');
+        });
+        
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                navRight.classList.remove('active');
+            });
+        });
+        
+        document.addEventListener('click', (e) => {
+            if (!hamburger.contains(e.target) && !navRight.contains(e.target)) {
+                hamburger.classList.remove('active');
+                navRight.classList.remove('active');
+            }
+        });
     }
 
-    function showConfirmModal(title, message, onConfirm, onCancel) {
-    const modal = document.getElementById("confirmModal");
-    if (!modal) return;
-    modal.querySelector("#confirmModalTitle").innerText = title;
-    modal.querySelector("#confirmModalMessage").innerText = message;
-    modal.style.display = "flex";
-
-    const yesBtn = modal.querySelector("#confirmYesBtn");
-    const noBtn = modal.querySelector("#confirmNoBtn");
-
-    yesBtn.onclick = () => {
-        modal.style.display = "none";
-        if (onConfirm) onConfirm();
-    };
-    noBtn.onclick = () => {
-        modal.style.display = "none";
-        if (onCancel) onCancel();
-    };
-    }
-
-    // --- Load Verification Requests ---
+    // Load Students
     async function loadStudents() {
-    if (!studentList) return;
+      studentTable.innerHTML = `<tr><td colspan="4" style="text-align:center;">Loading...</td></tr>`;
+      const q = query(collection(db, "verificationRequests"), where("status", "==", "pending"));
+      const snapshot = await getDocs(q);
 
-    studentList.innerHTML = "Loading verification requests...";
-    
-    // Load all pending verification requests
-    const q = query(collection(db, "verificationRequests"), where("status", "==", "pending"))
-    const snapshot = await getDocs(q);
-
-    if (snapshot.empty) {
-        studentList.innerHTML = "<li>🎉 No pending verification requests!</li>";
+      if (snapshot.empty) {
+        studentTable.innerHTML = `<tr><td colspan="4" style="text-align:center;">🎉 No pending verification requests!</td></tr>`;
         return;
-    }
+      }
 
-    studentList.innerHTML = "";
-    snapshot.forEach((docSnap) => {
+      studentTable.innerHTML = "";
+      snapshot.forEach((docSnap) => {
         const data = docSnap.data();
-        const li = document.createElement("li");
-        li.innerHTML = `
-        <div class="student-item">
-            <span>${data.firstName} ${data.middleInitial}. ${data.lastName}</span>
-            <div class="buttons">
-            <button class="verifyBtn" data-id="${data.studentId}" data-req="${docSnap.id}">✅ Verify</button>
-            <button class="rejectBtn" data-id="${data.studentId}" data-req="${docSnap.id}">❌ Reject</button>
-            </div>
-        </div>
-        `;
-        studentList.appendChild(li);
-    });
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${data.firstName} ${data.middleInitial || ""}. ${data.lastName}</td>
+          <td>${data.grade || "N/A"}</td>
+          <td class="status">Pending</td>
+          <td>
+            <button class="verify-btn" data-id="${data.studentId}" data-req="${docSnap.id}">Verify</button>
+            <button class="reject-btn" data-id="${data.studentId}" data-req="${docSnap.id}">Reject</button>
+          </td>`;
+        studentTable.appendChild(row);
+      });
 
-    // --- Verify Student ---
-    document.querySelectorAll(".verifyBtn").forEach((btn) => {
-        btn.addEventListener("click", () => {
-        const studentId = btn.dataset.id;
-        const requestId = btn.dataset.req;
-        showConfirmModal(
-            "Verify Student?",
-            "Are you sure you want to verify this student?",
-            async () => {
-            try {
-                // Update student as verified
-                await updateDoc(doc(db, "students", studentId), { verified: true });
-                // Mark verification request as approved
-                await updateDoc(doc(db, "verificationRequests", requestId), { status: "approved" });
-                showAlertModal("✅ Verified", "Student has been verified successfully.", loadStudents);
-            } catch (err) {
-                console.error(err);
-                showAlertModal("❌ Error", "Failed to verify student. Please try again.");
-            }
-            }
-        );
-        });
-    });
+      document.querySelectorAll(".verify-btn").forEach(btn => {
+        btn.onclick = async () => {
+          const studentId = btn.dataset.id;
+          const requestId = btn.dataset.req;
+          try {
+            await updateDoc(doc(db, "students", studentId), { verified: true });
+            await updateDoc(doc(db, "verificationRequests", requestId), { status: "approved" });
+            alert("✅ Student verified successfully.");
+            loadStudents();
+          } catch (err) {
+            console.error(err);
+            alert("❌ Failed to verify student.");
+          }
+        };
+      });
 
-    // --- Reject Student ---
-    document.querySelectorAll(".rejectBtn").forEach((btn) => {
-        btn.addEventListener("click", () => {
-        const studentId = btn.dataset.id;
-        const requestId = btn.dataset.req;
-        showConfirmModal(
-            "Reject Student?",
-            "Do you want to reject this student's request?",
-            async () => {
-            try {
-                // Delete both records (or mark as rejected)
-                await updateDoc(doc(db, "verificationRequests", requestId), { status: "rejected" });
-                await deleteDoc(doc(db, "students", studentId));
-                showAlertModal("❌ Rejected", "Student's request has been removed.", loadStudents);
-            } catch (err) {
-                console.error(err);
-                showAlertModal("❌ Error", "Failed to reject student. Please try again.");
-            }
-            }
-        );
-        });
-    });
+      document.querySelectorAll(".reject-btn").forEach(btn => {
+        btn.onclick = async () => {
+          const studentId = btn.dataset.id;
+          const requestId = btn.dataset.req;
+          try {
+            await updateDoc(doc(db, "verificationRequests", requestId), { status: "rejected" });
+            await deleteDoc(doc(db, "students", studentId));
+            alert("❌ Student request rejected.");
+            loadStudents();
+          } catch (err) {
+            console.error(err);
+            alert("❌ Failed to reject student.");
+          }
+        };
+      });
     }
+// js/language.js
 
-    // --- Sign Out ---
-    if (signOutBtn) {
-    signOutBtn.addEventListener("click", async () => {
-        await signOut(auth);
+let currentLanguage = 'en';
+
+export function initializeLanguageSwitcher() {
+  const enBtn = document.getElementById('lang-en');
+  const tlBtn = document.getElementById('lang-tl');
+
+  enBtn.addEventListener('click', () => switchLanguage('en'));
+  tlBtn.addEventListener('click', () => switchLanguage('tl'));
+}
+
+export function switchLanguage(lang) {
+  currentLanguage = lang;
+
+  document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+  document.getElementById('lang-tl').classList.toggle('active', lang === 'tl');
+
+  document.querySelectorAll('[data-en]').forEach(element => {
+    const text = element.getAttribute(`data-${lang}`);
+    if (text) element.textContent = text;
+  });
+
+  const nameInput = document.getElementById('child-name');
+  if (nameInput) {
+    nameInput.placeholder = lang === 'en'
+      ? "Enter child's name"
+      : "Ilagay ang pangalan ng bata";
+  }
+}
+
+    // Sign Out
+    signOutBtn.onclick = async () => {
+      await signOut(auth);
+      window.location.href = "index.html";
+    };
+
+    // Auth
+    onAuthStateChanged(auth, (user) => {
+      if (!user || user.email !== "mizutekuteacher@gmail.com") {
         window.location.href = "index.html";
+      } else {
+        loadStudents();
+      }
     });
-    }
-
-    // --- Page Protection & Auto Load ---
-    onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-        window.location.href = "index.html"; // Not logged in
-        return;
-    }
-
-    if (user.email === "mizutekuteacher@gmail.com") {
-        loadStudents(); // Only teacher can access
-    } else {
-        window.location.href = "index.html"; // Block others
-    }
-    });
-</script>
+  </script>
+  <script type="module">
+    import { initializeLanguageSwitcher } from '/language.js';
+    initializeLanguageSwitcher();
+  </script>
 </body>
 </html>
