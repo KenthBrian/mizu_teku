@@ -81,7 +81,8 @@
 
   .login-container input[type="text"],
   .login-container input[type="password"],
-  .login-container input[type="email"] {
+  .login-container input[type="email"],
+  .login-container select {
     width: 100%;
     padding: 0.8rem;
     margin-bottom: 1rem;
@@ -93,7 +94,8 @@
     box-sizing: border-box;
   }
 
-  .login-container input:focus {
+  .login-container input:focus,
+  .login-container select:focus {
     border-color: #2ecc71;
     box-shadow: 0 0 6px rgba(46, 204, 113, 0.5);
   }
@@ -126,56 +128,90 @@
   }
 
   .password-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center; /* vertically center the icon */
-}
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
 
-.password-wrapper input {
-  width: 100%;
-  padding-right: 2.8rem; /* extra space for the icon */
-  height: 2.8rem; /* set a fixed height to match the icon */
-  box-sizing: border-box;
-}
+  .password-wrapper input {
+    width: 100%;
+    padding-right: 2.8rem;
+    height: 2.8rem;
+    box-sizing: border-box;
+  }
 
-.password-wrapper .toggle-password {
-  position: absolute;
-  right: 10px;
-  top: 40%; /* position relative to vertical center */
-  transform: translateY(-50%); /* perfect vertical centering */
-  cursor: pointer;
-  font-size: 1.2rem;
-  color: #3498db;
-  user-select: none;
-}
+  .password-wrapper .toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 40%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: #3498db;
+    user-select: none;
+  }
 
-#loadingOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-}
+  #loadingOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+  }
 
-.spinner {
-  border: 6px solid #f3f3f3; /* Light grey background */
-  border-top: 6px solid #2196F3; /* Blue top border */
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  animation: spin 1s linear infinite;
-}
+  .spinner {
+    border: 6px solid #f3f3f3;
+    border-top: 6px solid #2196F3;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+  }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
 
+  /* ===== Flex Rows for Compact Sign-Up ===== */
+  .row {
+    display: flex;
+    gap: 10px;
+  }
+
+  .row input,
+  .row select {
+    flex: 1;
+  }
+
+  #nameRow input#lastnameInput {
+    flex: 2;
+  }
+
+  #nameRow input#firstnameInput {
+    flex: 2;
+  }
+
+  #nameRow input#middleinitialInput {
+    flex: 1;
+  }
+
+  #gradeRow select#gradeSelect {
+    flex: 1;
+  }
+
+  #gradeRow input#sectionInput {
+    flex: 1;
+  }
+
+  #nameRow, #gradeRow {
+    display: none; /* JS toggle will show */
+  }
 </style>
 </head>
 <body data-page="login">
@@ -184,16 +220,30 @@
 
 <div id="loadingOverlay" style="display: none;">
   <div class="spinner"></div>
-
 </div>
+
 <div class="login-container">
   <h2 id="formTitle">MizuTeku Sign In</h2>
   <p id="formDesc">Please enter your email and password:</p>
 
-  <input type="text" id="lastnameInput" placeholder="Enter your last name" style="display:none">
-  <input type="text" id="firstnameInput" placeholder="Enter your first name" style="display:none">
-  <input type="text" id="middleinitialInput" placeholder="Enter your middle initial" style="display:none">
+  <!-- Sign-Up Rows -->
+  <div class="row" id="nameRow">
+    <input type="text" id="lastnameInput" placeholder="Last Name">
+    <input type="text" id="firstnameInput" placeholder="First Name">
+    <input type="text" id="middleinitialInput" placeholder="M.I.">
+  </div>
 
+  <div class="row" id="gradeRow">
+    <select id="gradeSelect">
+      <option value="" disabled selected>Grade</option>
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+    </select>
+    <input type="text" id="sectionInput" placeholder="Section">
+  </div>
+
+  <!-- Sign-In Fields -->
   <input type="email" id="emailInput" placeholder="Enter your email">
 
   <div class="password-wrapper">
@@ -244,9 +294,6 @@ const toggleLink = document.getElementById("toggleForm");
 const switchText = document.getElementById("switchText");
 const formTitle = document.getElementById("formTitle");
 const formDesc = document.getElementById("formDesc");
-const lastnameInput = document.getElementById("lastnameInput");
-const firstnameInput = document.getElementById("firstnameInput");
-const middleinitialInput = document.getElementById("middleinitialInput");
 const emailInput = document.getElementById("emailInput");
 const passwordInput = document.getElementById("passwordInput");
 const confirmPasswordInput = document.getElementById("confirmPasswordInput");
@@ -254,6 +301,14 @@ const confirmWrapper = document.getElementById("confirmWrapper");
 const togglePassword = document.getElementById("togglePassword");
 const toggleConfirm = document.getElementById("toggleConfirm");
 const bgLayer = document.getElementById("bgLayer");
+
+const nameRow = document.getElementById("nameRow");
+const gradeRow = document.getElementById("gradeRow");
+const lastnameInput = document.getElementById("lastnameInput");
+const firstnameInput = document.getElementById("firstnameInput");
+const middleinitialInput = document.getElementById("middleinitialInput");
+const gradeSelect = document.getElementById("gradeSelect");
+const sectionInput = document.getElementById("sectionInput");
 
 let isSignUpMode = false;
 
@@ -263,9 +318,8 @@ toggleLink.addEventListener("click", () => {
   if (isSignUpMode) {
     formTitle.textContent = "MizuTeku Sign Up";
     formDesc.textContent = "Please enter your details to create an account:";
-    lastnameInput.style.display = "block";
-    firstnameInput.style.display = "block";
-    middleinitialInput.style.display = "block";
+    nameRow.style.display = "flex";
+    gradeRow.style.display = "flex";
     confirmWrapper.style.display = "flex";
     loginBtn.textContent = "Sign Up";
     toggleLink.textContent = "Sign In";
@@ -273,9 +327,8 @@ toggleLink.addEventListener("click", () => {
   } else {
     formTitle.textContent = "MizuTeku Sign In";
     formDesc.textContent = "Please enter your email and password:";
-    lastnameInput.style.display = "none";
-    firstnameInput.style.display = "none";
-    middleinitialInput.style.display = "none";
+    nameRow.style.display = "none";
+    gradeRow.style.display = "none";
     confirmWrapper.style.display = "none";
     loginBtn.textContent = "Sign In";
     toggleLink.textContent = "Sign Up";
@@ -283,7 +336,7 @@ toggleLink.addEventListener("click", () => {
   }
 });
 
-// --- Sign In / Sign Up Handler ---
+// --- Auth Handler ---
 async function handleAuth() {
   const email = emailInput.value.trim();
   const password = passwordInput.value.trim();
@@ -292,9 +345,11 @@ async function handleAuth() {
     const lastName = lastnameInput.value.trim();
     const firstName = firstnameInput.value.trim();
     const middleInitial = middleinitialInput.value.trim();
+    const grade = gradeSelect.value;
+    const section = sectionInput.value.trim();
     const confirmPassword = confirmPasswordInput.value.trim();
 
-    if (!lastName || !firstName || !email || !password) {
+    if (!lastName || !firstName || !email || !password || !section || !grade) {
       alert("⚠️ Please fill in all required fields!");
       return;
     }
@@ -312,6 +367,8 @@ async function handleAuth() {
         lastName,
         firstName,
         middleInitial,
+        grade,
+        section,
         email,
         status: "pending",
         requestedAt: serverTimestamp(),
@@ -339,9 +396,7 @@ async function handleAuth() {
         return;
       }
 
-      const studentRef = doc(db, "students", user.uid);
-      const studentDoc = await getDoc(studentRef);
-
+      const studentDoc = await getDoc(doc(db, "students", user.uid));
       if (studentDoc.exists() && studentDoc.data().verified) {
         window.location.href = "student.html";
       } else {
@@ -353,11 +408,11 @@ async function handleAuth() {
   }
 }
 
-// Attach handler to button
+// Attach handler
 loginBtn.addEventListener("click", handleAuth);
 
-// --- Enter Key Support ---
-const inputs = [emailInput, passwordInput, confirmPasswordInput, lastnameInput, firstnameInput, middleinitialInput];
+// Enter Key Support
+const inputs = [emailInput, passwordInput, confirmPasswordInput, lastnameInput, firstnameInput, middleinitialInput, sectionInput, gradeSelect];
 inputs.forEach(input => {
   input.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
@@ -367,7 +422,7 @@ inputs.forEach(input => {
   });
 });
 
-// --- Auto Redirect if Logged In ---
+// Auto Redirect if Logged In
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     if (user.email === "mizutekuteacher@gmail.com") {
@@ -381,7 +436,7 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
-// --- Bubble Animation ---
+// Bubble Animation
 function createBubble() {
   const bubble = document.createElement("div");
   bubble.classList.add("bubble");
@@ -398,7 +453,7 @@ function createBubble() {
 }
 setInterval(createBubble, 400);
 
-// --- Password Toggle ---
+// Password Toggle
 togglePassword.addEventListener("click", () => {
   const type = passwordInput.type === "password" ? "text" : "password";
   passwordInput.type = type;
