@@ -209,7 +209,7 @@
     flex: 1;
   }
 
-  #nameRow, #gradeRow {
+  #lrnRow, #nameRow, #gradeRow {
     display: none; /* JS toggle will show */
   }
 </style>
@@ -227,12 +227,14 @@
   <p id="formDesc">Please enter your email and password:</p>
 
   <!-- Sign-Up Rows -->
+  <div class="row" id="lrnRow">
+    <input type="text" id="lrnInput" placeholder="LRN">
+  </div>
   <div class="row" id="nameRow">
     <input type="text" id="lastnameInput" placeholder="Last Name">
     <input type="text" id="firstnameInput" placeholder="First Name">
     <input type="text" id="middleinitialInput" placeholder="M.I.">
   </div>
-
   <div class="row" id="gradeRow">
     <select id="gradeSelect">
       <option value="" disabled selected>Grade</option>
@@ -302,8 +304,10 @@ const togglePassword = document.getElementById("togglePassword");
 const toggleConfirm = document.getElementById("toggleConfirm");
 const bgLayer = document.getElementById("bgLayer");
 
+const lrnRow = document.getElementById("lrnRow");
 const nameRow = document.getElementById("nameRow");
 const gradeRow = document.getElementById("gradeRow");
+const lrnInput = document.getElementById("lrnInput");
 const lastnameInput = document.getElementById("lastnameInput");
 const firstnameInput = document.getElementById("firstnameInput");
 const middleinitialInput = document.getElementById("middleinitialInput");
@@ -318,6 +322,7 @@ toggleLink.addEventListener("click", () => {
   if (isSignUpMode) {
     formTitle.textContent = "MizuTeku Sign Up";
     formDesc.textContent = "Please enter your details to create an account:";
+    lrnRow.style.display = "flex";
     nameRow.style.display = "flex";
     gradeRow.style.display = "flex";
     confirmWrapper.style.display = "flex";
@@ -327,6 +332,7 @@ toggleLink.addEventListener("click", () => {
   } else {
     formTitle.textContent = "MizuTeku Sign In";
     formDesc.textContent = "Please enter your email and password:";
+    lrnRow.style.display = "none";
     nameRow.style.display = "none";
     gradeRow.style.display = "none";
     confirmWrapper.style.display = "none";
@@ -342,6 +348,7 @@ async function handleAuth() {
   const password = passwordInput.value.trim();
 
   if (isSignUpMode) {
+    const lrn = lrnInput.value.trim();
     const lastName = lastnameInput.value.trim();
     const firstName = firstnameInput.value.trim();
     const middleInitial = middleinitialInput.value.trim();
@@ -349,7 +356,7 @@ async function handleAuth() {
     const section = sectionInput.value.trim();
     const confirmPassword = confirmPasswordInput.value.trim();
 
-    if (!lastName || !firstName || !email || !password || !section || !grade) {
+    if (!lrn || !lastName || !firstName || !email || !password || !section || !grade) {
       alert("⚠️ Please fill in all required fields!");
       return;
     }
@@ -364,6 +371,7 @@ async function handleAuth() {
 
       await addDoc(collection(db, "verificationRequests"), {
         studentId: user.uid,
+        lrn,
         lastName,
         firstName,
         middleInitial,
@@ -412,7 +420,7 @@ async function handleAuth() {
 loginBtn.addEventListener("click", handleAuth);
 
 // Enter Key Support
-const inputs = [emailInput, passwordInput, confirmPasswordInput, lastnameInput, firstnameInput, middleinitialInput, sectionInput, gradeSelect];
+const inputs = [emailInput, passwordInput, confirmPasswordInput, lrnInput, lastnameInput, firstnameInput, middleinitialInput, sectionInput, gradeSelect];
 inputs.forEach(input => {
   input.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
