@@ -10,31 +10,145 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Chewy&display=swap" rel="stylesheet">
-    <script src="script.js"></script>
+    <style>
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(to bottom right, #c9f1ff, #f2fcfe);
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+
+header {
+  background: linear-gradient(to right, #00b4db, #0083b0);
+  color: white;
+  text-align: center;
+  padding: 1.5rem 0;
+  font-size: 1.8rem;
+  font-weight: 600;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+}
+
+.dashboard {
+  max-width: 900px;
+  margin: 40px auto;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  padding: 30px 25px;
+}
+
+.dashboard h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #0083b0;
+  font-weight: 700;
+}
+
+.student-list {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.student-list th, .student-list td {
+  padding: 14px 16px;
+  text-align: left;
+}
+
+.student-list th {
+  background: #00b4db;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+}
+
+.student-list tr:nth-child(even) {
+  background: #f9f9f9;
+}
+
+.student-list tr:hover {
+  background: #e8f8ff;
+  transition: 0.3s;
+}
+
+.status {
+  font-weight: 600;
+  color: #ff9f00;
+}
+
+.verified {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.verify-btn {
+  background: linear-gradient(to right, #00b4db, #0083b0);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.verify-btn:hover {
+  background: linear-gradient(to right, #009ac1, #007095);
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 600px) {
+  header {
+    font-size: 1.4rem;
+    padding: 1rem;
+  }
+
+  .dashboard {
+    margin: 15px;
+    padding: 15px;
+  }
+
+  .student-list th, .student-list td {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .verify-btn {
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+}
+</style>
 </head>
 <body>
+  <header>
+    <h1>Teacher Dashboard</h1>
+    <button id="clearDataBtn" class="signout-btn">Sign Out</button>
+  </header>
 
-    <!-- Navigation Bar -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <img src="attached_assets/images/logo_text2.png" alt="Logo">
-            </div>
-            <ul class="nav-menu">
-                <li><a href="#home" data-en="Home" data-tl="Tahanan">Home</a></li>
-                <li><a href="#clean-water" data-en="Why" data-tl="Bakit">Why</a></li>
-                <li><a href="#handwashing" data-en="Handwashing" data-tl="Hugas Kamay">Handwashing</a></li>
-                <li><a href="#games" data-en="Games" data-tl="Mga Laro">Games</a></li>
-                <li><a href="#resources" data-en="Resources" data-tl="Mga Liham">Resources</a></li>
-                <li><a href="#about_us" data-en="About Us" data-tl="Tungkol sa Amin">About Us</a></li>
-            </ul>
-            <div class="nav-controls">
-                <button id="lang-en" class="lang-btn active">EN</button>
-                <button id="lang-tl" class="lang-btn">TL</button>
-                <button id="clearDataBtn" class="clear-btn">Sign Out</button>
-            </div>
-        </div>
-    </nav>
+  <div class="dashboard">
+    <h2>Students for Verification</h2>
+
+    <table class="student-list">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Grade</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="studentTable">
+        <tr>
+          <td colspan="4" style="text-align:center;">Loading students...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
     <!-- Confirm Modal -->
     <div id="confirmModal" class="modal">
@@ -56,141 +170,178 @@
             <p id="alertModalMessage"></p>
         </div>
     </div>
-
-    <!-- Teacher Page -->
-    <div id="teacherPage">
-        <h2>👩‍🏫 Teacher Dashboard</h2>
-        <p>Pending student verifications:</p>
-        <ul id="studentList"></ul>
-    </div>
-
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, getDocs, query, where, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { 
+    getFirestore, 
+    collection, 
+    getDocs, 
+    query, 
+    where, 
+    updateDoc, 
+    doc, 
+    deleteDoc 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // --- Firebase Config ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
-            authDomain: "mizuteku-3a441.firebaseapp.com",
-            projectId: "mizuteku-3a441",
-            storageBucket: "mizuteku-3a441.firebasestorage.app",
-            messagingSenderId: "473895456413",
-            appId: "1:473895456413:web:1452ef7b9860908dd78e74",
-            measurementId: "G-NTT38FCEKG",
-        };
+    // --- Firebase Config ---
+    const firebaseConfig = {
+    apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
+    authDomain: "mizuteku-3a441.firebaseapp.com",
+    projectId: "mizuteku-3a441",
+    storageBucket: "mizuteku-3a441.firebasestorage.app",
+    messagingSenderId: "473895456413",
+    appId: "1:473895456413:web:1452ef7b9860908dd78e74",
+    measurementId: "G-NTT38FCEKG",
+    };
 
-        // --- Initialize Firebase ---
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+    // --- Initialize Firebase ---
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-        // --- DOM Elements ---
-        const studentList = document.getElementById("studentList");
-        const signOutBtn = document.getElementById("clearDataBtn");
+    // --- DOM Elements ---
+    const studentList = document.getElementById("studentList");
+    const signOutBtn = document.getElementById("clearDataBtn");
 
-        // --- Custom Modals ---
-        function showAlertModal(title = "", message = "", callback = null) {
-            const modal = document.getElementById("alertModal");
-            if (!modal) return;
-            modal.querySelector("#alertModalTitle").innerText = title;
-            modal.querySelector("#alertModalMessage").innerText = message;
-            modal.classList.remove("hidden");
-            modal._callback = callback;
-        }
+    // --- Custom Modals ---
+    function showAlertModal(title = "", message = "", callback = null) {
+    const modal = document.getElementById("alertModal");
+    if (!modal) return;
+    modal.querySelector("#alertModalTitle").innerText = title;
+    modal.querySelector("#alertModalMessage").innerText = message;
+    modal.classList.remove("hidden");
+    modal._callback = callback;
+    }
 
-        function closeAlertModal() {
-            const modal = document.getElementById("alertModal");
-            if (!modal) return;
-            modal.classList.add("hidden");
-            if (typeof modal._callback === "function") modal._callback();
-            modal._callback = null;
-        }
+    function closeAlertModal() {
+    const modal = document.getElementById("alertModal");
+    if (!modal) return;
+    modal.classList.add("hidden");
+    if (typeof modal._callback === "function") modal._callback();
+    modal._callback = null;
+    }
 
-        function showConfirmModal(title, message, onConfirm, onCancel) {
-            const modal = document.getElementById("confirmModal");
-            if (!modal) return;
-            modal.querySelector("#confirmModalTitle").innerText = title;
-            modal.querySelector("#confirmModalMessage").innerText = message;
-            modal.style.display = "flex";
+    function showConfirmModal(title, message, onConfirm, onCancel) {
+    const modal = document.getElementById("confirmModal");
+    if (!modal) return;
+    modal.querySelector("#confirmModalTitle").innerText = title;
+    modal.querySelector("#confirmModalMessage").innerText = message;
+    modal.style.display = "flex";
 
-            const yesBtn = modal.querySelector("#confirmYesBtn");
-            const noBtn = modal.querySelector("#confirmNoBtn");
+    const yesBtn = modal.querySelector("#confirmYesBtn");
+    const noBtn = modal.querySelector("#confirmNoBtn");
 
-            yesBtn.onclick = () => {
-                modal.style.display = "none";
-                if (onConfirm) onConfirm();
-            };
-            noBtn.onclick = () => {
-                modal.style.display = "none";
-                if (onCancel) onCancel();
-            };
-        }
+    yesBtn.onclick = () => {
+        modal.style.display = "none";
+        if (onConfirm) onConfirm();
+    };
+    noBtn.onclick = () => {
+        modal.style.display = "none";
+        if (onCancel) onCancel();
+    };
+    }
 
-        // --- Load unverified students ---
-        async function loadStudents() {
-            if (!studentList) return;
+    // --- Load Verification Requests ---
+    async function loadStudents() {
+    if (!studentList) return;
 
-            studentList.innerHTML = "Loading students...";
-            const q = query(collection(db, "students"), where("verified", "==", false));
-            const snapshot = await getDocs(q);
+    studentList.innerHTML = "Loading verification requests...";
+    
+    // Load all pending verification requests
+    const q = query(collection(db, "verificationRequests"), where("status", "==", "pending"));
+    const snapshot = await getDocs(q);
 
-            if (snapshot.empty) {
-                studentList.innerHTML = "<li>🎉 All students are verified!</li>";
-                return;
+    if (snapshot.empty) {
+        studentList.innerHTML = "<li>🎉 No pending verification requests!</li>";
+        return;
+    }
+
+    studentList.innerHTML = "";
+    snapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        const li = document.createElement("li");
+        li.innerHTML = `
+        <div class="student-item">
+            <span>${data.firstName} ${data.middleInitial}. ${data.lastName}</span>
+            <div class="buttons">
+            <button class="verifyBtn" data-id="${data.studentId}" data-req="${docSnap.id}">✅ Verify</button>
+            <button class="rejectBtn" data-id="${data.studentId}" data-req="${docSnap.id}">❌ Reject</button>
+            </div>
+        </div>
+        `;
+        studentList.appendChild(li);
+    });
+
+    // --- Verify Student ---
+    document.querySelectorAll(".verifyBtn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+        const studentId = btn.dataset.id;
+        const requestId = btn.dataset.req;
+        showConfirmModal(
+            "Verify Student?",
+            "Are you sure you want to verify this student?",
+            async () => {
+            try {
+                // Update student as verified
+                await updateDoc(doc(db, "students", studentId), { verified: true });
+                // Mark verification request as approved
+                await updateDoc(doc(db, "verificationRequests", requestId), { status: "approved" });
+                showAlertModal("✅ Verified", "Student has been verified successfully.", loadStudents);
+            } catch (err) {
+                console.error(err);
+                showAlertModal("❌ Error", "Failed to verify student. Please try again.");
             }
-
-            studentList.innerHTML = "";
-            snapshot.forEach((docSnap) => {
-                const data = docSnap.data();
-                const li = document.createElement("li");
-                li.innerHTML = `
-                    ${data.firstName} ${data.lastName} (${data.middleInitial})
-                    <button class="verifyBtn" data-id="${docSnap.id}">Verify</button>
-                `;
-                studentList.appendChild(li);
-            });
-
-            document.querySelectorAll(".verifyBtn").forEach((btn) => {
-                btn.addEventListener("click", () => {
-                    const uid = btn.dataset.id;
-                    showConfirmModal(
-                        "Verify Student?",
-                        `Do you want to verify ${btn.parentElement.textContent.trim()}?`,
-                        async () => {
-                            try {
-                                await updateDoc(doc(db, "students", uid), { verified: true });
-                                showAlertModal("✅ Verified", `${btn.parentElement.textContent.trim()} is now verified`, loadStudents);
-                            } catch (err) {
-                                console.error("❌ Failed to verify student:", err);
-                                showAlertModal("❌ Error", "Failed to verify student. Please try again.");
-                            }
-                        }
-                    );
-                });
-            });
-        }
-
-        // --- Page protection & auto-load ---
-        onAuthStateChanged(auth, async (user) => {
-            if (!user) {
-                window.location.href = "index.html"; // Not logged in
-                return;
             }
-
-            if (user.email === "mizutekuteacher@gmail.com") {
-                loadStudents(); // Teacher loads students
-            } else {
-                window.location.href = "index.html"; // Non-teacher access blocked
-            }
+        );
         });
-    </script>
-    <script type="module">
-    import { initializeClearData } from "./script.js";
+    });
 
-    // Optional: set current language
-    const currentLanguage = "en"; // or "tl"
-    initializeClearData(currentLanguage);
-    </script>
+    // --- Reject Student ---
+    document.querySelectorAll(".rejectBtn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+        const studentId = btn.dataset.id;
+        const requestId = btn.dataset.req;
+        showConfirmModal(
+            "Reject Student?",
+            "Do you want to reject this student's request?",
+            async () => {
+            try {
+                // Delete both records (or mark as rejected)
+                await updateDoc(doc(db, "verificationRequests", requestId), { status: "rejected" });
+                await deleteDoc(doc(db, "students", studentId));
+                showAlertModal("❌ Rejected", "Student's request has been removed.", loadStudents);
+            } catch (err) {
+                console.error(err);
+                showAlertModal("❌ Error", "Failed to reject student. Please try again.");
+            }
+            }
+        );
+        });
+    });
+    }
+
+    // --- Sign Out ---
+    if (signOutBtn) {
+    signOutBtn.addEventListener("click", async () => {
+        await signOut(auth);
+        window.location.href = "index.html";
+    });
+    }
+
+    // --- Page Protection & Auto Load ---
+    onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+        window.location.href = "index.html"; // Not logged in
+        return;
+    }
+
+    if (user.email === "mizutekuteacher@gmail.com") {
+        loadStudents(); // Only teacher can access
+    } else {
+        window.location.href = "index.html"; // Block others
+    }
+    });
+</script>
 </body>
 </html>

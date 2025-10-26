@@ -131,7 +131,10 @@
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { 
+  initializeApp 
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+
 import { 
   getAuth, 
   signInWithEmailAndPassword, 
@@ -140,8 +143,18 @@ import {
   setPersistence, 
   browserSessionPersistence 
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+import { 
+  getFirestore, 
+  doc, 
+  setDoc, 
+  getDoc, 
+  serverTimestamp, 
+  collection, 
+  addDoc 
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+// --- Firebase Config ---
 const firebaseConfig = {
   apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
   authDomain: "mizuteku-3a441.firebaseapp.com",
@@ -152,18 +165,19 @@ const firebaseConfig = {
   measurementId: "G-NTT38FCEKG",
 };
 
+// --- Initialize Firebase ---
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Form elements
+// --- Elements ---
 const loginBtn = document.getElementById("saveUsername");
 const toggleLink = document.getElementById("toggleForm");
 const switchText = document.getElementById("switchText");
 const formTitle = document.getElementById("formTitle");
 const formDesc = document.getElementById("formDesc");
 
-// Inputs
+// --- Inputs ---
 const lastnameInput = document.getElementById("lastnameInput");
 const firstnameInput = document.getElementById("firstnameInput");
 const middleinitialInput = document.getElementById("middleinitialInput");
@@ -173,16 +187,7 @@ const confirmPasswordInput = document.getElementById("confirmPasswordInput");
 
 let isSignUpMode = false;
 
-function toggleField(field, show) {
-  if (show) {
-    field.style.display = "block";
-    setTimeout(() => field.classList.add("show"), 10);
-  } else {
-    field.classList.remove("show");
-    setTimeout(() => field.style.display = "none", 400);
-  }
-}
-
+// --- Toggle Between Sign In / Sign Up ---
 toggleLink.addEventListener("click", () => {
   isSignUpMode = !isSignUpMode;
 
@@ -231,24 +236,38 @@ loginBtn.addEventListener("click", async () => {
     }
 
     try {
+      // Create user
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
+      // Save student data
       await setDoc(doc(db, "students", user.uid), {
         lastName,
         firstName,
         middleInitial,
         email,
         verified: false,
-        createdAt: new Date(),
+        createdAt: serverTimestamp(),
       });
 
-      alert("✅ Student sign-up successful! Waiting for teacher verification.");
-      toggleLink.click(); // Automatically switch to Sign In after sign-up
+      // --- Send verification request to teacher collection ---
+      await addDoc(collection(db, "verificationRequests"), {
+        studentId: user.uid,
+        lastName,
+        firstName,
+        middleInitial,
+        email,
+        status: "pending",
+        requestedAt: serverTimestamp(),
+      });
+
+      alert("✅ Sign-up successful! Your verification request has been sent to the teacher.");
+      toggleLink.click(); // Switch to Sign In
     } catch (err) {
       alert("❌ " + err.message);
     }
   } else {
+    // --- Sign In Logic ---
     if (!email || !password) {
       alert("⚠️ Please enter your email and password.");
       return;
@@ -261,18 +280,19 @@ loginBtn.addEventListener("click", async () => {
 
       if (email === "mizutekuteacher@gmail.com") {
         window.location.href = "teacher.html";
-      } else {
-        const docRef = await getDoc(doc(db, "students", user.uid));
-        if (docRef.exists()) {
-          const data = docRef.data();
-          if (data.verified) {
-            window.location.href = "student.html";
-          } else {
-            alert("⏳ Your account is pending teacher verification.");
-          }
+        return;
+      }
+
+      const studentDoc = await getDoc(doc(db, "students", user.uid));
+      if (studentDoc.exists()) {
+        const data = studentDoc.data();
+        if (data.verified) {
+          window.location.href = "student.html";
         } else {
-          alert("❌ Student record not found!");
+          alert("⏳ Your account is still waiting for teacher verification.");
         }
+      } else {
+        alert("❌ Student record not found!");
       }
     } catch (err) {
       alert("❌ " + err.message);
@@ -281,12 +301,18 @@ loginBtn.addEventListener("click", async () => {
 });
 
 // --- Auto redirect if already logged in ---
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
   if (user) {
     if (user.email === "mizutekuteacher@gmail.com") {
       window.location.href = "teacher.html";
     } else {
-      window.location.href = "student.html";
+      const studentDoc = await getDoc(doc(db, "students", user.uid));
+      if (studentDoc.exists()) {
+        const data = studentDoc.data();
+        if (data.verified) {
+          window.location.href = "student.html";
+        }
+      }
     }
   }
 });

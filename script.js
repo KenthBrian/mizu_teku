@@ -188,6 +188,8 @@ let memoryCards = [];
 let flippedCards = [];
 let canFlip = true;
 
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+
 document.addEventListener("DOMContentLoaded", function () {
     initializeLanguageSwitcher();
     initializeFactsSlider();
@@ -202,7 +204,7 @@ document.addEventListener("DOMContentLoaded", function () {
     initializeClearData();
 });
 
-function initializeLanguageSwitcher() {
+export function initializeLanguageSwitcher() {
     const enBtn = document.getElementById('lang-en');
     const tlBtn = document.getElementById('lang-tl');
     
@@ -210,7 +212,7 @@ function initializeLanguageSwitcher() {
     tlBtn.addEventListener('click', () => switchLanguage('tl'));
 }
 
-function switchLanguage(lang) {
+export function switchLanguage(lang) {
     currentLanguage = lang;
     
     document.getElementById('lang-en').classList.toggle('active', lang === 'en');
@@ -233,7 +235,7 @@ function switchLanguage(lang) {
 }
 
 // Facts Slider
-function initializeFactsSlider() {
+export function initializeFactsSlider() {
     const factCards = document.querySelectorAll('.fact-card');
     
     setInterval(() => {
@@ -244,7 +246,7 @@ function initializeFactsSlider() {
 }
 
 // Navigation
-function initializeNavigation() {
+export function initializeNavigation() {
     const ctaButton = document.querySelector('.cta-button');
     const navLinks = document.querySelectorAll('.nav-menu a');
     
@@ -265,7 +267,7 @@ function initializeNavigation() {
 }
 
 // Hamburger Menu
-function initializeHamburgerMenu() {
+export function initializeHamburgerMenu() {
     const hamburger = document.getElementById('hamburger');
     const navRight = document.querySelector('.nav-right');
     const navLinks = document.querySelectorAll('.nav-menu a');
@@ -294,7 +296,7 @@ function initializeHamburgerMenu() {
 let _alertQueue = [];
 let _isAlertOpen = false;
 
-function showAlertModal(title = '', message = '', callback = null) {
+export function showAlertModal(title = '', message = '', callback = null) {
   const modal = document.getElementById('alertModal');
   if (!modal) {
     console.warn('showAlertModal: #alertModal not found');
@@ -329,7 +331,7 @@ function showAlertModal(title = '', message = '', callback = null) {
   if (closeBtn) closeBtn.focus();
 }
 
-function closeAlert() {
+export function closeAlert() {
   const modal = document.getElementById('alertModal');
   if (!modal) return;
 
@@ -375,7 +377,7 @@ const totalGlasses = 5;
 const dirtyGlassesCount = 3;
 const germsPerGlass = 5;
 
-function initializeDirtyGlassGame() {
+export function initializeDirtyGlassGame() {
     const container = document.querySelector('.glasses-container');
     const scoreElement = document.getElementById('dirty-found');
     let dirtyFound = 0;
@@ -454,7 +456,7 @@ function initializeDirtyGlassGame() {
 initializeDirtyGlassGame();
 
 // Quiz Game (Drag and Drop)
-function initializeQuiz() {
+export function initializeQuiz() {
     let scenarios = document.querySelectorAll('.scenario-card');
     const dropZones = document.querySelectorAll('.drop-zone');
     const scoreElement = document.getElementById('quiz-score');
@@ -673,7 +675,7 @@ function initializeQuiz() {
 }
 
 // Puzzle Game
-function initializePuzzleGame() {
+export function initializePuzzleGame() {
     const soapItems = document.querySelectorAll('.puzzle-item');
     const handTargets = document.querySelectorAll('.puzzle-target');
     const scoreElement = document.getElementById('puzzle-score');
@@ -739,7 +741,7 @@ function initializePuzzleGame() {
 }
 
 // Memory Game
-function initializeMemoryGame() {
+export function initializeMemoryGame() {
     const memoryGameContainer = document.getElementById('memory-game');
     const scoreElement = document.getElementById('memory-score');
     const resetButton = document.getElementById('reset-memory');
@@ -816,7 +818,7 @@ function initializeMemoryGame() {
 
 // Badge System
 // Load badges on page start
-function initializeBadges() {
+export function initializeBadges() {
     const earnedBadges = JSON.parse(localStorage.getItem("earnedBadges")) || [];
 
     earnedBadges.forEach((badgeId) => {
@@ -827,7 +829,7 @@ function initializeBadges() {
     });
 }
 
-function earnBadge(badgeId) {
+export function earnBadge(badgeId) {
     const badge = document.getElementById(badgeId);
     if (badge && !badge.classList.contains("earned")) {
         badge.classList.add("earned");
@@ -854,7 +856,7 @@ function earnBadge(badgeId) {
 window.addEventListener("load", initializeBadges);
 
 // Game Reset Functions
-function initializeGameResets() {
+export function initializeGameResets() {
     
     document.getElementById('reset-quiz').addEventListener('click', resetQuizGame);
     
@@ -862,7 +864,7 @@ function initializeGameResets() {
 }
 
 
-function resetQuizGame() {
+export function resetQuizGame() {
     quizScore = 0;
     document.getElementById('quiz-score').textContent = quizScore;
     
@@ -879,7 +881,7 @@ function resetQuizGame() {
     });
 }
 
-function resetPuzzleGame() {
+export function resetPuzzleGame() {
     puzzleScore = 0;
     document.getElementById('puzzle-score').textContent = puzzleScore;
 
@@ -946,7 +948,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // Resource Functions
-function downloadPoster() {
+export function downloadPoster() {
     const file = document.getElementById("posterSelect").value;
     if (!file) {
     showAlertModal(
@@ -966,7 +968,7 @@ function downloadPoster() {
     document.body.removeChild(link);
 }
 
-function downloadWorksheet() {
+export function downloadWorksheet() {
     const file = document.getElementById("worksheetSelect").value;
     if (!file) {
     showAlertModal(
@@ -1259,7 +1261,7 @@ const handwashingVideos = {
     }
 };
 
-function showVideo(step) {
+export function showVideo(step) {
     const lang = (typeof currentLanguage !== "undefined" && currentLanguage === "tl") ? "tl" : "en";
     if (!handwashingVideos[step]) return;
 
@@ -1326,7 +1328,7 @@ function showVideo(step) {
     document.head.appendChild(style);
 }
 
-function closeVideo() {
+export function closeVideo() {
     const videoContainer = document.getElementById("videoContainer");
     videoContainer.innerHTML = "";
     document.getElementById("videoModal").classList.add("hidden");
@@ -1337,14 +1339,14 @@ window.onclick = function (event) {
     if (event.target === modal) closeVideo();
 };
 
-function allBadgesEarned() {
+export function allBadgesEarned() {
     const badges = document.querySelectorAll('.badge');
     return Array.from(badges).every(badge => badge.classList.contains('earned'));
 }
 
 let generatedPDF = null;
 
-function generateCertificate() {
+export function generateCertificate() {
     if (!allBadgesEarned()) {
         showAlertModal(
     currentLanguage === 'en'
@@ -1444,7 +1446,7 @@ function generateCertificate() {
     });
 }
 
-function downloadCertificate() {
+export function downloadCertificate() {
     if (generatedPDF) {
         const name = document.getElementById('child-name').value.trim() || "certificate";
         generatedPDF.save(`${name}_certificate.pdf`);
@@ -1485,7 +1487,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-function showConfirmModal(title, message, onConfirm, onCancel) {
+export function showConfirmModal(title, message, onConfirm, onCancel) {
   const modal = document.getElementById("confirmModal");
   const modalTitle = document.getElementById("confirmModalTitle");
   const modalMessage = document.getElementById("confirmModalMessage");
