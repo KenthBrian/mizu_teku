@@ -1596,50 +1596,39 @@ const reminders = {
   ]
 };
 
+if (mascotImg && mascotTipEl) {
+  let tipIndex = 0;
+  let imgToggle = true;
+  const tipDuration = 7800;
 
-let tipIndex = 0;
-let imgToggle = true;
+  function showNextTip() {
+    const currentReminders = reminders[currentLanguage];
+    mascotTipEl.textContent = currentReminders[tipIndex];
+    mascotImg.src = imgToggle
+      ? "attached_assets/images/aquaneutral.png"
+      : "attached_assets/images/aquawave.png";
+    imgToggle = !imgToggle;
+    tipIndex = (tipIndex + 1) % currentReminders.length;
 
-// Duration each tip is visible
-const tipDuration = 7800; // 7.8s
+    mascotTipEl.style.opacity = "1";
+    mascotTipEl.classList.remove("pop-float");
+    void mascotTipEl.offsetWidth;
+    mascotTipEl.classList.add("pop-float");
 
-function showNextTip() {
-  const currentReminders = reminders[currentLanguage];
+    mascotImg.classList.remove("pop-float");
+    void mascotImg.offsetWidth;
+    mascotImg.classList.add("pop-float");
 
-  // set tip text
-  mascotTipEl.textContent = currentReminders[tipIndex];
+    setTimeout(() => {
+      mascotTipEl.style.opacity = "0";
+    }, tipDuration);
+  }
 
-  // alternate mascot images
-  mascotImg.src = imgToggle
-    ? "attached_assets/images/aquaneutral.png"
-    : "attached_assets/images/aquawave.png";
-  imgToggle = !imgToggle;
-
-  // update tip index for next
-  tipIndex = (tipIndex + 1) % currentReminders.length;
-
-  // show tip with pop-float animation
-  mascotTipEl.style.opacity = "1";
-  mascotTipEl.classList.remove("pop-float");
-  void mascotTipEl.offsetWidth; // restart animation
-  mascotTipEl.classList.add("pop-float");
-
-  // animate mascot slightly
-  mascotImg.classList.remove("pop-float");
-  void mascotImg.offsetWidth;
-  mascotImg.classList.add("pop-float");
-
-  // hide tip after duration
-  setTimeout(() => {
-    mascotTipEl.style.opacity = "0";
-  }, tipDuration);
+  showNextTip();
+  const tipInterval = setInterval(showNextTip, tipDuration);
+  mascotImg.addEventListener("click", () => {
+    clearInterval(tipInterval);
+    showNextTip();
+    setInterval(showNextTip, tipDuration);
+  });
 }
-
-// start immediately
-showNextTip();
-
-// automatically show next tip after each duration
-setInterval(showNextTip, tipDuration);
-
-// manual click to show next tip instantly
-mascotImg.addEventListener("click", showNextTip);
