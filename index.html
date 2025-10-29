@@ -6,8 +6,8 @@
 <title>MizuTeku - Sign In / Sign Up</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Chewy&display=swap" rel="stylesheet">
+
 <style>
-  /* ===== Full-page container ===== */
   body {
     margin: 0;
     padding: 0;
@@ -20,7 +20,6 @@
     overflow: hidden;
   }
 
-  /* ===== Bubble Layer ===== */
   #bgLayer {
     position: fixed;
     top: 0;
@@ -47,9 +46,7 @@
     100% { transform: translateY(-120vh) scale(1.2); opacity: 0; }
   }
 
-  .bubble.pop {
-    animation: pop 0.3s forwards !important;
-  }
+  .bubble.pop { animation: pop 0.3s forwards !important; }
 
   @keyframes pop {
     0% { transform: scale(1); opacity: 1; }
@@ -57,7 +54,6 @@
     100% { transform: scale(0); opacity: 0; }
   }
 
-  /* ===== Login Form ===== */
   .login-container {
     background: rgba(255, 255, 255, 0.95);
     padding: 2rem 2.5rem;
@@ -137,7 +133,6 @@
     width: 100%;
     padding-right: 2.8rem;
     height: 2.8rem;
-    box-sizing: border-box;
   }
 
   .password-wrapper .toggle-password {
@@ -151,82 +146,29 @@
     user-select: none;
   }
 
-  #loadingOverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-  }
-
-  .spinner {
-    border: 6px solid #f3f3f3;
-    border-top: 6px solid #2196F3;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: spin 1s linear infinite;
-  }
-
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-
-  /* ===== Flex Rows for Compact Sign-Up ===== */
   .row {
     display: flex;
     gap: 10px;
   }
 
-  .row input,
-  .row select {
-    flex: 1;
-  }
+  .row input, .row select { flex: 1; }
 
-  #nameRow input#lastnameInput {
-    flex: 2;
-  }
+  #nameRow input#lastnameInput { flex: 2; }
+  #nameRow input#firstnameInput { flex: 2; }
+  #nameRow input#middleinitialInput { flex: 1; }
 
-  #nameRow input#firstnameInput {
-    flex: 2;
-  }
-
-  #nameRow input#middleinitialInput {
-    flex: 1;
-  }
-
-  #gradeRow select#gradeSelect {
-    flex: 1;
-  }
-
-  #gradeRow input#sectionInput {
-    flex: 1;
-  }
-
-  #lrnRow, #nameRow, #gradeRow {
-    display: none; /* JS toggle will show */
-  }
+  #lrnRow, #nameRow, #gradeRow { display: none; }
 </style>
 </head>
-<body data-page="login">
+<body>
 
 <div id="bgLayer"></div>
-
-<div id="loadingOverlay" style="display: none;">
-  <div class="spinner"></div>
-</div>
 
 <div class="login-container">
   <h2 id="formTitle">MizuTeku Sign In</h2>
   <p id="formDesc">Please enter your email and password:</p>
 
-  <!-- Sign-Up Rows -->
+  <!-- Sign-Up Extra Fields -->
   <div class="row" id="lrnRow">
     <input type="text" id="lrnInput" placeholder="LRN">
   </div>
@@ -245,7 +187,7 @@
     <input type="text" id="sectionInput" placeholder="Section">
   </div>
 
-  <!-- Sign-In Fields -->
+  <!-- Common Fields -->
   <input type="email" id="emailInput" placeholder="Enter your email">
 
   <div class="password-wrapper">
@@ -253,7 +195,7 @@
     <span class="toggle-password" id="togglePassword"><i class="fa-solid fa-eye"></i></span>
   </div>
 
-  <div class="password-wrapper" style="display:none;" id="confirmWrapper">
+  <div class="password-wrapper" id="confirmWrapper" style="display:none;">
     <input type="password" id="confirmPasswordInput" placeholder="Confirm your password">
     <span class="toggle-password" id="toggleConfirm"><i class="fa-solid fa-eye"></i></span>
   </div>
@@ -267,12 +209,12 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { 
+import {
   getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
-  onAuthStateChanged, setPersistence, browserSessionPersistence 
+  onAuthStateChanged, setPersistence, browserSessionPersistence
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { 
-  getFirestore, doc, getDoc, serverTimestamp, collection, addDoc 
+import {
+  getFirestore, doc, getDoc, collection, addDoc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 // --- Firebase Config ---
@@ -290,19 +232,17 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// --- Elements ---
-const loginBtn = document.getElementById("saveUsername");
+// Elements
 const toggleLink = document.getElementById("toggleForm");
-const switchText = document.getElementById("switchText");
+const loginBtn = document.getElementById("saveUsername");
 const formTitle = document.getElementById("formTitle");
 const formDesc = document.getElementById("formDesc");
+const confirmWrapper = document.getElementById("confirmWrapper");
 const emailInput = document.getElementById("emailInput");
 const passwordInput = document.getElementById("passwordInput");
 const confirmPasswordInput = document.getElementById("confirmPasswordInput");
-const confirmWrapper = document.getElementById("confirmWrapper");
 const togglePassword = document.getElementById("togglePassword");
 const toggleConfirm = document.getElementById("toggleConfirm");
-const bgLayer = document.getElementById("bgLayer");
 
 const lrnRow = document.getElementById("lrnRow");
 const nameRow = document.getElementById("nameRow");
@@ -313,36 +253,29 @@ const firstnameInput = document.getElementById("firstnameInput");
 const middleinitialInput = document.getElementById("middleinitialInput");
 const gradeSelect = document.getElementById("gradeSelect");
 const sectionInput = document.getElementById("sectionInput");
+const bgLayer = document.getElementById("bgLayer");
 
 let isSignUpMode = false;
 
-// --- Toggle Sign In / Sign Up ---
+// --- Toggle between Sign In and Sign Up ---
 toggleLink.addEventListener("click", () => {
   isSignUpMode = !isSignUpMode;
-  if (isSignUpMode) {
-    formTitle.textContent = "MizuTeku Sign Up";
-    formDesc.textContent = "Please enter your details to create an account:";
-    lrnRow.style.display = "flex";
-    nameRow.style.display = "flex";
-    gradeRow.style.display = "flex";
-    confirmWrapper.style.display = "flex";
-    loginBtn.textContent = "Sign Up";
-    toggleLink.textContent = "Sign In";
-    switchText.firstChild.textContent = "Already have an account? ";
-  } else {
-    formTitle.textContent = "MizuTeku Sign In";
-    formDesc.textContent = "Please enter your email and password:";
-    lrnRow.style.display = "none";
-    nameRow.style.display = "none";
-    gradeRow.style.display = "none";
-    confirmWrapper.style.display = "none";
-    loginBtn.textContent = "Sign In";
-    toggleLink.textContent = "Sign Up";
-    switchText.firstChild.textContent = "Don't have an account? ";
-  }
+  formTitle.textContent = isSignUpMode ? "MizuTeku Sign Up" : "MizuTeku Sign In";
+  formDesc.textContent = isSignUpMode
+    ? "Please enter your details to create an account:"
+    : "Please enter your email and password:";
+
+  lrnRow.style.display = nameRow.style.display = gradeRow.style.display =
+    confirmWrapper.style.display = isSignUpMode ? "flex" : "none";
+
+  loginBtn.textContent = isSignUpMode ? "Sign Up" : "Sign In";
+  toggleLink.textContent = isSignUpMode ? "Sign In" : "Sign Up";
+  document.getElementById("switchText").firstChild.textContent = isSignUpMode
+    ? "Already have an account? "
+    : "Don't have an account? ";
 });
 
-// --- Auth Handler ---
+// --- Handle Auth ---
 async function handleAuth() {
   const email = emailInput.value.trim();
   const password = passwordInput.value.trim();
@@ -356,7 +289,7 @@ async function handleAuth() {
     const section = sectionInput.value.trim();
     const confirmPassword = confirmPasswordInput.value.trim();
 
-    if (!lrn || !lastName || !firstName || !email || !password || !section || !grade) {
+    if (!lrn || !lastName || !firstName || !grade || !section || !email || !password) {
       alert("⚠️ Please fill in all required fields!");
       return;
     }
@@ -382,7 +315,7 @@ async function handleAuth() {
         requestedAt: serverTimestamp(),
       });
 
-      alert("✅ Sign-up successful! Your verification request has been sent to the teacher.");
+      alert("✅ Sign-up successful! Verification request sent to teacher.");
       toggleLink.click();
     } catch (err) {
       alert("❌ " + err.message);
@@ -393,11 +326,9 @@ async function handleAuth() {
       alert("⚠️ Please enter your email and password.");
       return;
     }
-
     try {
       await setPersistence(auth, browserSessionPersistence);
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
+      const { user } = await signInWithEmailAndPassword(auth, email, password);
 
       if (email === "mizutekuteacher@gmail.com") {
         window.location.href = "teacher.html";
@@ -416,21 +347,16 @@ async function handleAuth() {
   }
 }
 
-// Attach handler
 loginBtn.addEventListener("click", handleAuth);
 
 // Enter Key Support
-const inputs = [emailInput, passwordInput, confirmPasswordInput, lrnInput, lastnameInput, firstnameInput, middleinitialInput, sectionInput, gradeSelect];
-inputs.forEach(input => {
-  input.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleAuth();
-    }
+document.querySelectorAll("input, select").forEach(el => {
+  el.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") handleAuth();
   });
 });
 
-// Auto Redirect if Logged In
+// Auto Redirect
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     if (user.email === "mizutekuteacher@gmail.com") {
@@ -454,25 +380,23 @@ function createBubble() {
   bubble.style.left = `${Math.random() * 100}%`;
   bubble.style.background = `rgba(${Math.floor(Math.random()*255)}, ${Math.floor(Math.random()*255)}, ${Math.floor(Math.random()*255)}, 0.5)`;
   bubble.style.animationDuration = `${Math.random() * 5 + 5}s`;
-
   bubble.addEventListener("click", () => bubble.classList.add("pop"));
   bubble.addEventListener("animationend", () => bubble.remove());
   bgLayer.appendChild(bubble);
 }
 setInterval(createBubble, 400);
 
-// Password Toggle
-togglePassword.addEventListener("click", () => {
-  const type = passwordInput.type === "password" ? "text" : "password";
-  passwordInput.type = type;
-  togglePassword.innerHTML = type === "password" ? '<i class="fa-solid fa-eye"></i>' : '<i class="fa-solid fa-eye-slash"></i>';
-});
+// Password Toggles
+function toggleVisibility(input, icon) {
+  const type = input.type === "password" ? "text" : "password";
+  input.type = type;
+  icon.innerHTML = type === "password"
+    ? '<i class="fa-solid fa-eye"></i>'
+    : '<i class="fa-solid fa-eye-slash"></i>';
+}
 
-toggleConfirm.addEventListener("click", () => {
-  const type = confirmPasswordInput.type === "password" ? "text" : "password";
-  confirmPasswordInput.type = type;
-  toggleConfirm.innerHTML = type === "password" ? '<i class="fa-solid fa-eye"></i>' : '<i class="fa-solid fa-eye-slash"></i>';
-});
+togglePassword.addEventListener("click", () => toggleVisibility(passwordInput, togglePassword));
+toggleConfirm.addEventListener("click", () => toggleVisibility(confirmPasswordInput, toggleConfirm));
 </script>
 </body>
 </html>

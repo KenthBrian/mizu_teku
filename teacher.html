@@ -525,6 +525,56 @@
 .modal-buttons .no-btn:hover {
   background: #d32f2f;
 }
+
+.verify-btn {
+    background-color: #4CAF50; /* green */
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .verify-btn:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+  }
+
+  .reject-btn {
+    background-color: #f44336; /* red */
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .reject-btn:hover {
+    background-color: #d32f2f;
+    transform: scale(1.05);
+  }
+
+  .btn-container {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .gear-icon {
+    fill: #1c1f23; /* default dark color */
+    transition: fill 0.3s ease, transform 0.3s ease;
+    vertical-align: middle;
+  }
+
+  nav ul li a:hover .gear-icon {
+    fill: white; /* turn white when hovered */
+    transform: rotate(360deg);
+  }
+
   </style>
 </head>
 
@@ -570,10 +620,18 @@
                 <div class="nav-right">
                     <ul class="nav-menu" id="nav-menu">
                         <li><a href="#home" data-en="Home" data-tl="Tahanan">Home</a></li>
-                        <li><a href="#verification" data-en="Verification" data-tl="Mga Mag-aaral">Students</a></li>
-                        <li><a href="#students" data-en="Students" data-tl="Mga Ulat">Reports</a></li>
-                        <li><a href="#settings" data-en="Settings" data-tl="Mga Setting">Settings</a></li>
+                        <li><a href="#verification" data-en="Verification" data-tl="Pagpapatunay">Verification</a></li>
+                        <li><a href="#students" data-en="Students" data-tl="Mag-aaral">Students</a></li>
+                        <li><a href="#reports" data-en="Reports" data-tl="Ulat">Reports</a></li>
                         <li><a href="#about" data-en="About" data-tl="Tungkol">About</a></li>
+                        <li>
+                          <a href="#settings">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                viewBox="0 0 16 16" class="gear-icon">
+                              <path d="M9.405 1.05a.5.5 0 0 1 .49.598l-.273 1.638a5.518 5.518 0 0 1 1.415.82l1.302-.753a.5.5 0 0 1 .707.708l-.753 1.302a5.518 5.518 0 0 1 .82 1.415l1.638-.273a.5.5 0 0 1 .598.49v2.092a.5.5 0 0 1-.598.49l-1.638-.273a5.518 5.518 0 0 1-.82 1.415l.753 1.302a.5.5 0 0 1-.707.707l-1.302-.753a5.518 5.518 0 0 1-1.415.82l.273 1.638a.5.5 0 0 1-.49.598H6.595a.5.5 0 0 1-.49-.598l.273-1.638a5.518 5.518 0 0 1-1.415-.82l-1.302.753a.5.5 0 0 1-.707-.707l.753-1.302a5.518 5.518 0 0 1-.82-1.415l-1.638.273a.5.5 0 0 1-.598-.49V6.595a.5.5 0 0 1 .598-.49l1.638.273a5.518 5.518 0 0 1 .82-1.415L2.685 4.06a.5.5 0 0 1 .707-.708l1.302.753a5.518 5.518 0 0 1 1.415-.82L5.836 1.65A.5.5 0 0 1 6.326 1h2.078zm-1.405 4.45a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z"/>
+                            </svg>
+                          </a>
+                        </li>
                     </ul>
 
                     <!-- Right-side controls -->
@@ -600,17 +658,19 @@
     <!-- VERIFICATION SECTION -->
     <section id="verification">
       <h2>Students for Verification</h2>
-      <table class="student-list">
+      <table id="verificationTable" class="student-list">
         <thead>
           <tr>
             <th>Name</th>
+            <th>LRN</th>
             <th>Grade</th>
+            <th>Section</th>
             <th>Status</th>
             <th>Action</th>
           </tr>
         </thead>
-        <tbody id="studentTable">
-          <tr><td colspan="4" style="text-align:center;">Loading students...</td></tr>
+        <tbody>
+          <tr><td colspan="6" style="text-align:center;">Loading students...</td></tr>
         </tbody>
       </table>
     </section>
@@ -618,22 +678,23 @@
     <!-- STUDENTS SECTION -->
     <section id="students">
       <h2>Verified Students</h2>
-      <table id="studentTable" border="1" style="border-collapse: collapse; width: 100%;">
+      <table id="verifiedTable" border="1" style="border-collapse: collapse; width: 100%;">
         <thead>
           <tr>
             <th>First Name</th>
             <th>Middle Initial</th>
             <th>Last Name</th>
             <th>Email</th>
+            <th>LRN</th>
+            <th>Grade</th>
+            <th>Section</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td colspan="4">Loading...</td>
-          </tr>
+          <tr><td colspan="7" style="text-align:center;">Loading...</td></tr>
         </tbody>
       </table>
-</section>
+    </section>
 
     <!-- REPORTS SECTION -->
     <section id="reports">
@@ -646,344 +707,167 @@
       <h2>About</h2>
       <p>This dashboard is designed for teachers to manage student verifications easily and securely.</p>
     </section>
-  </main>
-  <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { 
-    getAuth, 
-    onAuthStateChanged, 
-    signOut 
-  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-  import { 
-    getFirestore, 
-    collection, 
-    getDocs, 
-    getDoc, 
-    setDoc,
-    query, 
-    where, 
-    updateDoc, 
-    deleteDoc, 
-    doc,
-    serverTimestamp
-  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-  // --- Firebase Config ---
-  const firebaseConfig = {
-    apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
-    authDomain: "mizuteku-3a441.firebaseapp.com",
-    projectId: "mizuteku-3a441",
-    storageBucket: "mizuteku-3a441.firebasestorage.app",
-    messagingSenderId: "473895456413",
-    appId: "1:473895456413:web:1452ef7b9860908dd78e74",
-    measurementId: "G-NTT38FCEKG"
-  };
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import {
+      getAuth, onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import {
+      getFirestore, collection, getDocs, getDoc, setDoc,
+      query, where, updateDoc, deleteDoc, doc, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-
-  const studentTable = document.getElementById("studentTable");
-
-  document.addEventListener("DOMContentLoaded", () => {
-    initializeHamburgerMenu();
-    initializeNavigation();
-    initializeLanguageSwitcher();
-  });
-
-  // --- Navigation Scroll ---
-  function initializeNavigation() {
-    const navLinks = document.querySelectorAll(".nav-menu a");
-    navLinks.forEach(link => {
-      link.addEventListener("click", e => {
-        e.preventDefault();
-        const targetId = link.getAttribute("href");
-        const targetElement = document.querySelector(targetId);
-        if (targetElement) {
-          targetElement.scrollIntoView({ behavior: "smooth" });
-        }
-      });
-    });
-  }
-
-  // --- Hamburger Menu ---
-  function initializeHamburgerMenu() {
-    const hamburger = document.getElementById("hamburger");
-    const navRight = document.querySelector(".nav-right");
-    const navLinks = document.querySelectorAll(".nav-menu a");
-    
-    hamburger.addEventListener("click", () => {
-      hamburger.classList.toggle("active");
-      navRight.classList.toggle("active");
-    });
-    
-    navLinks.forEach(link => {
-      link.addEventListener("click", () => {
-        hamburger.classList.remove("active");
-        navRight.classList.remove("active");
-      });
-    });
-    
-    document.addEventListener("click", (e) => {
-      if (!hamburger.contains(e.target) && !navRight.contains(e.target)) {
-        hamburger.classList.remove("active");
-        navRight.classList.remove("active");
-      }
-    });
-  }
-
-  function showConfirmModal(title, message, onConfirm, onCancel) {
-    const modal = document.getElementById("confirmModal");
-    const modalTitle = document.getElementById("confirmModalTitle");
-    const modalMessage = document.getElementById("confirmModalMessage");
-    const yesBtn = document.getElementById("confirmYesBtn");
-    const noBtn = document.getElementById("confirmNoBtn");
-
-    modalTitle.textContent = title;
-    modalMessage.textContent = message;
-    modal.style.display = "flex";
-
-    yesBtn.onclick = null;
-    noBtn.onclick = null;
-
-    yesBtn.onclick = () => {
-      modal.style.display = "none";
-      if (onConfirm) onConfirm();
+    // --- Firebase Config ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
+      authDomain: "mizuteku-3a441.firebaseapp.com",
+      projectId: "mizuteku-3a441",
+      storageBucket: "mizuteku-3a441.firebasestorage.app",
+      messagingSenderId: "473895456413",
+      appId: "1:473895456413:web:1452ef7b9860908dd78e74",
+      measurementId: "G-NTT38FCEKG"
     };
 
-    noBtn.onclick = () => {
-      modal.style.display = "none";
-      if (onCancel) onCancel();
-    };
-  }
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-  let _alertQueue = [];
-  let _isAlertOpen = false;
+    const verificationTable = document.querySelector("#verificationTable tbody");
+    const verifiedTable = document.querySelector("#verifiedTable tbody");
 
-  function showAlertModal(title = '', message = '', callback = null) {
-    const modal = document.getElementById('alertModal');
-    if (!modal) {
-      console.warn('showAlertModal: #alertModal not found');
-      if (callback) callback();
-      return;
-    }
+    // --- Load Pending Verification Requests ---
+    async function loadStudentsForVerification() {
+      verificationTable.innerHTML = `<tr><td colspan="6" style="text-align:center;">Loading...</td></tr>`;
 
-    // If another alert is open, enqueue this one
-    if (_isAlertOpen) {
-      _alertQueue.push({ title, message, callback });
-      console.log('showAlertModal: queued:', title);
-      return;
-    }
-
-    console.log('showAlertModal: showing:', title);
-    // Fill contents
-    const titleEl = document.getElementById('alertModalTitle');
-    const msgEl = document.getElementById('alertModalMessage');
-    if (titleEl) titleEl.innerText = title;
-    if (msgEl) msgEl.innerText = message;
-
-    // Attach callback to modal instance
-    modal._alertCallback = typeof callback === 'function' ? callback : null;
-
-    // Show
-    modal.classList.remove('hidden');
-    modal.setAttribute('aria-hidden', 'false');
-    _isAlertOpen = true;
-
-    // optional: focus close button for accessibility
-    const closeBtn = modal.querySelector('.close-btn');
-    if (closeBtn) closeBtn.focus();
-  }
-
-  function closeAlert() {
-    const modal = document.getElementById('alertModal');
-    if (!modal) return;
-
-    // hide modal first (so UI updates)
-    modal.classList.add('hidden');
-    modal.setAttribute('aria-hidden', 'true');
-
-    // run callback if provided
-    const cb = modal._alertCallback;
-    modal._alertCallback = null;
-    _isAlertOpen = false;
-
-    if (typeof cb === 'function') {
-      try {
-        console.log('closeAlert: running callback');
-        cb();
-      } catch (err) {
-        console.error('closeAlert: callback error', err);
-      }
-    }
-
-    if (_alertQueue.length > 0) {
-      const next = _alertQueue.shift();
-      setTimeout(() => {
-        showAlertModal(next.title, next.message, next.callback);
-      }, 120);
-    }
-  }
-
-  window.addEventListener('click', function (event) {
-    const modal = document.getElementById('alertModal');
-    if (!modal) return;
-    if (event.target === modal) closeAlert();
-  });
-
-  window.addEventListener('keydown', function (e) {
-    const modal = document.getElementById('alertModal');
-    if (!modal || modal.classList.contains('hidden')) return;
-    if (e.key === 'Escape') closeAlert();
-  });
-
-  // --- Load Students ---
-  async function loadStudents() {
-    studentTable.innerHTML = `<tr><td colspan="4" style="text-align:center;">Loading...</td></tr>`;
-    const q = query(collection(db, "verificationRequests"), where("status", "==", "pending"));
-    const snapshot = await getDocs(q);
-
-    if (snapshot.empty) {
-      studentTable.innerHTML = `<tr><td colspan="4" style="text-align:center;">🎉 No pending verification requests!</td></tr>`;
-      return;
-    }
-
-    studentTable.innerHTML = "";
-    snapshot.forEach((docSnap) => {
-      const data = docSnap.data();
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${data.firstName} ${data.middleInitial || ""}. ${data.lastName}</td>
-        <td>${data.grade || "N/A"}</td>
-        <td class="status">Pending</td>
-        <td>
-          <button class="verify-btn" data-id="${data.studentId}" data-req="${docSnap.id}">Verify</button>
-          <button class="reject-btn" data-id="${data.studentId}" data-req="${docSnap.id}">Reject</button>
-        </td>`;
-      studentTable.appendChild(row);
-    });
-
-    // --- Verify Logic ---
-    document.querySelectorAll(".verify-btn").forEach(btn => {
-      btn.onclick = async () => {
-        const studentId = btn.dataset.id;
-        const requestId = btn.dataset.req;
-
-        try {
-          const requestRef = doc(db, "verificationRequests", requestId);
-          const requestSnap = await getDoc(requestRef);
-
-          if (!requestSnap.exists()) {
-            alert("❌ Verification request not found.");
-            return;
-          }
-
-          const requestData = requestSnap.data();
-
-          await setDoc(doc(db, "students", studentId), {
-            studentId,
-            firstName: requestData.firstName,
-            middleInitial: requestData.middleInitial,
-            lastName: requestData.lastName,
-            email: requestData.email,
-            verified: true,
-            createdAt: requestData.requestedAt || serverTimestamp(),
-            verifiedAt: serverTimestamp()
-          });
-
-          await updateDoc(requestRef, { status: "approved" });
-
-          alert("✅ Student verified and added to the students collection.");
-          loadStudents();
-        } catch (err) {
-          console.error(err);
-          alert("❌ Failed to verify student: " + err.message);
-        }
-      };
-    });
-
-    // --- Reject Logic ---
-    document.querySelectorAll(".reject-btn").forEach(btn => {
-      btn.onclick = async () => {
-        const studentId = btn.dataset.id;
-        const requestId = btn.dataset.req;
-        try {
-          await updateDoc(doc(db, "verificationRequests", requestId), { status: "rejected" });
-          await deleteDoc(doc(db, "students", studentId));
-          alert("❌ Student request rejected.");
-          loadStudents();
-        } catch (err) {
-          console.error(err);
-          alert("❌ Failed to reject student: " + err.message);
-        }
-      };
-    });
-  }
-
-  // --- Language Switcher ---
-  function initializeLanguageSwitcher() {
-    const enBtn = document.getElementById("lang-en");
-    const tlBtn = document.getElementById("lang-tl");
-
-    enBtn.addEventListener("click", () => switchLanguage("en"));
-    tlBtn.addEventListener("click", () => switchLanguage("tl"));
-  }
-
-  function switchLanguage(lang) {
-    document.getElementById("lang-en").classList.toggle("active", lang === "en");
-    document.getElementById("lang-tl").classList.toggle("active", lang === "tl");
-
-    document.querySelectorAll("[data-en]").forEach(el => {
-      const text = el.getAttribute(`data-${lang}`);
-      if (text) el.textContent = text;
-    });
-  }
-
-  // --- Auth State ---
-  onAuthStateChanged(auth, (user) => {
-    if (!user || user.email !== "mizutekuteacher@gmail.com") {
-      window.location.href = "index.html";
-    } else {
-      loadStudents();
-    }
-  });
-
-  const studentTableBody = document.querySelector("#studentTable tbody");
-
-  // --- Fetch Verified Students ---
-  async function loadVerifiedStudents() {
-    studentTableBody.innerHTML = '<tr><td colspan="4">Loading...</td></tr>';
-    try {
-      const q = query(collection(db, "students"), where("verified", "==", true));
+      const q = query(collection(db, "verificationRequests"), where("status", "==", "pending"));
       const snapshot = await getDocs(q);
 
       if (snapshot.empty) {
-        studentTableBody.innerHTML = '<tr><td colspan="4">No verified students yet.</td></tr>';
+        verificationTable.innerHTML = `<tr><td colspan="6" style="text-align:center;">🎉 No pending verification requests!</td></tr>`;
         return;
       }
 
-      studentTableBody.innerHTML = "";
-      snapshot.forEach((doc) => {
-        const data = doc.data();
+      verificationTable.innerHTML = "";
+      snapshot.forEach((docSnap) => {
+        const data = docSnap.data();
         const row = document.createElement("tr");
         row.innerHTML = `
-          <td>${data.firstName || ""}</td>
-          <td>${data.middleInitial || ""}</td>
-          <td>${data.lastName || ""}</td>
-          <td>${data.email || ""}</td>
-        `;
-        studentTableBody.appendChild(row);
+          <td>${data.firstName} ${data.middleInitial || ""}. ${data.lastName}</td>
+          <td>${data.lrn || "N/A"}</td>
+          <td>${data.grade || "N/A"}</td>
+          <td>${data.section || "N/A"}</td>
+          <td class="status">Pending</td>
+          <td>
+            <button class="verify-btn" data-id="${data.studentId}" data-req="${docSnap.id}">Verify</button>
+            <button class="reject-btn" data-id="${data.studentId}" data-req="${docSnap.id}">Reject</button>
+          </td>`;
+        verificationTable.appendChild(row);
       });
-    } catch (error) {
-      console.error("Error fetching students:", error);
-      studentTableBody.innerHTML = '<tr><td colspan="4">Failed to load students.</td></tr>';
+
+      // --- Verify Logic ---
+      document.querySelectorAll(".verify-btn").forEach(btn => {
+        btn.onclick = async () => {
+          const studentId = btn.dataset.id;
+          const requestId = btn.dataset.req;
+
+          try {
+            const requestRef = doc(db, "verificationRequests", requestId);
+            const requestSnap = await getDoc(requestRef);
+
+            if (!requestSnap.exists()) {
+              alert("❌ Verification request not found.");
+              return;
+            }
+
+            const requestData = requestSnap.data();
+
+            await setDoc(doc(db, "students", studentId), {
+              studentId,
+              firstName: requestData.firstName,
+              middleInitial: requestData.middleInitial,
+              lastName: requestData.lastName,
+              email: requestData.email,
+              lrn: requestData.lrn || "",
+              grade: requestData.grade || "",
+              section: requestData.section || "",
+              verified: true,
+              createdAt: requestData.requestedAt || serverTimestamp(),
+              verifiedAt: serverTimestamp()
+            });
+
+            await updateDoc(requestRef, { status: "approved" });
+
+            alert("✅ Student verified and added to the students collection.");
+            loadStudentsForVerification();
+            loadVerifiedStudents();
+          } catch (err) {
+            console.error(err);
+            alert("❌ Failed to verify student: " + err.message);
+          }
+        };
+      });
+
+      // --- Reject Logic ---
+      document.querySelectorAll(".reject-btn").forEach(btn => {
+        btn.onclick = async () => {
+          const requestId = btn.dataset.req;
+          try {
+            await updateDoc(doc(db, "verificationRequests", requestId), { status: "rejected" });
+            alert("❌ Student request rejected.");
+            loadStudentsForVerification();
+          } catch (err) {
+            console.error(err);
+            alert("❌ Failed to reject student: " + err.message);
+          }
+        };
+      });
     }
-  }
 
-  // --- Load on page load ---
-  loadVerifiedStudents();
+    // --- Load Verified Students ---
+    async function loadVerifiedStudents() {
+      verifiedTable.innerHTML = '<tr><td colspan="7" style="text-align:center;">Loading...</td></tr>';
 
-</script>
+      try {
+        const q = query(collection(db, "students"), where("verified", "==", true));
+        const snapshot = await getDocs(q);
+
+        if (snapshot.empty) {
+          verifiedTable.innerHTML = '<tr><td colspan="7" style="text-align:center;">No verified students yet.</td></tr>';
+          return;
+        }
+
+        verifiedTable.innerHTML = "";
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${data.firstName || ""}</td>
+            <td>${data.middleInitial || ""}</td>
+            <td>${data.lastName || ""}</td>
+            <td>${data.email || ""}</td>
+            <td>${data.lrn || "N/A"}</td>
+            <td>${data.grade || "N/A"}</td>
+            <td>${data.section || "N/A"}</td>
+          `;
+          verifiedTable.appendChild(row);
+        });
+      } catch (error) {
+        console.error("Error fetching students:", error);
+        verifiedTable.innerHTML = '<tr><td colspan="7" style="text-align:center;">Failed to load students.</td></tr>';
+      }
+    }
+
+    // --- Auth State ---
+    onAuthStateChanged(auth, (user) => {
+      if (!user || user.email !== "mizutekuteacher@gmail.com") {
+        window.location.href = "index.html";
+      } else {
+        loadStudentsForVerification();
+        loadVerifiedStudents();
+      }
+    });
+    </script>
     <script type="module">
         
     import { initializeClearData, 
