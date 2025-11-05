@@ -158,54 +158,116 @@
   #nameRow input#middleinitialInput { flex: 1; }
 
   #lrnRow, #nameRow, #gradeRow { display: none; }
+
+  .modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.modal-content {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  width: 320px;
+  text-align: center;
+  animation: pop 0.3s ease;
+}
+
+@keyframes pop {
+  0% { transform: scale(0.7); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.modal-content button {
+  margin-top: 15px;
+  background: #007bff;
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.modal-content button:hover {
+  background: #005ec7;
+}
+  
 </style>
 </head>
 <body>
-
-<div id="bgLayer"></div>
-
-<div class="login-container">
-  <h2 id="formTitle">MizuTeku Sign In</h2>
-  <p id="formDesc">Please enter your email and password:</p>
-
-  <!-- Sign-Up Extra Fields -->
-  <div class="row" id="lrnRow">
-    <input type="text" id="lrnInput" placeholder="LRN">
+  <div id="verifyModal" class="modal">
+    <div class="modal-content">
+      <h3>✅ Account Created!</h3>
+      <p>Your verification request has been sent.<br>
+      Please wait for approval.</p>
+      <button id="closeVerifyModal">Okay</button>
+    </div>
   </div>
-  <div class="row" id="nameRow">
-    <input type="text" id="lastnameInput" placeholder="Last Name">
-    <input type="text" id="firstnameInput" placeholder="First Name">
-    <input type="text" id="middleinitialInput" placeholder="M.I.">
-  </div>
-  <div class="row" id="gradeRow">
+
+  <div id="bgLayer"></div>
+
+  <div class="login-container">
+    <h2 id="formTitle">MizuTeku Sign In</h2>
+    <p id="formDesc">Please enter your email and password:</p>
+
+    <!-- Sign Up Role Selection -->
+    <div class="row" id="roleRow" style="display:none;">
+      <select id="roleSelect">
+        <option value="" disabled selected>Select Role</option>
+        <option value="student">Student</option>
+        <option value="teacher">Teacher</option>
+      </select>
+    </div>
+
+    <!-- STUDENT ONLY FIELD -->
+    <div class="row" id="lrnRow" style="display:none;">
+      <input type="text" id="lrnInput" placeholder="LRN (12 digits)">
+    </div>
+
+    <!-- SHARED NAME FIELDS -->
+    <div class="row" id="nameRow" style="display:none;">
+      <input type="text" id="lastnameInput" placeholder="Last Name">
+      <input type="text" id="firstnameInput" placeholder="First Name">
+      <input type="text" id="middleinitialInput" placeholder="M.I.">
+    </div>
+
+    <!-- SHARED ADVISORY / SECTION FIELDS -->
+    <div class="row" id="gradeRow" style="display:none;">
     <select id="gradeSelect">
       <option value="" disabled selected>Grade</option>
-      <option value="1">1</option>
-      <option value="2">2</option>
-      <option value="3">3</option>
+      <option value="1">Grade 1</option>
+      <option value="2">Grade 2</option>
+      <option value="3">Grade 3</option>
     </select>
-    <input type="text" id="sectionInput" placeholder="Section">
+    <input type="text" id="sectionInput" placeholder="Section (Ex. Diamond)">
   </div>
 
-  <!-- Common Fields -->
-  <input type="email" id="emailInput" placeholder="Enter your email">
+    <!-- COMMON EMAIL -->
+    <input type="email" id="emailInput" placeholder="Enter your email">
 
-  <div class="password-wrapper">
-    <input type="password" id="passwordInput" placeholder="Enter your password">
-    <span class="toggle-password" id="togglePassword"><i class="fa-solid fa-eye"></i></span>
+    <!-- PASSWORD -->
+    <div class="password-wrapper">
+      <input type="password" id="passwordInput" placeholder="Enter your password">
+      <span class="toggle-password" id="togglePassword"><i class="fa-solid fa-eye"></i></span>
+    </div>
+
+    <!-- CONFIRM PASSWORD (SIGN UP ONLY) -->
+    <div class="password-wrapper" id="confirmWrapper" style="display:none;">
+      <input type="password" id="confirmPasswordInput" placeholder="Confirm your password">
+      <span class="toggle-password" id="toggleConfirm"><i class="fa-solid fa-eye"></i></span>
+    </div>
+
+    <button id="saveUsername">Sign In</button>
+
+    <p id="switchText">
+      Don't have an account? <span class="toggle-link" id="toggleForm">Sign Up</span>
+    </p>
   </div>
-
-  <div class="password-wrapper" id="confirmWrapper" style="display:none;">
-    <input type="password" id="confirmPasswordInput" placeholder="Confirm your password">
-    <span class="toggle-password" id="toggleConfirm"><i class="fa-solid fa-eye"></i></span>
-  </div>
-
-  <button id="saveUsername">Sign In</button>
-
-  <p style="margin-top:10px;" id="switchText">
-    Don't have an account? <span class="toggle-link" id="toggleForm">Sign Up</span>
-  </p>
-</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -214,10 +276,9 @@ import {
   onAuthStateChanged, setPersistence, browserSessionPersistence
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import {
-  getFirestore, doc, getDoc, collection, addDoc, serverTimestamp
+  getFirestore, doc, getDoc, collection, addDoc, setDoc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// --- Firebase Config ---
 const firebaseConfig = {
   apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
   authDomain: "mizuteku-3a441.firebaseapp.com",
@@ -237,166 +298,188 @@ const toggleLink = document.getElementById("toggleForm");
 const loginBtn = document.getElementById("saveUsername");
 const formTitle = document.getElementById("formTitle");
 const formDesc = document.getElementById("formDesc");
-const confirmWrapper = document.getElementById("confirmWrapper");
+const confirmWrapper = document.getElementById("confirmPasswordInput").parentElement;
+
 const emailInput = document.getElementById("emailInput");
 const passwordInput = document.getElementById("passwordInput");
 const confirmPasswordInput = document.getElementById("confirmPasswordInput");
-const togglePassword = document.getElementById("togglePassword");
-const toggleConfirm = document.getElementById("toggleConfirm");
+
+const roleRow = document.getElementById("roleRow");
+const roleSelect = document.getElementById("roleSelect");
 
 const lrnRow = document.getElementById("lrnRow");
 const nameRow = document.getElementById("nameRow");
 const gradeRow = document.getElementById("gradeRow");
+
 const lrnInput = document.getElementById("lrnInput");
 const lastnameInput = document.getElementById("lastnameInput");
 const firstnameInput = document.getElementById("firstnameInput");
 const middleinitialInput = document.getElementById("middleinitialInput");
 const gradeSelect = document.getElementById("gradeSelect");
 const sectionInput = document.getElementById("sectionInput");
-const bgLayer = document.getElementById("bgLayer");
+
+const verifyModal = document.getElementById("verifyModal");
+document.getElementById("closeVerifyModal").onclick = () => verifyModal.style.display = "none";
 
 let isSignUpMode = false;
 
-// --- Toggle between Sign In and Sign Up ---
+// INPUT FILTERS
+lrnInput.addEventListener("input", () => lrnInput.value = lrnInput.value.replace(/\D/g, "").slice(0, 12));
+firstnameInput.addEventListener("input", () => {firstnameInput.value = firstnameInput.value.replace(/[^A-Za-z\s-]/g, "");});
+lastnameInput.addEventListener("input", () => lastnameInput.value = lastnameInput.value.replace(/[^A-Za-z\s]/g, ""));
+middleinitialInput.addEventListener("input", () => middleinitialInput.value = middleinitialInput.value.replace(/[^A-Za-z]/g, "").toUpperCase().slice(0, 1));
+sectionInput.addEventListener("input", () => sectionInput.value = sectionInput.value.replace(/[^A-Za-z0-9]/g, ""));
+
+// Toggle Sign Up / Sign In
 toggleLink.addEventListener("click", () => {
   isSignUpMode = !isSignUpMode;
+
   formTitle.textContent = isSignUpMode ? "MizuTeku Sign Up" : "MizuTeku Sign In";
-  formDesc.textContent = isSignUpMode
-    ? "Please enter your details to create an account:"
-    : "Please enter your email and password:";
-
-  lrnRow.style.display = nameRow.style.display = gradeRow.style.display =
-    confirmWrapper.style.display = isSignUpMode ? "flex" : "none";
-
-  loginBtn.textContent = isSignUpMode ? "Sign Up" : "Sign In";
+  formDesc.textContent = isSignUpMode ? "Create an account:" : "Please enter your credentials:";
+  loginBtn.textContent = isSignUpMode ? "Create Account" : "Sign In";
   toggleLink.textContent = isSignUpMode ? "Sign In" : "Sign Up";
-  document.getElementById("switchText").firstChild.textContent = isSignUpMode
-    ? "Already have an account? "
-    : "Don't have an account? ";
-});
 
-// --- Handle Auth ---
-async function handleAuth() {
-  const email = emailInput.value.trim();
-  const password = passwordInput.value.trim();
+  confirmWrapper.style.display = isSignUpMode ? "flex" : "none";
+  roleRow.style.display = isSignUpMode ? "flex" : "none";
 
   if (isSignUpMode) {
-    const lrn = lrnInput.value.trim();
-    const lastName = lastnameInput.value.trim();
-    const firstName = firstnameInput.value.trim();
-    const middleInitial = middleinitialInput.value.trim();
-    const grade = gradeSelect.value;
-    const section = sectionInput.value.trim();
-    const confirmPassword = confirmPasswordInput.value.trim();
+    roleSelect.value = "student";
+    lrnRow.style.display = "flex";
+    nameRow.style.display = "flex";
+    gradeRow.style.display = "flex";
+  } else {
+    lrnRow.style.display = "none";
+    nameRow.style.display = "none";
+    gradeRow.style.display = "none";
+  }
+});
 
-    if (!lrn || !lastName || !firstName || !grade || !section || !email || !password) {
-      alert("⚠️ Please fill in all required fields!");
-      return;
-    }
-    if (password !== confirmPassword) {
-      alert("⚠️ Passwords do not match!");
-      return;
-    }
+// Role Selection Fields
+roleSelect.addEventListener("change", () => {
+  const role = roleSelect.value;
 
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
+  if (role === "student") {
+    lrnRow.style.display = "flex";
+    nameRow.style.display = "flex";
+    gradeRow.style.display = "flex";
 
-      await addDoc(collection(db, "verificationRequests"), {
-        studentId: user.uid,
-        lrn,
-        lastName,
-        firstName,
-        middleInitial,
-        grade,
-        section,
-        email,
+    gradeSelect.options[0].textContent = "Grade (1-3)";
+    sectionInput.placeholder = "Section (e.g. Diamond)";
+  }
+
+  if (role === "teacher") {
+    lrnRow.style.display = "none";
+    nameRow.style.display = "flex";
+    gradeRow.style.display = "flex";
+
+    gradeSelect.options[0].textContent = "Advisory Grade";
+    sectionInput.placeholder = "Advisory Section";
+  }
+});
+
+// Handle Auth
+async function handleAuth() {
+
+  if (isSignUpMode) {
+
+    // ✅ TEACHER SIGN UP → SEND TO teacherVerificationRequests
+    if (roleSelect.value === "teacher") {
+
+      if (!lastnameInput.value || !firstnameInput.value || !gradeSelect.value || !sectionInput.value) {
+        return alert("Please fill all teacher information.");
+      }
+
+      if (passwordInput.value !== confirmPasswordInput.value) {
+        confirmPasswordInput.setCustomValidity("Passwords do not match.");
+        confirmPasswordInput.reportValidity();
+        return;
+      }
+
+      const userCredential = await createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
+
+      await setDoc(doc(db, "teacherVerificationRequests", userCredential.user.uid), {
+        teacherId: userCredential.user.uid,
+        lastName: lastnameInput.value,
+        firstName: firstnameInput.value,
+        middleInitial: middleinitialInput.value,
+        advisoryGrade: gradeSelect.value,
+        advisorySection: sectionInput.value,
+        email: emailInput.value,
         status: "pending",
         requestedAt: serverTimestamp(),
       });
 
-      alert("✅ Sign-up successful! Verification request sent to teacher.");
-      toggleLink.click();
-    } catch (err) {
-      alert("❌ " + err.message);
-    }
-
-  } else {
-    if (!email || !password) {
-      alert("⚠️ Please enter your email and password.");
+      verifyModal.style.display = "flex";
       return;
     }
-    try {
-      await setPersistence(auth, browserSessionPersistence);
-      const { user } = await signInWithEmailAndPassword(auth, email, password);
 
-      if (email === "mizutekuteacher@gmail.com") {
-        window.location.href = "teacher.html";
-        return;
-      }
-
-      const studentDoc = await getDoc(doc(db, "students", user.uid));
-      if (studentDoc.exists() && studentDoc.data().verified) {
-        window.location.href = "student.html";
-      } else {
-        alert("⏳ Your account is still waiting for teacher verification.");
-      }
-    } catch (err) {
-      alert("❌ " + err.message);
+    // ✅ STUDENT SIGN UP (same as before)
+    if (!/^[0-9]{12}$/.test(lrnInput.value)) {
+      lrnInput.setCustomValidity("LRN must be exactly 12 digits.");
+      lrnInput.reportValidity();
+      return;
     }
+
+    if (passwordInput.value !== confirmPasswordInput.value) {
+      confirmPasswordInput.setCustomValidity("Passwords do not match.");
+      confirmPasswordInput.reportValidity();
+      return;
+    }
+
+    const userCredential = await createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
+
+    await addDoc(collection(db, "verificationRequests"), {
+      studentId: userCredential.user.uid,
+      lrn: lrnInput.value,
+      lastName: lastnameInput.value,
+      firstName: firstnameInput.value,
+      middleInitial: middleinitialInput.value,
+      grade: gradeSelect.value,
+      section: sectionInput.value,
+      email: emailInput.value,
+      status: "pending",
+      requestedAt: serverTimestamp(),
+    });
+
+    verifyModal.style.display = "flex";
+    return;
   }
+
+  // ✅ SIGN IN
+// ✅ SIGN IN
+await setPersistence(auth, browserSessionPersistence);
+const { user } = await signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
+
+// --- TEACHER LOGIN CHECK ---
+const teacherDoc = await getDoc(doc(db, "teachers", user.uid));
+if (teacherDoc.exists()) {
+  if (teacherDoc.data().verified === true) {
+    return window.location.href = "teacher.html"; // ✅ Approved Teacher
+  } else {
+    passwordInput.setCustomValidity("Your teacher account is still pending admin verification.");
+    passwordInput.reportValidity();
+    return;
+  }
+}
+
+// --- STUDENT LOGIN CHECK ---
+const studentDoc = await getDoc(doc(db, "students", user.uid));
+if (studentDoc.exists()) {
+  if (studentDoc.data().verified === true) {
+    return window.location.href = "student.html"; // ✅ Approved Student
+  } else {
+    passwordInput.setCustomValidity("Your student account is still pending verification.");
+    passwordInput.reportValidity();
+    return;
+  }
+}
+
+// If neither student nor teacher exists:
+passwordInput.setCustomValidity("Your account is not yet processed by admin.");
+passwordInput.reportValidity();
 }
 
 loginBtn.addEventListener("click", handleAuth);
-
-// Enter Key Support
-document.querySelectorAll("input, select").forEach(el => {
-  el.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") handleAuth();
-  });
-});
-
-// Auto Redirect
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    if (user.email === "mizutekuteacher@gmail.com") {
-      window.location.href = "teacher.html";
-    } else {
-      const studentDoc = await getDoc(doc(db, "students", user.uid));
-      if (studentDoc.exists() && studentDoc.data().verified) {
-        window.location.href = "student.html";
-      }
-    }
-  }
-});
-
-// Bubble Animation
-function createBubble() {
-  const bubble = document.createElement("div");
-  bubble.classList.add("bubble");
-  const size = Math.random() * 50 + 20;
-  bubble.style.width = `${size}px`;
-  bubble.style.height = `${size}px`;
-  bubble.style.left = `${Math.random() * 100}%`;
-  bubble.style.background = `rgba(${Math.floor(Math.random()*255)}, ${Math.floor(Math.random()*255)}, ${Math.floor(Math.random()*255)}, 0.5)`;
-  bubble.style.animationDuration = `${Math.random() * 5 + 5}s`;
-  bubble.addEventListener("click", () => bubble.classList.add("pop"));
-  bubble.addEventListener("animationend", () => bubble.remove());
-  bgLayer.appendChild(bubble);
-}
-setInterval(createBubble, 400);
-
-// Password Toggles
-function toggleVisibility(input, icon) {
-  const type = input.type === "password" ? "text" : "password";
-  input.type = type;
-  icon.innerHTML = type === "password"
-    ? '<i class="fa-solid fa-eye"></i>'
-    : '<i class="fa-solid fa-eye-slash"></i>';
-}
-
-togglePassword.addEventListener("click", () => toggleVisibility(passwordInput, togglePassword));
-toggleConfirm.addEventListener("click", () => toggleVisibility(confirmPasswordInput, toggleConfirm));
 </script>
 </body>
 </html>
