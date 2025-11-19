@@ -859,14 +859,28 @@
     }
 
     // --- Auth State ---
-    onAuthStateChanged(auth, (user) => {
-      if (!user || user.email !== "mizutekuteacher@gmail.com") {
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
         window.location.href = "index.html";
-      } else {
-        loadStudentsForVerification();
-        loadVerifiedStudents();
+        return;
       }
+
+      // Check TEACHER collection
+      const teacherDoc = await getDoc(doc(db, "teacher", user.uid));
+
+      if (teacherDoc.exists()) {
+        if (teacherDoc.data().verified === true) {
+          // ALLOW ACCESS
+          loadStudentsForVerification();
+          loadVerifiedStudents();
+          return;
+        }
+      }
+
+      // If not verified or not in teacher collection → redirect
+      window.location.href = "index.html";
     });
+
     </script>
     <script type="module">
         

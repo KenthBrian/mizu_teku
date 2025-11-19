@@ -451,7 +451,7 @@ await setPersistence(auth, browserSessionPersistence);
 const { user } = await signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
 
 // --- TEACHER LOGIN CHECK ---
-const teacherDoc = await getDoc(doc(db, "teachers", user.uid));
+const teacherDoc = await getDoc(doc(db, "teacher", user.uid));
 if (teacherDoc.exists()) {
   if (teacherDoc.data().verified === true) {
     return window.location.href = "teacher.html"; // ✅ Approved Teacher

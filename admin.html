@@ -575,9 +575,35 @@
     transform: rotate(360deg);
   }
 
+  .verify-btn, .reject-btn {
+        border: none;
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: 0.3s;
+        color: white;
+    }
+
+    .verify-btn {
+        background-color: #4caf50;
+        margin-right: 8px;
+    }
+
+    .verify-btn:hover {
+        background-color: #43a047;
+    }
+
+    .reject-btn {
+        background-color: #f44336;
+    }
+
+    .reject-btn:hover {
+        background-color: #e53935;
+    }
+
   </style>
 </head>
-
 <body data-page="admin">
 
   <!-- Confirm Modal -->
@@ -618,11 +644,11 @@
 
       <div class="nav-right">
         <ul class="nav-menu" id="nav-menu">
-          <li><a href="#home" data-en="Home" data-tl="Tahanan">Home</a></li>
-          <li><a href="#verification" data-en="Verification" data-tl="Mga Kaharap na Patunayan">Verification</a></li>
-          <li><a href="#teachers" data-en="Teachers" data-tl="Guro">Teachers</a></li>
-          <li><a href="#reports" data-en="Reports" data-tl="Ulat">Reports</a></li>
-          <li><a href="#about" data-en="About" data-tl="Tungkol">About</a></li>
+          <li><a href="#home">Home</a></li>
+          <li><a href="#verification">Teacher Verification</a></li>
+          <li><a href="#teachers">Teachers</a></li>
+          <li><a href="#reports">Reports</a></li>
+          <li><a href="#about">About</a></li>
           <li>
             <a href="#settings">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
@@ -648,30 +674,29 @@
   <main>
     <section id="home">
       <h2>Welcome to Admin Dashboard</h2>
-      <p>Manage teacher verification, student verification, and oversee system reports.</p>
+      <p>Manage teacher verification and oversee system reports.</p>
     </section>
 
-    <!-- VERIFICATION REQUESTS -->
+    <!-- TEACHER VERIFICATION REQUESTS -->
     <section id="verification">
-      <h2>Pending Verification Requests</h2>
+      <h2>Pending Teacher Verification Requests</h2>
       <table id="verificationTable" class="student-list">
         <thead>
           <tr>
             <th>Name</th>
-            <th>Type</th> <!-- student or teacher -->
-            <th>Grade / Role</th>
+            <th>Grade</th>
             <th>Section</th>
-            <th>Status</th>
+            <th>Email</th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td colspan="6" style="text-align:center;">Loading...</td></tr>
+          <tr><td colspan="5" style="text-align:center;">Loading...</td></tr>
         </tbody>
       </table>
     </section>
 
-    <!-- TEACHERS -->
+    <!-- VERIFIED TEACHERS -->
     <section id="teachers">
       <h2>Verified Teachers</h2>
       <table id="teacherTable" border="1" style="width: 100%; border-collapse: collapse;">
@@ -679,12 +704,13 @@
           <tr>
             <th>Name</th>
             <th>Email</th>
-            <th>ID Number</th>
+            <th>Advisory Grade</th>
+            <th>Advisory Section</th>
             <th>Status</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td colspan="4" style="text-align:center;">Loading...</td></tr>
+          <tr><td colspan="6" style="text-align:center;">Loading...</td></tr>
         </tbody>
       </table>
     </section>
@@ -696,177 +722,174 @@
 
     <section id="about">
       <h2>About</h2>    
-      <p>This dashboard allows admins to verify accounts and manage users.</p>
+      <p>This dashboard allows admins to verify teacher accounts and manage users.</p>
     </section>
 
-    <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import {
-    getAuth, onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import {
-    getFirestore, collection, getDocs, getDoc, setDoc,
-    query, where, updateDoc, deleteDoc, doc, serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+<!-- ========================= -->
+<!--        FIREBASE JS        -->
+<!-- ========================= -->
 
-    // --- Firebase Config ---
-    const firebaseConfig = {
-    apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
-    authDomain: "mizuteku-3a441.firebaseapp.com",
-    projectId: "mizuteku-3a441",
-    storageBucket: "mizuteku-3a441.firebasestorage.app",
-    messagingSenderId: "473895456413",
-    appId: "1:473895456413:web:1452ef7b9860908dd78e74",
-    measurementId: "G-NTT38FCEKG"
+<script type="module">
+
+// FIREBASE IMPORTS
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import {
+  getFirestore, collection, getDocs, getDoc, setDoc,
+  query, where, updateDoc, doc, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+// FIREBASE CONFIG
+const firebaseConfig = {
+  apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
+  authDomain: "mizuteku-3a441.firebaseapp.com",
+  projectId: "mizuteku-3a441",
+  storageBucket: "mizuteku-3a441.firebasestorage.app",
+  messagingSenderId: "473895456413",
+  appId: "1:473895456413:web:1452ef7b9860908dd78e74",
+  measurementId: "G-NTT38FCEKG"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// TABLES
+const verificationTable = document.querySelector("#verificationTable tbody");
+const teacherTable = document.querySelector("#teacherTable tbody");
+
+
+// ------------------------------
+// LOAD PENDING TEACHER REQUESTS
+// ------------------------------
+async function loadTeacherRequests() {
+  verificationTable.innerHTML = `<tr><td colspan="5" style="text-align:center;">Loading...</td></tr>`;
+
+  const q = query(collection(db, "teacherVerificationRequests"), where("status", "==", "pending"));
+  const snapshot = await getDocs(q);
+
+  if (snapshot.empty) {
+    verificationTable.innerHTML = `<tr><td colspan="5" style="text-align:center;">No Teachers Found</td></tr>`;
+    return;
+  }
+
+  verificationTable.innerHTML = "";
+  snapshot.forEach((docSnap) => {
+    const data = docSnap.data();
+
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${data.firstName} ${data.middleInitial || ""}. ${data.lastName}</td>
+      <td>${data.advisoryGrade}</td>
+      <td>${data.advisorySection}</td>
+      <td>${data.email}</td>
+      <td>
+          <button class="verify-teacher" data-id="${data.teacherId}" data-req="${docSnap.id}">Verify</button>
+          <button class="reject-teacher" data-req="${docSnap.id}">Reject</button>
+      </td>
+    `;
+
+    verificationTable.appendChild(row);
+  });
+
+  // VERIFY TEACHER
+  document.querySelectorAll(".verify-teacher").forEach(btn => {
+    btn.onclick = async () => {
+      const teacherId = btn.dataset.id;
+      const requestId = btn.dataset.req;
+
+      const reqRef = doc(db, "teacherVerificationRequests", requestId);
+      const reqSnap = await getDoc(reqRef);
+      const data = reqSnap.data();
+
+      // SAVE verified teacher into "teachers" collection
+      await setDoc(doc(db, "teacher", teacherId), {
+        teacherId,
+        firstName: data.firstName,
+        middleInitial: data.middleInitial || "",
+        lastName: data.lastName,
+        email: data.email,
+        role: "teacher",
+        advisoryGrade: data.advisoryGrade,
+        advisorySection: data.advisorySection,
+        status: "verified",
+        verified: true,
+        verifiedAt: serverTimestamp()
+      });
+
+      // Update their request status
+      await updateDoc(reqRef, { status: "approved" });
+
+      alert("✅ Teacher Verified");
+
+      loadTeacherRequests();
+      loadVerifiedTeachers();
     };
+  });
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+  // REJECT TEACHER
+  document.querySelectorAll(".reject-teacher").forEach(btn => {
+    btn.onclick = async () => {
+      await updateDoc(doc(db, "teacherVerificationRequests", btn.dataset.req), {
+        status: "rejected"
+      });
 
-    // TABLES
-    const studentTable = document.querySelector("#verificationTable tbody");
-    const teacherTable = document.querySelector("#teacherVerificationTable tbody");
+      alert("❌ Teacher Request Rejected");
+      loadTeacherRequests();
+    };
+  });
+}
 
-    // --- Load PENDING STUDENT Requests ---
-    async function loadStudentRequests() {
-    studentTable.innerHTML = `<tr><td colspan="6" style="text-align:center;">Loading...</td></tr>`;
 
-    const q = query(collection(db, "verificationRequests"), where("status", "==", "pending"));
-    const snapshot = await getDocs(q);
+// ------------------------------
+// LOAD VERIFIED TEACHERS
+// ------------------------------
+async function loadVerifiedTeachers() {
+  teacherTable.innerHTML = `<tr><td colspan="5" style="text-align:center;">Loading...</td></tr>`;
 
-    if (snapshot.empty) {
-        studentTable.innerHTML = `<tr><td colspan="6" style="text-align:center;">No pending student requests.</td></tr>`;
-        return;
-    }
+  const q = query(collection(db, "teacher"), where("verified", "==", true));
+  const snapshot = await getDocs(q);
 
-    studentTable.innerHTML = "";
-    snapshot.forEach((docSnap) => {
-        const data = docSnap.data();
-        const row = document.createElement("tr");
-        row.innerHTML = `
-        <td>${data.firstName} ${data.middleInitial || ""}. ${data.lastName}</td>
-        <td>${data.lrn}</td>
-        <td>${data.grade}</td>
-        <td>${data.section}</td>
-        <td>
-            <button class="verify-student" data-id="${data.studentId}" data-req="${docSnap.id}">Verify</button>
-            <button class="reject-student" data-req="${docSnap.id}">Reject</button>
-        </td>`;
-        studentTable.appendChild(row);
-    });
+  if (snapshot.empty) {
+    teacherTable.innerHTML = `<tr><td colspan="5" style="text-align:center;">No Teachers Found</td></tr>`;
+    return;
+  }
 
-    // VERIFY STUDENT
-    document.querySelectorAll(".verify-student").forEach(btn => {
-        btn.onclick = async () => {
-        const studentId = btn.dataset.id;
-        const requestId = btn.dataset.req;
-        const reqRef = doc(db, "verificationRequests", requestId);
-        const reqSnap = await getDoc(reqRef);
+  teacherTable.innerHTML = "";
 
-        if (!reqSnap.exists()) return;
+  snapshot.forEach((docSnap) => {
+    const data = docSnap.data();
 
-        const data = reqSnap.data();
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${data.firstName} ${data.middleInitial || ""}. ${data.lastName}</td>
+      <td>${data.email}</td>
+      <td>${data.advisoryGrade || "—"}</td>
+      <td>${data.advisorySection || "—"}</td>
+      <td>${data.status}</td>
+    `;
 
-        await setDoc(doc(db, "students", studentId), {
-            studentId,
-            ...data,
-            verified: true,
-            verifiedAt: serverTimestamp()
-        });
+    teacherTable.appendChild(row);
+  });
+}
 
-        await updateDoc(reqRef, { status: "approved" });
-        alert("✅ Student Verified");
-        loadStudentRequests();
-        };
-    });
+// ------------------------------
+// ON PAGE LOAD
+// ------------------------------
+onAuthStateChanged(auth, (user) => {
+  if (!user) return;
+  loadTeacherRequests();
+  loadVerifiedTeachers();
+});
 
-    // REJECT STUDENT
-    document.querySelectorAll(".reject-student").forEach(btn => {
-        btn.onclick = async () => {
-        await updateDoc(doc(db, "verificationRequests", btn.dataset.req), { status: "rejected" });
-        alert("❌ Request Rejected");
-        loadStudentRequests();
-        };
-    });
-    }
+</script>
 
-    // --- Load PENDING TEACHER Requests ---
-    async function loadTeacherRequests() {
-    teacherTable.innerHTML = `<tr><td colspan="6" style="text-align:center;">Loading...</td></tr>`;
+<script type="module">
+import { initializeClearData, initializeLanguageSwitcher } from "./script.js";
 
-    const q = query(collection(db, "teacherVerificationRequests"), where("status", "==", "pending"));
-    const snapshot = await getDocs(q);
-
-    if (snapshot.empty) {
-        teacherTable.innerHTML = `<tr><td colspan="6" style="text-align:center;">No pending teacher requests.</td></tr>`;
-        return;
-    }
-
-    teacherTable.innerHTML = "";
-    snapshot.forEach((docSnap) => {
-        const data = docSnap.data();
-        const row = document.createElement("tr");
-        row.innerHTML = `
-        <td>${data.firstName} ${data.middleInitial || ""}. ${data.lastName}</td>
-        <td>${data.advisoryGrade}</td>
-        <td>${data.advisorySection}</td>
-        <td>${data.email}</td>
-        <td>
-            <button class="verify-teacher" data-id="${data.teacherId}" data-req="${docSnap.id}">Verify</button>
-            <button class="reject-teacher" data-req="${docSnap.id}">Reject</button>
-        </td>`;
-        teacherTable.appendChild(row);
-    });
-
-    // VERIFY TEACHER
-    document.querySelectorAll(".verify-teacher").forEach(btn => {
-        btn.onclick = async () => {
-        const teacherId = btn.dataset.id;
-        const requestId = btn.dataset.req;
-        const reqRef = doc(db, "teacherVerificationRequests", requestId);
-        const reqSnap = await getDoc(reqRef);
-        const data = reqSnap.data();
-
-        await setDoc(doc(db, "teachers", teacherId), {
-            teacherId,
-            ...data,
-            verified: true,
-            verifiedAt: serverTimestamp()
-        });
-
-        await updateDoc(reqRef, { status: "approved" });
-        alert("✅ Teacher Verified");
-        loadTeacherRequests();
-        };
-    });
-
-    // REJECT TEACHER
-    document.querySelectorAll(".reject-teacher").forEach(btn => {
-        btn.onclick = async () => {
-        await updateDoc(doc(db, "teacherVerificationRequests", btn.dataset.req), { status: "rejected" });
-        alert("❌ Teacher Request Rejected");
-        loadTeacherRequests();
-        };
-    });
-    }
-
-    // --- On Page Load ---
-    onAuthStateChanged(auth, (user) => {
-    // OPTIONAL: Add admin login restriction here
-    loadStudentRequests();
-    loadTeacherRequests();
-    });
-    </script>
-    <script type="module">
-        
-    import { initializeClearData, 
-        initializeLanguageSwitcher,
-     } from "./script.js";
-
-    const currentLanguage = "en"; // or "tl"
-    initializeClearData(currentLanguage);
-    initializeLanguageSwitcher();
-    </script>
+const currentLanguage = "en";
+initializeClearData(currentLanguage);
+initializeLanguageSwitcher();
+</script>
 </body>
 </html>
