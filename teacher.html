@@ -622,7 +622,7 @@
                         <li><a href="#home" data-en="Home" data-tl="Tahanan">Home</a></li>
                         <li><a href="#verification" data-en="Verification" data-tl="Pagpapatunay">Verification</a></li>
                         <li><a href="#students" data-en="Students" data-tl="Mag-aaral">Students</a></li>
-                        <li><a href="#reports" data-en="Reports" data-tl="Ulat">Reports</a></li>
+                        <li><a href="#logs" data-en="Logs" data-tl="Mga log">Logs</a></li>
                         <li><a href="#about" data-en="About" data-tl="Tungkol">About</a></li>
                         <li>
                           <a href="#settings">
@@ -697,10 +697,12 @@
     </section>
 
     <!-- REPORTS SECTION -->
-    <section id="reports">
-      <h2>Reports</h2>
-      <p>Configure dashboard preferences or teacher account options.</p>
-    </section>
+    <section id="logs">
+    <h2>Logs</h2>
+    <div id="logContainer">
+      <p>No logs available at the moment.</p>
+    </div>
+  </section>
 
     <!-- ABOUT SECTION -->
     <section id="about">
@@ -708,14 +710,17 @@
       <p>This dashboard is designed for teachers to manage student verifications easily and securely.</p>
     </section>
 
+    <section id="logs">
+  <h2>Logs</h2>
+  <div id="logContainer" style="max-height: 300px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;"></div>
+</section>
+
     <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import {
-      getAuth, onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import {
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { 
       getFirestore, collection, getDocs, getDoc, setDoc,
-      query, where, updateDoc, deleteDoc, doc, serverTimestamp
+      query, where, updateDoc, doc, serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     // --- Firebase Config ---
@@ -735,12 +740,31 @@
 
     const verificationTable = document.querySelector("#verificationTable tbody");
     const verifiedTable = document.querySelector("#verifiedTable tbody");
+    const logContainer = document.querySelector("#logContainer");
+
+    // --- Logging Function ---
+    function addLog(message, type = "info") {
+      const p = document.createElement("p");
+      const timestamp = new Date().toLocaleString();
+      p.textContent = `${timestamp}: ${message}`;
+
+      if(type === "success") p.style.color = "green";
+      if(type === "error") p.style.color = "red";
+      if(type === "warning") p.style.color = "orange";
+
+      logContainer.prepend(p);
+    }
 
     // --- Load Pending Verification Requests ---
-    async function loadStudentsForVerification() {
+    async function loadStudentsForVerification(advisorySection) {
       verificationTable.innerHTML = `<tr><td colspan="6" style="text-align:center;">Loading...</td></tr>`;
 
-      const q = query(collection(db, "verificationRequests"), where("status", "==", "pending"));
+      const q = query(
+        collection(db, "verificationRequests"),
+        where("status", "==", "pending"),
+        where("section", "==", advisorySection)
+      );
+
       const snapshot = await getDocs(q);
 
       if (snapshot.empty) {
@@ -749,7 +773,7 @@
       }
 
       verificationTable.innerHTML = "";
-      snapshot.forEach((docSnap) => {
+      snapshot.forEach(docSnap => {
         const data = docSnap.data();
         const row = document.createElement("tr");
         row.innerHTML = `
@@ -776,6 +800,7 @@
             const requestSnap = await getDoc(requestRef);
 
             if (!requestSnap.exists()) {
+              addLog(`Attempted to verify student ${studentId}, but request not found.`, "error");
               alert("❌ Verification request not found.");
               return;
             }
@@ -798,11 +823,12 @@
 
             await updateDoc(requestRef, { status: "approved" });
 
-            alert("✅ Student verified and added to the students collection.");
-            loadStudentsForVerification();
-            loadVerifiedStudents();
+            addLog(`Student ${requestData.firstName} ${requestData.lastName} verified successfully.`, "success");
+            loadStudentsForVerification(advisorySection);
+            loadVerifiedStudents(advisorySection);
           } catch (err) {
             console.error(err);
+            addLog(`Failed to verify student ${studentId}: ${err.message}`, "error");
             alert("❌ Failed to verify student: " + err.message);
           }
         };
@@ -813,11 +839,16 @@
         btn.onclick = async () => {
           const requestId = btn.dataset.req;
           try {
+            const requestSnap = await getDoc(doc(db, "verificationRequests", requestId));
+            const requestData = requestSnap.exists() ? requestSnap.data() : { studentId: "unknown" };
+
             await updateDoc(doc(db, "verificationRequests", requestId), { status: "rejected" });
-            alert("❌ Student request rejected.");
-            loadStudentsForVerification();
+
+            addLog(`Student ${requestData.firstName || ""} ${requestData.lastName || ""} verification rejected.`, "warning");
+            loadStudentsForVerification(advisorySection);
           } catch (err) {
             console.error(err);
+            addLog(`Failed to reject student request ${requestId}: ${err.message}`, "error");
             alert("❌ Failed to reject student: " + err.message);
           }
         };
@@ -825,11 +856,16 @@
     }
 
     // --- Load Verified Students ---
-    async function loadVerifiedStudents() {
+    async function loadVerifiedStudents(advisorySection) {
       verifiedTable.innerHTML = '<tr><td colspan="7" style="text-align:center;">Loading...</td></tr>';
 
       try {
-        const q = query(collection(db, "students"), where("verified", "==", true));
+        const q = query(
+          collection(db, "students"),
+          where("verified", "==", true),
+          where("section", "==", advisorySection)
+        );
+
         const snapshot = await getDocs(q);
 
         if (snapshot.empty) {
@@ -838,7 +874,7 @@
         }
 
         verifiedTable.innerHTML = "";
-        snapshot.forEach((doc) => {
+        snapshot.forEach(doc => {
           const data = doc.data();
           const row = document.createElement("tr");
           row.innerHTML = `
@@ -865,22 +901,17 @@
         return;
       }
 
-      // Check TEACHER collection
       const teacherDoc = await getDoc(doc(db, "teacher", user.uid));
 
-      if (teacherDoc.exists()) {
-        if (teacherDoc.data().verified === true) {
-          // ALLOW ACCESS
-          loadStudentsForVerification();
-          loadVerifiedStudents();
-          return;
-        }
+      if (teacherDoc.exists() && teacherDoc.data().verified === true) {
+        const advisorySection = teacherDoc.data().advisorySection || "";
+        loadStudentsForVerification(advisorySection);
+        loadVerifiedStudents(advisorySection);
+        return;
       }
 
-      // If not verified or not in teacher collection → redirect
       window.location.href = "index.html";
     });
-
     </script>
     <script type="module">
         
