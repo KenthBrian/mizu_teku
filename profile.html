@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MizuTeku | User Profile</title>
+
+<style>
+    ::-webkit-scrollbar { display: none; }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Poppins", sans-serif; }
+
+    body {
+        background: linear-gradient(135deg, #7ecbff, #9fffa5);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .profile-container {
+        width: 95%;
+        max-width: 1150px;
+        background: #ffffff;
+        padding: 40px;
+        border-radius: 25px;
+        display: flex;
+        gap: 35px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        animation: fadeIn 0.4s ease-in-out;
+    }
+
+    @keyframes fadeIn { 
+        from { opacity: 0; transform: translateY(10px); } 
+        to { opacity: 1; transform: translateY(0); } 
+    }
+
+    /* LEFT PANEL */
+    .left {
+        width: 32%;
+        text-align: center;
+        border-right: 2px solid #e5e5e5;
+        padding-right: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .profile-img {
+        width: 165px;
+        height: 165px;
+        border-radius: 50%;
+        border: 4px solid #3498db;
+        object-fit: cover;
+        margin-bottom: 15px;
+        transition: 0.3s;
+    }
+    .profile-img:hover { transform: scale(1.03); }
+
+    #changePhotoBtn {
+        background: #3498db;
+        color: white;
+        padding: 8px 14px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        margin-bottom: 15px;
+        font-size: 0.9rem;
+        transition: 0.2s;
+    }
+    #changePhotoBtn:hover { background: #217dbb; }
+
+    .name-input, .subtitle-input {
+        width: 100%;
+        max-width: 220px;
+        border: none;
+        background: transparent;
+        text-align: center;
+        font-size: 1.2rem; /* slightly smaller */
+        font-weight: 700;
+        margin-bottom: 8px;
+        cursor: default;
+        opacity: 0.95;
+        padding: 0;
+        white-space: normal; /* allow wrapping instead of truncating */
+        overflow: visible;
+        text-overflow: unset;
+    }
+
+    .subtitle-input {
+        font-size: 1rem;
+        font-weight: 500;
+        color: #555;
+        margin-bottom: 15px;
+    }
+
+    .field {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        font-size: 1rem;
+        color: #34495e;
+        margin-bottom: 12px;
+    }
+
+    .field strong { text-align: left; }
+
+    .field input.profile-edit {
+        width: 60%;
+        border: none;
+        background: transparent;
+        text-align: right;
+        font-size: 1rem;
+        color: #34495e;
+        transition: 0.25s;
+        opacity: 0.8;
+        cursor: not-allowed;
+        padding: 2px 4px;
+    }
+
+    .field input.profile-edit:focus {
+        outline: none;
+        border-bottom: 1px solid #3498db;
+        opacity: 1;
+        cursor: text;
+    }
+
+    .field input.profile-edit.editable {
+        cursor: text;
+        opacity: 1;
+    }
+
+    /* RIGHT PANEL */
+    .right { width: 68%; display: flex; flex-direction: column; gap: 20px; }
+    .box { background: #f9fafc; padding: 22px 26px; border-radius: 18px; box-shadow: 0 3px 12px rgba(0,0,0,0.12); transition: 0.25s; }
+    .box:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
+
+    .box-title { font-size: 1.2rem; font-weight: 600; color: #3498db; margin-bottom: 10px; }
+    .badge { display: inline-block; background: #3498db; padding: 8px 16px; color: white; border-radius: 25px; margin: 5px 5px 0 0; font-size: 0.85rem; }
+
+    .btn { padding: 13px; border: none; border-radius: 12px; background: linear-gradient(135deg, #3498db, #27ae60); color: #fff; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.25s; margin-top:5px; }
+    .btn:hover { opacity: 0.9; transform: translateY(-3px); }
+
+    #photoInput { display: none; }
+</style>
+</head>
+<body>
+
+<div class="profile-container">
+
+    <!-- LEFT -->
+    <div class="left">
+        <img src="https://via.placeholder.com/160" id="profileImage" class="profile-img">
+        <div style="margin-bottom: 15px;">
+            <button id="changePhotoBtn">Change Photo</button>
+            <input type="file" id="photoInput" accept="image/*">
+        </div>
+
+        <input type="text" id="editFullName" class="profile-edit name-input" readonly>
+        <input type="text" id="editSubtitle" class="profile-edit subtitle-input" readonly>
+
+        <div class="field">
+            <strong>Role:</strong>
+            <span id="role">Loading...</span>
+        </div>
+        <div class="field">
+            <strong>Status:</strong>
+            <span>Verified</span>
+        </div>
+        <div class="field">
+            <strong>Grade:</strong>
+            <input type="text" id="editGrade" class="profile-edit" readonly>
+        </div>
+        <div class="field">
+            <strong>Section:</strong>
+            <input type="text" id="editSection" class="profile-edit" readonly>
+        </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="right">
+        <div class="box">
+            <div class="box-title">Account Information</div>
+            <p><strong>Email:</strong> <span id="email">Loading...</span></p>
+            <p><strong>Created:</strong> <span id="created">Loading...</span></p>
+        </div>
+
+        <div class="box">
+            <div class="box-title">Badges Earned</div>
+            <div id="badges">No badges yet</div>
+        </div>
+
+        <div class="box">
+            <div class="box-title">Scores</div>
+            <p><strong>Total XP:</strong> <span id="xp">0</span></p>
+            <p><strong>Rank:</strong> <span id="rank">Unranked</span></p>
+            <p><strong>Games Completed:</strong> <span id="games">0</span></p>
+        </div>
+
+        <button class="btn" id="editProfileBtn">Edit Profile</button>
+        <button class="btn" id="changeEmailBtn">Change Email</button>
+        <button class="btn" id="changePasswordBtn">Change Password</button>
+    </div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
+    authDomain: "mizuteku-3a441.firebaseapp.com",
+    projectId: "mizuteku-3a441",
+    storageBucket: "mizuteku-3a441.appspot.com",
+    messagingSenderId: "473895456413",
+    appId: "1:473895456413:web:1452ef7b9860908dd78e74",
+    measurementId: "G-NTT38FCEKG",
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+onAuthStateChanged(auth, async (user) => {
+    if (!user) return (window.location.href = "index.html");
+
+    document.getElementById("email").textContent = user.email;
+    document.getElementById("created").textContent = new Date(user.metadata.creationTime).toDateString();
+
+    const teacherSnap = await getDoc(doc(db, "teacher", user.uid));
+    const studentSnap = await getDoc(doc(db, "students", user.uid));
+
+    const fullNameInput = document.getElementById("editFullName");
+    const subtitleInput = document.getElementById("editSubtitle");
+    const gradeInput = document.getElementById("editGrade");
+    const sectionInput = document.getElementById("editSection");
+
+    if (teacherSnap.exists()) {
+        const t = teacherSnap.data();
+        document.getElementById("role").textContent = "Teacher";
+        fullNameInput.value = `${t.firstName} ${t.lastName}`;
+        subtitleInput.value = "MizuTeku Teacher";
+        gradeInput.value = t.advisoryGrade;
+        sectionInput.value = t.advisorySection;
+    }
+
+    if (studentSnap.exists()) {
+        const s = studentSnap.data();
+        document.getElementById("role").textContent = "Student";
+        fullNameInput.value = `${s.firstName} ${s.lastName}`;
+        subtitleInput.value = "MizuTeku Student";
+        gradeInput.value = s.grade;
+        sectionInput.value = s.section;
+    }
+});
+
+const changePhotoBtn = document.getElementById("changePhotoBtn");
+const photoInput = document.getElementById("photoInput");
+const profileImage = document.getElementById("profileImage");
+changePhotoBtn.addEventListener("click", () => photoInput.click());
+
+photoInput.addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const storageRef = ref(storage, `profilePhotos/${user.uid}`);
+    await uploadBytes(storageRef, file);
+    const photoURL = await getDownloadURL(storageRef);
+    profileImage.src = photoURL;
+
+    const teacherSnap = await getDoc(doc(db, "teacher", user.uid));
+    const studentSnap = await getDoc(doc(db, "students", user.uid));
+    if (teacherSnap.exists()) await updateDoc(doc(db, "teacher", user.uid), { photoURL });
+    if (studentSnap.exists()) await updateDoc(doc(db, "students", user.uid), { photoURL });
+});
+
+const editBtn = document.getElementById("editProfileBtn");
+editBtn.addEventListener("click", () => {
+    const fullNameInput = document.getElementById("editFullName");
+    const gradeInput = document.getElementById("editGrade");
+    const sectionInput = document.getElementById("editSection");
+
+    const editable = fullNameInput.hasAttribute("readonly");
+    if(editable){
+        [fullNameInput, gradeInput, sectionInput].forEach(input => {
+            input.removeAttribute("readonly");
+            input.classList.add("editable");
+            input.placeholder = "Click to edit";
+        });
+        fullNameInput.focus();
+        editBtn.textContent = "Save Changes";
+    } else {
+        const user = auth.currentUser;
+        if (!user) return alert("User not logged in");
+
+        const firstName = fullNameInput.value.split(" ")[0];
+        const lastName = fullNameInput.value.split(" ")[1] || "";
+
+        getDoc(doc(db, "teacher", user.uid)).then(async teacherSnap => {
+            if (teacherSnap.exists()) {
+                await updateDoc(doc(db, "teacher", user.uid), {
+                    firstName, lastName,
+                    advisoryGrade: gradeInput.value,
+                    advisorySection: sectionInput.value
+                });
+            } else {
+                const studentSnap = await getDoc(doc(db, "students", user.uid));
+                if (studentSnap.exists()) {
+                    await updateDoc(doc(db, "students", user.uid), {
+                        firstName, lastName,
+                        grade: gradeInput.value,
+                        section: sectionInput.value
+                    });
+                }
+            }
+            [fullNameInput, gradeInput, sectionInput].forEach(input => {
+                input.setAttribute("readonly", true);
+                input.classList.remove("editable");
+                input.placeholder = "";
+            });
+            editBtn.textContent = "Edit Profile";
+            alert("Profile updated successfully!");
+        });
+    }
+});
+</script>
+</body>
+</html>
