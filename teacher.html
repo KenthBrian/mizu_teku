@@ -176,6 +176,78 @@
 
 
     /* ---------- SECTIONS ---------- */
+
+    .dashboard-stats {
+  display: flex;
+  gap: 20px;
+  margin-top: 30px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.stat-card {
+  background: white; /* same as sections */
+  padding: 25px;
+  border-radius: 20px;
+  flex: 1 1 200px;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); /* matches section shadow */
+  transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+}
+
+.stat-card h3 {
+  font-size: 2rem;
+  color: #0077a3; /* same as section headings */
+  margin-bottom: 10px;
+}
+
+.stat-card p {
+  color: #555;
+  font-weight: 500;
+}
+
+/* Circular chart */
+.circle-chart {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 15px;
+  position: relative;
+}
+
+.circle-bg {
+  fill: none;
+  stroke: #eee;
+  stroke-width: 3.8;
+}
+
+.circle {
+  fill: none;
+  stroke: #0077a3; /* same as section heading */
+  stroke-width: 3.8;
+  stroke-linecap: round;
+  transition: stroke-dasharray 1s;
+}
+
+.percentage {
+  font-size: 0.7em;
+  font-weight: bold;
+  text-anchor: middle;
+  fill: #0077a3;
+}
+
+/* Responsive adjustments */
+@media (max-width: 800px) {
+  .dashboard-stats {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+
     main {
         margin-top: 30px; /* pushes content below navbar */
     }
@@ -653,6 +725,34 @@
       <p>
         This is your main control panel. Manage student verification, view reports, and configure settings — all in one place.
       </p>
+
+      <div class="dashboard-stats">
+        <div class="stat-card">
+          <h3 id="totalStudents">0</h3>
+          <p>Total Students</p>
+        </div>
+
+        <div class="stat-card">
+          <div class="circle-chart" id="activeCircle">
+            <svg viewBox="0 0 36 36">
+              <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+              <path class="circle" stroke-dasharray="0,100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+              <text x="18" y="20.35" class="percentage">0%</text>
+            </svg>
+          </div>
+          <p>Active Students <br> (Past 7 days)</p>
+        </div>
+
+        <div class="stat-card">
+          <h3 id="pendingStudents">0</h3>
+          <p>Pending Verification</p>
+        </div>
+
+        <div class="stat-card">
+          <h3 id="rejectedStudents">0</h3>
+          <p>Rejected Requests</p>
+        </div>
+      </div>
     </section>
 
     <!-- VERIFICATION SECTION -->
@@ -696,13 +796,19 @@
       </table>
     </section>
 
-    <!-- REPORTS SECTION -->
+    <!-- LOGS SECTION -->
     <section id="logs">
-    <h2>Logs</h2>
-    <div id="logContainer">
-      <p>No logs available at the moment.</p>
-    </div>
-  </section>
+      <h2>Logs</h2>
+      <div id="logContainer" style="
+        max-height: 250px;
+        overflow-y: auto;
+        border: 1px solid #ddd;
+        padding: 10px;
+        border-radius: 6px;
+      ">
+        <p id="noLogs">No logs available at the moment.</p>
+      </div>
+    </section>
 
     <!-- ABOUT SECTION -->
     <section id="about">
@@ -710,20 +816,23 @@
       <p>This dashboard is designed for teachers to manage student verifications easily and securely.</p>
     </section>
 
-    <section id="logs">
-  <h2>Logs</h2>
-  <div id="logContainer" style="max-height: 300px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;"></div>
-</section>
-
     <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { 
-      getFirestore, collection, getDocs, getDoc, setDoc,
-      query, where, updateDoc, doc, serverTimestamp
+    import {
+      getFirestore,
+      collection,
+      getDocs,
+      getDoc,
+      setDoc,
+      query,
+      where,
+      updateDoc,
+      doc,
+      serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // --- Firebase Config ---
+    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
       authDomain: "mizuteku-3a441.firebaseapp.com",
@@ -738,24 +847,133 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    // DOM Elements
     const verificationTable = document.querySelector("#verificationTable tbody");
     const verifiedTable = document.querySelector("#verifiedTable tbody");
     const logContainer = document.querySelector("#logContainer");
 
-    // --- Logging Function ---
-    function addLog(message, type = "info") {
-      const p = document.createElement("p");
+    // Dashboard Elements
+    const totalStudentsEl = document.getElementById("totalStudents");
+    const verifiedStudentsEl = document.getElementById("verifiedStudents");
+    const pendingVerificationsEl = document.getElementById("pendingVerifications");
+
+    // --- Logging Function (Updated) ---
+    async function addLog(message, type = "info") {
+      const teacherId = auth.currentUser?.uid;
+      if (!teacherId) return;
+
       const timestamp = new Date().toLocaleString();
+
+      // Create new log element
+      const p = document.createElement("p");
       p.textContent = `${timestamp}: ${message}`;
 
       if(type === "success") p.style.color = "green";
       if(type === "error") p.style.color = "red";
       if(type === "warning") p.style.color = "orange";
 
+      // Remove "no logs" text
+      const noLogs = document.getElementById("noLogs");
+      if (noLogs) noLogs.remove();
+
+      // Prepend to UI
       logContainer.prepend(p);
+
+      // Scroll to top automatically
+      logContainer.scrollTop = 0;
+
+      // Save to Firestore
+      await addDoc(
+        collection(db, "teacherLogs", teacherId, "logs"),
+        {
+          message,
+          type,
+          timestamp: serverTimestamp()
+        }
+      );
     }
 
-    // --- Load Pending Verification Requests ---
+    // --- Load Teacher Logs from Firestore (NEW) ---
+    async function loadTeacherLogs() {
+      const teacherId = auth.currentUser?.uid;
+      if (!teacherId) return;
+
+      logContainer.innerHTML = `<p>Loading logs...</p>`;
+
+      const q = query(
+        collection(db, "teacherLogs", teacherId, "logs"),
+        orderBy("timestamp", "desc")
+      );
+
+      const snap = await getDocs(q);
+
+      logContainer.innerHTML = ""; // clear
+
+      if (snap.empty) {
+        logContainer.innerHTML = `<p id="noLogs">No logs available at the moment.</p>`;
+        return;
+      }
+
+      snap.forEach(logDoc => {
+        const log = logDoc.data();
+        const ts = log.timestamp?.toDate().toLocaleString() || "(no time)";
+
+        const p = document.createElement("p");
+        p.textContent = `${ts}: ${log.message}`;
+
+        if(log.type === "success") p.style.color = "green";
+        if(log.type === "error") p.style.color = "red";
+        if(log.type === "warning") p.style.color = "orange";
+
+        logContainer.appendChild(p);
+      });
+
+      // Auto scroll to top
+      logContainer.scrollTop = 0;
+    }
+    // Update Dashboard Percentages
+    async function updateDashboardStats(advisorySection) {
+      try {
+        const totalSnap = await getDocs(query(collection(db, "students"), where("section", "==", advisorySection)));
+        const total = totalSnap.size;
+
+        const verifiedSnap = await getDocs(query(collection(db, "students"), where("verified", "==", true), where("section", "==", advisorySection)));
+        const verified = verifiedSnap.size;
+
+        const pendingSnap = await getDocs(query(collection(db, "verificationRequests"), where("status", "==", "pending"), where("section", "==", advisorySection)));
+        const pending = pendingSnap.size;
+
+        const rejectedSnap = await getDocs(query(collection(db, "verificationRequests"), where("status", "==", "rejected"), where("section", "==", advisorySection)));
+        const rejected = rejectedSnap.size;
+
+        // Active students = last 7 days
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        const activeSnap = await getDocs(query(
+          collection(db, "students"),
+          where("section", "==", advisorySection),
+          where("lastLogin", ">=", sevenDaysAgo)
+        ));
+        const active = activeSnap.size;
+
+        // Update numbers
+        document.getElementById("totalStudents").textContent = total;
+        document.getElementById("pendingStudents").textContent = pending;
+        document.getElementById("rejectedStudents").textContent = rejected;
+        document.getElementById("activeStudents").textContent = active;
+
+        // Update circle charts (optional)
+        const activeCircle = document.querySelector('#activeCircle .circle');
+        if (activeCircle) activeCircle.setAttribute('stroke-dasharray', `${total ? (active/total)*100 : 0},100`);
+        const activeText = document.querySelector('#activeCircle .percentage');
+        if (activeText) activeText.textContent = total ? Math.round((active/total)*100) + '%' : '0%';
+
+      } catch (err) {
+        console.error("Error updating dashboard stats:", err);
+      }
+    }
+
+    // Load Pending Verification Requests
     async function loadStudentsForVerification(advisorySection) {
       verificationTable.innerHTML = `<tr><td colspan="6" style="text-align:center;">Loading...</td></tr>`;
 
@@ -769,6 +987,7 @@
 
       if (snapshot.empty) {
         verificationTable.innerHTML = `<tr><td colspan="6" style="text-align:center;">🎉 No pending verification requests!</td></tr>`;
+        updateDashboardStats(advisorySection); // update stats
         return;
       }
 
@@ -789,24 +1008,17 @@
         verificationTable.appendChild(row);
       });
 
-      // --- Verify Logic ---
+      // Buttons
       document.querySelectorAll(".verify-btn").forEach(btn => {
         btn.onclick = async () => {
           const studentId = btn.dataset.id;
           const requestId = btn.dataset.req;
-
           try {
             const requestRef = doc(db, "verificationRequests", requestId);
             const requestSnap = await getDoc(requestRef);
-
-            if (!requestSnap.exists()) {
-              addLog(`Attempted to verify student ${studentId}, but request not found.`, "error");
-              alert("❌ Verification request not found.");
-              return;
-            }
+            if (!requestSnap.exists()) { addLog("Request not found", "error"); return; }
 
             const requestData = requestSnap.data();
-
             await setDoc(doc(db, "students", studentId), {
               studentId,
               firstName: requestData.firstName,
@@ -822,58 +1034,48 @@
             });
 
             await updateDoc(requestRef, { status: "approved" });
+            addLog(`Student ${requestData.firstName} verified successfully.`, "success");
 
-            addLog(`Student ${requestData.firstName} ${requestData.lastName} verified successfully.`, "success");
             loadStudentsForVerification(advisorySection);
             loadVerifiedStudents(advisorySection);
+            updateDashboardStats(advisorySection);
+
           } catch (err) {
             console.error(err);
-            addLog(`Failed to verify student ${studentId}: ${err.message}`, "error");
-            alert("❌ Failed to verify student: " + err.message);
+            addLog(`Failed to verify student: ${err.message}`, "error");
           }
         };
       });
 
-      // --- Reject Logic ---
       document.querySelectorAll(".reject-btn").forEach(btn => {
         btn.onclick = async () => {
           const requestId = btn.dataset.req;
           try {
             const requestSnap = await getDoc(doc(db, "verificationRequests", requestId));
-            const requestData = requestSnap.exists() ? requestSnap.data() : { studentId: "unknown" };
-
+            const requestData = requestSnap.exists() ? requestSnap.data() : {};
             await updateDoc(doc(db, "verificationRequests", requestId), { status: "rejected" });
-
-            addLog(`Student ${requestData.firstName || ""} ${requestData.lastName || ""} verification rejected.`, "warning");
+            addLog(`Rejected student verification for ${requestData.firstName || ""}.`, "warning");
             loadStudentsForVerification(advisorySection);
+            updateDashboardStats(advisorySection);
           } catch (err) {
             console.error(err);
-            addLog(`Failed to reject student request ${requestId}: ${err.message}`, "error");
-            alert("❌ Failed to reject student: " + err.message);
+            addLog(`Failed to reject student request: ${err.message}`, "error");
           }
         };
       });
     }
 
-    // --- Load Verified Students ---
+    // Load Verified Students
     async function loadVerifiedStudents(advisorySection) {
-      verifiedTable.innerHTML = '<tr><td colspan="7" style="text-align:center;">Loading...</td></tr>';
-
+      verifiedTable.innerHTML = `<tr><td colspan="7" style="text-align:center;">Loading...</td></tr>`;
       try {
-        const q = query(
-          collection(db, "students"),
-          where("verified", "==", true),
-          where("section", "==", advisorySection)
-        );
-
+        const q = query(collection(db, "students"), where("verified", "==", true), where("section", "==", advisorySection));
         const snapshot = await getDocs(q);
-
+        verifiedTable.innerHTML = "";
         if (snapshot.empty) {
-          verifiedTable.innerHTML = '<tr><td colspan="7" style="text-align:center;">No verified students yet.</td></tr>';
+          verifiedTable.innerHTML = `<tr><td colspan="7" style="text-align:center;">No verified students yet.</td></tr>`;
           return;
         }
-
-        verifiedTable.innerHTML = "";
         snapshot.forEach(doc => {
           const data = doc.data();
           const row = document.createElement("tr");
@@ -884,17 +1086,16 @@
             <td>${data.email || ""}</td>
             <td>${data.lrn || "N/A"}</td>
             <td>${data.grade || "N/A"}</td>
-            <td>${data.section || "N/A"}</td>
-          `;
+            <td>${data.section || "N/A"}</td>`;
           verifiedTable.appendChild(row);
         });
-      } catch (error) {
-        console.error("Error fetching students:", error);
-        verifiedTable.innerHTML = '<tr><td colspan="7" style="text-align:center;">Failed to load students.</td></tr>';
+      } catch (err) {
+        console.error("Error fetching students:", err);
+        verifiedTable.innerHTML = `<tr><td colspan="7" style="text-align:center;">Failed to load students.</td></tr>`;
       }
     }
 
-    // --- Auth State ---
+    // Auth State
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
         window.location.href = "index.html";
@@ -905,11 +1106,13 @@
 
       if (teacherDoc.exists() && teacherDoc.data().verified === true) {
         const advisorySection = teacherDoc.data().advisorySection || "";
+
         loadStudentsForVerification(advisorySection);
         loadVerifiedStudents(advisorySection);
+        loadTeacherLogs();   // ⭐ NEW — load logs on login
+
         return;
       }
-
       window.location.href = "index.html";
     });
     </script>

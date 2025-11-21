@@ -276,7 +276,7 @@ import {
   onAuthStateChanged, setPersistence, browserSessionPersistence
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import {
-  getFirestore, doc, getDoc, collection, addDoc, setDoc, serverTimestamp
+  getFirestore, doc, getDoc, collection, addDoc, setDoc, updateDoc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -382,7 +382,7 @@ async function handleAuth() {
 
   if (isSignUpMode) {
 
-    // ✅ TEACHER SIGN UP → SEND TO teacherVerificationRequests
+    // TEACHER SIGN UP → SEND TO teacherVerificationRequests
     if (roleSelect.value === "teacher") {
 
       if (!lastnameInput.value || !firstnameInput.value || !gradeSelect.value || !sectionInput.value) {
@@ -413,7 +413,7 @@ async function handleAuth() {
       return;
     }
 
-    // ✅ STUDENT SIGN UP (same as before)
+    // STUDENT SIGN UP
     if (!/^[0-9]{12}$/.test(lrnInput.value)) {
       lrnInput.setCustomValidity("LRN must be exactly 12 digits.");
       lrnInput.reportValidity();
@@ -428,6 +428,7 @@ async function handleAuth() {
 
     const userCredential = await createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
 
+    // Add to verification requests
     await addDoc(collection(db, "verificationRequests"), {
       studentId: userCredential.user.uid,
       lrn: lrnInput.value,
@@ -441,42 +442,59 @@ async function handleAuth() {
       requestedAt: serverTimestamp(),
     });
 
+    // Create actual student doc with lastLogin
+    await setDoc(doc(db, "students", userCredential.user.uid), {
+      studentId: userCredential.user.uid,
+      lrn: lrnInput.value,
+      lastName: lastnameInput.value,
+      firstName: firstnameInput.value,
+      middleInitial: middleinitialInput.value,
+      grade: gradeSelect.value,
+      section: sectionInput.value,
+      email: emailInput.value,
+      verified: false,
+      createdAt: serverTimestamp(),
+      lastLogin: serverTimestamp() // <-- track last login
+    });
+
     verifyModal.style.display = "flex";
     return;
   }
 
-  // ✅ SIGN IN
-// ✅ SIGN IN
-await setPersistence(auth, browserSessionPersistence);
-const { user } = await signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
+  // SIGN IN
+  await setPersistence(auth, browserSessionPersistence);
+  const { user } = await signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
 
-// --- TEACHER LOGIN CHECK ---
-const teacherDoc = await getDoc(doc(db, "teacher", user.uid));
-if (teacherDoc.exists()) {
-  if (teacherDoc.data().verified === true) {
-    return window.location.href = "teacher.html"; // ✅ Approved Teacher
-  } else {
-    passwordInput.setCustomValidity("Your teacher account is still pending admin verification.");
-    passwordInput.reportValidity();
-    return;
+  // --- TEACHER LOGIN CHECK ---
+  const teacherDoc = await getDoc(doc(db, "teacher", user.uid));
+  if (teacherDoc.exists()) {
+    if (teacherDoc.data().verified === true) {
+      return window.location.href = "teacher.html"; // Approved Teacher
+    } else {
+      passwordInput.setCustomValidity("Your teacher account is still pending admin verification.");
+      passwordInput.reportValidity();
+      return;
+    }
   }
-}
 
-// --- STUDENT LOGIN CHECK ---
-const studentDoc = await getDoc(doc(db, "students", user.uid));
-if (studentDoc.exists()) {
-  if (studentDoc.data().verified === true) {
-    return window.location.href = "student.html"; // ✅ Approved Student
-  } else {
-    passwordInput.setCustomValidity("Your student account is still pending verification.");
-    passwordInput.reportValidity();
-    return;
+  // --- STUDENT LOGIN CHECK ---
+  const studentDocRef = doc(db, "students", user.uid);
+  const studentDocSnap = await getDoc(studentDocRef);
+  if (studentDocSnap.exists()) {
+    if (studentDocSnap.data().verified === true) {
+      // Update lastLogin timestamp on login
+      await updateDoc(studentDocRef, { lastLogin: serverTimestamp() });
+      return window.location.href = "student.html"; // ✅ Approved Student
+    } else {
+      passwordInput.setCustomValidity("Your student account is still pending verification.");
+      passwordInput.reportValidity();
+      return;
+    }
   }
-}
 
-// If neither student nor teacher exists:
-passwordInput.setCustomValidity("Your account is not yet processed by admin.");
-passwordInput.reportValidity();
+  // If neither student nor teacher exists:
+  passwordInput.setCustomValidity("Your account is not yet processed by admin.");
+  passwordInput.reportValidity();
 }
 
 loginBtn.addEventListener("click", handleAuth);
