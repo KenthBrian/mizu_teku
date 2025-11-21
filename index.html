@@ -271,14 +271,13 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import {
-  getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
-  onAuthStateChanged, setPersistence, browserSessionPersistence
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import {
-  getFirestore, doc, getDoc, collection, addDoc, setDoc, updateDoc, serverTimestamp
+  getFirestore, collection, getDocs, getDoc, setDoc, addDoc, updateDoc,
+  query, where, orderBy, doc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+// --- Firebase Config ---
 const firebaseConfig = {
   apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
   authDomain: "mizuteku-3a441.firebaseapp.com",
@@ -286,218 +285,241 @@ const firebaseConfig = {
   storageBucket: "mizuteku-3a441.firebasestorage.app",
   messagingSenderId: "473895456413",
   appId: "1:473895456413:web:1452ef7b9860908dd78e74",
-  measurementId: "G-NTT38FCEKG",
+  measurementId: "G-NTT38FCEKG"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Elements
-const toggleLink = document.getElementById("toggleForm");
-const loginBtn = document.getElementById("saveUsername");
-const formTitle = document.getElementById("formTitle");
-const formDesc = document.getElementById("formDesc");
-const confirmWrapper = document.getElementById("confirmPasswordInput").parentElement;
+// --- DOM Elements ---
+const verificationTable = document.querySelector("#verificationTable tbody");
+const verifiedTable = document.querySelector("#verifiedTable tbody");
+const logContainer = document.querySelector("#logContainer");
 
-const emailInput = document.getElementById("emailInput");
-const passwordInput = document.getElementById("passwordInput");
-const confirmPasswordInput = document.getElementById("confirmPasswordInput");
+const totalStudentsEl = document.getElementById("totalStudents");
+const verifiedStudentsEl = document.getElementById("verifiedStudents");
+const pendingStudentsEl = document.getElementById("pendingStudents");
+const rejectedStudentsEl = document.getElementById("rejectedStudents");
+const activeStudentsEl = document.getElementById("activeStudents");
 
-const roleRow = document.getElementById("roleRow");
-const roleSelect = document.getElementById("roleSelect");
+// --- Logging Function ---
+async function addLog(message, type = "info") {
+  const teacherId = auth.currentUser?.uid;
+  if (!teacherId) return;
 
-const lrnRow = document.getElementById("lrnRow");
-const nameRow = document.getElementById("nameRow");
-const gradeRow = document.getElementById("gradeRow");
+  const timestamp = new Date().toLocaleString();
 
-const lrnInput = document.getElementById("lrnInput");
-const lastnameInput = document.getElementById("lastnameInput");
-const firstnameInput = document.getElementById("firstnameInput");
-const middleinitialInput = document.getElementById("middleinitialInput");
-const gradeSelect = document.getElementById("gradeSelect");
-const sectionInput = document.getElementById("sectionInput");
+  // UI
+  const p = document.createElement("p");
+  p.textContent = `${timestamp}: ${message}`;
+  if(type === "success") p.style.color = "green";
+  if(type === "error") p.style.color = "red";
+  if(type === "warning") p.style.color = "orange";
 
-const verifyModal = document.getElementById("verifyModal");
-document.getElementById("closeVerifyModal").onclick = () => verifyModal.style.display = "none";
+  const noLogs = document.getElementById("noLogs");
+  if (noLogs) noLogs.remove();
+  logContainer.prepend(p);
+  logContainer.scrollTop = 0;
 
-let isSignUpMode = false;
-
-// INPUT FILTERS
-lrnInput.addEventListener("input", () => lrnInput.value = lrnInput.value.replace(/\D/g, "").slice(0, 12));
-firstnameInput.addEventListener("input", () => {firstnameInput.value = firstnameInput.value.replace(/[^A-Za-z\s-]/g, "");});
-lastnameInput.addEventListener("input", () => lastnameInput.value = lastnameInput.value.replace(/[^A-Za-z\s]/g, ""));
-middleinitialInput.addEventListener("input", () => middleinitialInput.value = middleinitialInput.value.replace(/[^A-Za-z]/g, "").toUpperCase().slice(0, 1));
-sectionInput.addEventListener("input", () => sectionInput.value = sectionInput.value.replace(/[^A-Za-z0-9]/g, ""));
-
-// Toggle Sign Up / Sign In
-toggleLink.addEventListener("click", () => {
-  isSignUpMode = !isSignUpMode;
-
-  formTitle.textContent = isSignUpMode ? "MizuTeku Sign Up" : "MizuTeku Sign In";
-  formDesc.textContent = isSignUpMode ? "Create an account:" : "Please enter your credentials:";
-  loginBtn.textContent = isSignUpMode ? "Create Account" : "Sign In";
-  toggleLink.textContent = isSignUpMode ? "Sign In" : "Sign Up";
-
-  confirmWrapper.style.display = isSignUpMode ? "flex" : "none";
-  roleRow.style.display = isSignUpMode ? "flex" : "none";
-
-  if (isSignUpMode) {
-    roleSelect.value = "student";
-    lrnRow.style.display = "flex";
-    nameRow.style.display = "flex";
-    gradeRow.style.display = "flex";
-  } else {
-    lrnRow.style.display = "none";
-    nameRow.style.display = "none";
-    gradeRow.style.display = "none";
+  // Firestore
+  try {
+    await addDoc(collection(db, "teacherLogs", teacherId, "logs"), {
+      message,
+      type,
+      timestamp: serverTimestamp()
+    });
+  } catch(err) {
+    console.error("Failed to save log:", err);
   }
-});
+}
 
-// Role Selection Fields
-roleSelect.addEventListener("change", () => {
-  const role = roleSelect.value;
+// --- Load Teacher Logs ---
+async function loadTeacherLogs() {
+  const teacherId = auth.currentUser?.uid;
+  if (!teacherId) return;
 
-  if (role === "student") {
-    lrnRow.style.display = "flex";
-    nameRow.style.display = "flex";
-    gradeRow.style.display = "flex";
+  logContainer.innerHTML = `<p>Loading logs...</p>`;
 
-    gradeSelect.options[0].textContent = "Grade (1-3)";
-    sectionInput.placeholder = "Section (e.g. Diamond)";
-  }
+  try {
+    const q = query(
+      collection(db, "teacherLogs", teacherId, "logs"),
+      orderBy("timestamp", "desc")
+    );
+    const snap = await getDocs(q);
+    logContainer.innerHTML = "";
 
-  if (role === "teacher") {
-    lrnRow.style.display = "none";
-    nameRow.style.display = "flex";
-    gradeRow.style.display = "flex";
-
-    gradeSelect.options[0].textContent = "Advisory Grade";
-    sectionInput.placeholder = "Advisory Section";
-  }
-});
-
-// Handle Auth
-async function handleAuth() {
-
-  if (isSignUpMode) {
-
-    // TEACHER SIGN UP → SEND TO teacherVerificationRequests
-    if (roleSelect.value === "teacher") {
-
-      if (!lastnameInput.value || !firstnameInput.value || !gradeSelect.value || !sectionInput.value) {
-        return alert("Please fill all teacher information.");
-      }
-
-      if (passwordInput.value !== confirmPasswordInput.value) {
-        confirmPasswordInput.setCustomValidity("Passwords do not match.");
-        confirmPasswordInput.reportValidity();
-        return;
-      }
-
-      const userCredential = await createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
-
-      await setDoc(doc(db, "teacherVerificationRequests", userCredential.user.uid), {
-        teacherId: userCredential.user.uid,
-        lastName: lastnameInput.value,
-        firstName: firstnameInput.value,
-        middleInitial: middleinitialInput.value,
-        advisoryGrade: gradeSelect.value,
-        advisorySection: sectionInput.value,
-        email: emailInput.value,
-        status: "pending",
-        requestedAt: serverTimestamp(),
-      });
-
-      verifyModal.style.display = "flex";
+    if (snap.empty) {
+      logContainer.innerHTML = `<p id="noLogs">No logs available at the moment.</p>`;
       return;
     }
 
-    // STUDENT SIGN UP
-    if (!/^[0-9]{12}$/.test(lrnInput.value)) {
-      lrnInput.setCustomValidity("LRN must be exactly 12 digits.");
-      lrnInput.reportValidity();
-      return;
-    }
-
-    if (passwordInput.value !== confirmPasswordInput.value) {
-      confirmPasswordInput.setCustomValidity("Passwords do not match.");
-      confirmPasswordInput.reportValidity();
-      return;
-    }
-
-    const userCredential = await createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
-
-    // Add to verification requests
-    await addDoc(collection(db, "verificationRequests"), {
-      studentId: userCredential.user.uid,
-      lrn: lrnInput.value,
-      lastName: lastnameInput.value,
-      firstName: firstnameInput.value,
-      middleInitial: middleinitialInput.value,
-      grade: gradeSelect.value,
-      section: sectionInput.value,
-      email: emailInput.value,
-      status: "pending",
-      requestedAt: serverTimestamp(),
+    snap.forEach(docSnap => {
+      const log = docSnap.data();
+      const ts = log.timestamp?.toDate().toLocaleString() || "(no time)";
+      const p = document.createElement("p");
+      p.textContent = `${ts}: ${log.message}`;
+      if(log.type === "success") p.style.color = "green";
+      if(log.type === "error") p.style.color = "red";
+      if(log.type === "warning") p.style.color = "orange";
+      logContainer.appendChild(p);
     });
 
-    // Create actual student doc with lastLogin
-    await setDoc(doc(db, "students", userCredential.user.uid), {
-      studentId: userCredential.user.uid,
-      lrn: lrnInput.value,
-      lastName: lastnameInput.value,
-      firstName: firstnameInput.value,
-      middleInitial: middleinitialInput.value,
-      grade: gradeSelect.value,
-      section: sectionInput.value,
-      email: emailInput.value,
-      verified: false,
-      createdAt: serverTimestamp(),
-      lastLogin: serverTimestamp() // <-- track last login
-    });
+    logContainer.scrollTop = 0;
+  } catch(err) {
+    console.error("Failed to load logs:", err);
+    logContainer.innerHTML = `<p id="noLogs">Failed to load logs.</p>`;
+  }
+}
 
-    verifyModal.style.display = "flex";
+// --- Dashboard Stats ---
+async function updateDashboardStats(section) {
+  try {
+    const totalSnap = await getDocs(query(collection(db, "students"), where("section", "==", section)));
+    const total = totalSnap.size;
+
+    const verifiedSnap = await getDocs(query(collection(db, "students"), where("verified", "==", true), where("section", "==", section)));
+    const verified = verifiedSnap.size;
+
+    const pendingSnap = await getDocs(query(collection(db, "verificationRequests"), where("status", "==", "pending"), where("section", "==", section)));
+    const pending = pendingSnap.size;
+
+    const rejectedSnap = await getDocs(query(collection(db, "verificationRequests"), where("status", "==", "rejected"), where("section", "==", section)));
+    const rejected = rejectedSnap.size;
+
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const activeSnap = await getDocs(query(collection(db, "students"), where("section", "==", section), where("lastLogin", ">=", sevenDaysAgo)));
+    const active = activeSnap.size;
+
+    totalStudentsEl.textContent = total;
+    verifiedStudentsEl.textContent = verified;
+    pendingStudentsEl.textContent = pending;
+    rejectedStudentsEl.textContent = rejected;
+    activeStudentsEl.textContent = active;
+
+  } catch(err) {
+    console.error("Failed to update dashboard stats:", err);
+  }
+}
+
+// --- Load Pending Verification ---
+async function loadStudentsForVerification(section) {
+  verificationTable.innerHTML = `<tr><td colspan="6" style="text-align:center;">Loading...</td></tr>`;
+  const q = query(collection(db, "verificationRequests"), where("status", "==", "pending"), where("section", "==", section));
+  const snapshot = await getDocs(q);
+
+  if(snapshot.empty){
+    verificationTable.innerHTML = `<tr><td colspan="6" style="text-align:center;">🎉 No pending verification requests!</td></tr>`;
+    updateDashboardStats(section);
     return;
   }
 
-  // SIGN IN
-  await setPersistence(auth, browserSessionPersistence);
-  const { user } = await signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
+  verificationTable.innerHTML = "";
+  snapshot.forEach(docSnap => {
+    const data = docSnap.data();
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${data.firstName} ${data.middleInitial || ""}. ${data.lastName}</td>
+      <td>${data.lrn || "N/A"}</td>
+      <td>${data.grade || "N/A"}</td>
+      <td>${data.section || "N/A"}</td>
+      <td class="status">Pending</td>
+      <td>
+        <button class="verify-btn" data-id="${data.studentId}" data-req="${docSnap.id}">Verify</button>
+        <button class="reject-btn" data-id="${data.studentId}" data-req="${docSnap.id}">Reject</button>
+      </td>`;
+    verificationTable.appendChild(row);
+  });
 
-  // --- TEACHER LOGIN CHECK ---
-  const teacherDoc = await getDoc(doc(db, "teacher", user.uid));
-  if (teacherDoc.exists()) {
-    if (teacherDoc.data().verified === true) {
-      return window.location.href = "teacher.html"; // Approved Teacher
-    } else {
-      passwordInput.setCustomValidity("Your teacher account is still pending admin verification.");
-      passwordInput.reportValidity();
-      return;
-    }
-  }
+  document.querySelectorAll(".verify-btn").forEach(btn => {
+    btn.onclick = async () => {
+      const studentId = btn.dataset.id;
+      const requestId = btn.dataset.req;
+      try {
+        const requestSnap = await getDoc(doc(db, "verificationRequests", requestId));
+        if(!requestSnap.exists()){ addLog("Request not found", "error"); return; }
+        const data = requestSnap.data();
+        await setDoc(doc(db, "students", studentId), {
+          studentId,
+          firstName: data.firstName,
+          middleInitial: data.middleInitial,
+          lastName: data.lastName,
+          email: data.email,
+          lrn: data.lrn || "",
+          grade: data.grade || "",
+          section: data.section || "",
+          verified: true,
+          createdAt: data.requestedAt || serverTimestamp(),
+          verifiedAt: serverTimestamp()
+        });
+        await updateDoc(doc(db, "verificationRequests", requestId), { status: "approved" });
+        addLog(`Student ${data.firstName} verified successfully.`, "success");
+        loadStudentsForVerification(section);
+        loadVerifiedStudents(section);
+        updateDashboardStats(section);
+      } catch(err){ console.error(err); addLog(`Failed to verify student: ${err.message}`, "error"); }
+    };
+  });
 
-  // --- STUDENT LOGIN CHECK ---
-  const studentDocRef = doc(db, "students", user.uid);
-  const studentDocSnap = await getDoc(studentDocRef);
-  if (studentDocSnap.exists()) {
-    if (studentDocSnap.data().verified === true) {
-      // Update lastLogin timestamp on login
-      await updateDoc(studentDocRef, { lastLogin: serverTimestamp() });
-      return window.location.href = "student.html"; // ✅ Approved Student
-    } else {
-      passwordInput.setCustomValidity("Your student account is still pending verification.");
-      passwordInput.reportValidity();
-      return;
-    }
-  }
-
-  // If neither student nor teacher exists:
-  passwordInput.setCustomValidity("Your account is not yet processed by admin.");
-  passwordInput.reportValidity();
+  document.querySelectorAll(".reject-btn").forEach(btn => {
+    btn.onclick = async () => {
+      const requestId = btn.dataset.req;
+      try{
+        const requestSnap = await getDoc(doc(db, "verificationRequests", requestId));
+        const data = requestSnap.exists() ? requestSnap.data() : {};
+        await updateDoc(doc(db, "verificationRequests", requestId), { status: "rejected" });
+        addLog(`Rejected student verification for ${data.firstName || ""}.`, "warning");
+        loadStudentsForVerification(section);
+        updateDashboardStats(section);
+      } catch(err){ console.error(err); addLog(`Failed to reject student request: ${err.message}`, "error"); }
+    };
+  });
 }
 
-loginBtn.addEventListener("click", handleAuth);
+// --- Load Verified Students ---
+async function loadVerifiedStudents(section) {
+  verifiedTable.innerHTML = `<tr><td colspan="7" style="text-align:center;">Loading...</td></tr>`;
+  try{
+    const q = query(collection(db, "students"), where("verified", "==", true), where("section", "==", section));
+    const snapshot = await getDocs(q);
+    verifiedTable.innerHTML = "";
+    if(snapshot.empty){
+      verifiedTable.innerHTML = `<tr><td colspan="7" style="text-align:center;">No verified students yet.</td></tr>`;
+      return;
+    }
+    snapshot.forEach(docSnap => {
+      const data = docSnap.data();
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${data.firstName || ""}</td>
+        <td>${data.middleInitial || ""}</td>
+        <td>${data.lastName || ""}</td>
+        <td>${data.email || ""}</td>
+        <td>${data.lrn || "N/A"}</td>
+        <td>${data.grade || "N/A"}</td>
+        <td>${data.section || "N/A"}</td>`;
+      verifiedTable.appendChild(row);
+    });
+  } catch(err){ console.error(err); verifiedTable.innerHTML = `<tr><td colspan="7" style="text-align:center;">Failed to load students.</td></tr>`;}
+}
+
+// --- Auth State ---
+onAuthStateChanged(auth, async (user)=>{
+  if(!user) return window.location.href = "index.html";
+
+  const teacherDoc = await getDoc(doc(db, "teacher", user.uid));
+  if(teacherDoc.exists() && teacherDoc.data().verified){
+    const section = teacherDoc.data().advisorySection || "";
+    loadStudentsForVerification(section);
+    loadVerifiedStudents(section);
+    loadTeacherLogs();
+    updateDashboardStats(section);
+    return;
+  }
+
+  window.location.href = "index.html";
+});
 </script>
 </body>
 </html>

@@ -806,33 +806,58 @@
         padding: 10px;
         border-radius: 6px;
       ">
-        <p id="noLogs">No logs available at the moment.</p>
+        <p id="noLogs"><br>No logs available at the moment.</p>
       </div>
     </section>
 
-    <!-- ABOUT SECTION -->
-    <section id="about">
-      <h2>About</h2>
-      <p>This dashboard is designed for teachers to manage student verifications easily and securely.</p>
-    </section>
+    <!-- Footer -->
+        <footer class="footer" id="about">
+            <div class="container">
+                <div class="footer-content">
+
+                    <!-- MizuTeku Section -->
+                    <div class="footer-section">
+                        <h4 data-en="About MizuTeku" data-tl="Tungkol sa MizuTeku">About MizuTeku</h4>
+                        <p data-en="MizuTeku is an interactive website that helps make learning handwashing practices and clean water awareness easier and more engaging."
+                        data-tl="Ang MizuTeku ay isang interaktibong website na tumutulong gawing mas madali at mas kawili-wili ang pag-aaral ng wastong paghuhugas ng kamay at kamalayan tungkol sa malinis na tubig.">
+                            MizuTeku creates interactive websites to make learning handwashing practices and clean water awareness easier and more engaging.
+                        </p>
+                    </div>
+
+                    <!-- Contact + Socials Section -->
+                    <div class="footer-section">
+                        <h4 data-en="Connect with Us" data-tl="Makipag-ugnayan">Connect with Us</h4>
+                        <p data-en="Schools and teachers are welcome to collaborate!" data-tl="Malugod naming tinatanggap ang mga paaralan at guro upang makipagtulungan!">
+                            Schools and teachers are welcome to collaborate!
+                        </p>
+                        <div class="social-links">
+                            <a href="https://facebook.com/mizuteku" target="_blank" aria-label="Facebook" class="social-icon fb"><i class="fab fa-facebook-f"></i></a>
+                            <a href="https://twitter.com/mizuteku" target="_blank" aria-label="Twitter" class="social-icon tw"><i class="fab fa-twitter"></i></a>
+                            <a href="https://instagram.com/mizuteku" target="_blank" aria-label="Instagram" class="social-icon ig"><i class="fab fa-instagram"></i></a>
+                            <a href="https://youtube.com/@mizuteku" target="_blank" aria-label="YouTube" class="social-icon yt"><i class="fab fa-youtube"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Bottom -->
+                <div class="footer-bottom">
+                    <p>
+                        &copy; 2025 MizuTeku.
+                        <span data-en="All rights reserved." data-tl="Lahat ng karapatan ay nakalaan.">All rights reserved.</span>
+                    </p>
+                </div>
+            </div>
+        </footer>
 
     <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import {
-      getFirestore,
-      collection,
-      getDocs,
-      getDoc,
-      setDoc,
-      query,
-      where,
-      updateDoc,
-      doc,
-      serverTimestamp
+      getFirestore, collection, getDocs, getDoc, setDoc, addDoc, updateDoc,
+      query, where, orderBy, doc, serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // Firebase Config
+    // --- Firebase Config ---
     const firebaseConfig = {
       apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
       authDomain: "mizuteku-3a441.firebaseapp.com",
@@ -847,147 +872,126 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // DOM Elements
+    // --- DOM Elements ---
     const verificationTable = document.querySelector("#verificationTable tbody");
     const verifiedTable = document.querySelector("#verifiedTable tbody");
     const logContainer = document.querySelector("#logContainer");
 
-    // Dashboard Elements
     const totalStudentsEl = document.getElementById("totalStudents");
     const verifiedStudentsEl = document.getElementById("verifiedStudents");
-    const pendingVerificationsEl = document.getElementById("pendingVerifications");
+    const pendingStudentsEl = document.getElementById("pendingStudents");
+    const rejectedStudentsEl = document.getElementById("rejectedStudents");
+    const activeStudentsEl = document.getElementById("activeStudents");
 
-    // --- Logging Function (Updated) ---
+    // --- Logging Function ---
     async function addLog(message, type = "info") {
       const teacherId = auth.currentUser?.uid;
       if (!teacherId) return;
 
       const timestamp = new Date().toLocaleString();
 
-      // Create new log element
+      // UI
       const p = document.createElement("p");
       p.textContent = `${timestamp}: ${message}`;
-
       if(type === "success") p.style.color = "green";
       if(type === "error") p.style.color = "red";
       if(type === "warning") p.style.color = "orange";
 
-      // Remove "no logs" text
       const noLogs = document.getElementById("noLogs");
       if (noLogs) noLogs.remove();
-
-      // Prepend to UI
       logContainer.prepend(p);
-
-      // Scroll to top automatically
       logContainer.scrollTop = 0;
 
-      // Save to Firestore
-      await addDoc(
-        collection(db, "teacherLogs", teacherId, "logs"),
-        {
+      // Firestore
+      try {
+        await addDoc(collection(db, "teacherLogs", teacherId, "logs"), {
           message,
           type,
           timestamp: serverTimestamp()
-        }
-      );
+        });
+      } catch(err) {
+        console.error("Failed to save log:", err);
+      }
     }
 
-    // --- Load Teacher Logs from Firestore (NEW) ---
+    // --- Load Teacher Logs ---
     async function loadTeacherLogs() {
       const teacherId = auth.currentUser?.uid;
       if (!teacherId) return;
 
-      logContainer.innerHTML = `<p>Loading logs...</p>`;
+      logContainer.innerHTML = `<p><br>Loading logs...</p>`;
 
-      const q = query(
-        collection(db, "teacherLogs", teacherId, "logs"),
-        orderBy("timestamp", "desc")
-      );
-
-      const snap = await getDocs(q);
-
-      logContainer.innerHTML = ""; // clear
-
-      if (snap.empty) {
-        logContainer.innerHTML = `<p id="noLogs">No logs available at the moment.</p>`;
-        return;
-      }
-
-      snap.forEach(logDoc => {
-        const log = logDoc.data();
-        const ts = log.timestamp?.toDate().toLocaleString() || "(no time)";
-
-        const p = document.createElement("p");
-        p.textContent = `${ts}: ${log.message}`;
-
-        if(log.type === "success") p.style.color = "green";
-        if(log.type === "error") p.style.color = "red";
-        if(log.type === "warning") p.style.color = "orange";
-
-        logContainer.appendChild(p);
-      });
-
-      // Auto scroll to top
-      logContainer.scrollTop = 0;
-    }
-    // Update Dashboard Percentages
-    async function updateDashboardStats(advisorySection) {
       try {
-        const totalSnap = await getDocs(query(collection(db, "students"), where("section", "==", advisorySection)));
+        const q = query(
+          collection(db, "teacherLogs", teacherId, "logs"),
+          orderBy("timestamp", "desc")
+        );
+        const snap = await getDocs(q);
+        logContainer.innerHTML = "";
+
+        if (snap.empty) {
+          logContainer.innerHTML = `<p id="noLogs"><br>No logs available at the moment.</p>`;
+          return;
+        }
+
+        snap.forEach(docSnap => {
+          const log = docSnap.data();
+          const ts = log.timestamp?.toDate().toLocaleString() || "(no time)";
+          const p = document.createElement("p");
+          p.textContent = `${ts}: ${log.message}`;
+          if(log.type === "success") p.style.color = "green";
+          if(log.type === "error") p.style.color = "red";
+          if(log.type === "warning") p.style.color = "orange";
+          logContainer.appendChild(p);
+        });
+
+        logContainer.scrollTop = 0;
+      } catch(err) {
+        console.error("Failed to load logs:", err);
+        logContainer.innerHTML = `<p id="noLogs">Failed to load logs.</p>`;
+      }
+    }
+
+    // --- Dashboard Stats ---
+    async function updateDashboardStats(section) {
+      try {
+        const totalSnap = await getDocs(query(collection(db, "students"), where("section", "==", section)));
         const total = totalSnap.size;
 
-        const verifiedSnap = await getDocs(query(collection(db, "students"), where("verified", "==", true), where("section", "==", advisorySection)));
+        const verifiedSnap = await getDocs(query(collection(db, "students"), where("verified", "==", true), where("section", "==", section)));
         const verified = verifiedSnap.size;
 
-        const pendingSnap = await getDocs(query(collection(db, "verificationRequests"), where("status", "==", "pending"), where("section", "==", advisorySection)));
+        const pendingSnap = await getDocs(query(collection(db, "verificationRequests"), where("status", "==", "pending"), where("section", "==", section)));
         const pending = pendingSnap.size;
 
-        const rejectedSnap = await getDocs(query(collection(db, "verificationRequests"), where("status", "==", "rejected"), where("section", "==", advisorySection)));
+        const rejectedSnap = await getDocs(query(collection(db, "verificationRequests"), where("status", "==", "rejected"), where("section", "==", section)));
         const rejected = rejectedSnap.size;
 
-        // Active students = last 7 days
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-        const activeSnap = await getDocs(query(
-          collection(db, "students"),
-          where("section", "==", advisorySection),
-          where("lastLogin", ">=", sevenDaysAgo)
-        ));
+        const activeSnap = await getDocs(query(collection(db, "students"), where("section", "==", section), where("lastLogin", ">=", sevenDaysAgo)));
         const active = activeSnap.size;
 
-        // Update numbers
-        document.getElementById("totalStudents").textContent = total;
-        document.getElementById("pendingStudents").textContent = pending;
-        document.getElementById("rejectedStudents").textContent = rejected;
-        document.getElementById("activeStudents").textContent = active;
+        totalStudentsEl.textContent = total;
+        verifiedStudentsEl.textContent = verified;
+        pendingStudentsEl.textContent = pending;
+        rejectedStudentsEl.textContent = rejected;
+        activeStudentsEl.textContent = active;
 
-        // Update circle charts (optional)
-        const activeCircle = document.querySelector('#activeCircle .circle');
-        if (activeCircle) activeCircle.setAttribute('stroke-dasharray', `${total ? (active/total)*100 : 0},100`);
-        const activeText = document.querySelector('#activeCircle .percentage');
-        if (activeText) activeText.textContent = total ? Math.round((active/total)*100) + '%' : '0%';
-
-      } catch (err) {
-        console.error("Error updating dashboard stats:", err);
+      } catch(err) {
+        console.error("Failed to update dashboard stats:", err);
       }
     }
 
-    // Load Pending Verification Requests
-    async function loadStudentsForVerification(advisorySection) {
+    // --- Load Pending Verification ---
+    async function loadStudentsForVerification(section) {
       verificationTable.innerHTML = `<tr><td colspan="6" style="text-align:center;">Loading...</td></tr>`;
-
-      const q = query(
-        collection(db, "verificationRequests"),
-        where("status", "==", "pending"),
-        where("section", "==", advisorySection)
-      );
-
+      const q = query(collection(db, "verificationRequests"), where("status", "==", "pending"), where("section", "==", section));
       const snapshot = await getDocs(q);
 
-      if (snapshot.empty) {
-        verificationTable.innerHTML = `<tr><td colspan="6" style="text-align:center;">🎉 No pending verification requests!</td></tr>`;
-        updateDashboardStats(advisorySection); // update stats
+      if(snapshot.empty){
+        verificationTable.innerHTML = `<tr><td colspan="6" style="text-align:center;">No pending verification requests!</td></tr>`;
+        updateDashboardStats(section);
         return;
       }
 
@@ -1008,76 +1012,64 @@
         verificationTable.appendChild(row);
       });
 
-      // Buttons
       document.querySelectorAll(".verify-btn").forEach(btn => {
         btn.onclick = async () => {
           const studentId = btn.dataset.id;
           const requestId = btn.dataset.req;
           try {
-            const requestRef = doc(db, "verificationRequests", requestId);
-            const requestSnap = await getDoc(requestRef);
-            if (!requestSnap.exists()) { addLog("Request not found", "error"); return; }
-
-            const requestData = requestSnap.data();
+            const requestSnap = await getDoc(doc(db, "verificationRequests", requestId));
+            if(!requestSnap.exists()){ addLog("Request not found", "error"); return; }
+            const data = requestSnap.data();
             await setDoc(doc(db, "students", studentId), {
               studentId,
-              firstName: requestData.firstName,
-              middleInitial: requestData.middleInitial,
-              lastName: requestData.lastName,
-              email: requestData.email,
-              lrn: requestData.lrn || "",
-              grade: requestData.grade || "",
-              section: requestData.section || "",
+              firstName: data.firstName,
+              middleInitial: data.middleInitial,
+              lastName: data.lastName,
+              email: data.email,
+              lrn: data.lrn || "",
+              grade: data.grade || "",
+              section: data.section || "",
               verified: true,
-              createdAt: requestData.requestedAt || serverTimestamp(),
+              createdAt: data.requestedAt || serverTimestamp(),
               verifiedAt: serverTimestamp()
             });
-
-            await updateDoc(requestRef, { status: "approved" });
-            addLog(`Student ${requestData.firstName} verified successfully.`, "success");
-
-            loadStudentsForVerification(advisorySection);
-            loadVerifiedStudents(advisorySection);
-            updateDashboardStats(advisorySection);
-
-          } catch (err) {
-            console.error(err);
-            addLog(`Failed to verify student: ${err.message}`, "error");
-          }
+            await updateDoc(doc(db, "verificationRequests", requestId), { status: "approved" });
+            addLog(`Student ${data.firstName} verified successfully.`, "success");
+            loadStudentsForVerification(section);
+            loadVerifiedStudents(section);
+            updateDashboardStats(section);
+          } catch(err){ console.error(err); addLog(`Failed to verify student: ${err.message}`, "error"); }
         };
       });
 
       document.querySelectorAll(".reject-btn").forEach(btn => {
         btn.onclick = async () => {
           const requestId = btn.dataset.req;
-          try {
+          try{
             const requestSnap = await getDoc(doc(db, "verificationRequests", requestId));
-            const requestData = requestSnap.exists() ? requestSnap.data() : {};
+            const data = requestSnap.exists() ? requestSnap.data() : {};
             await updateDoc(doc(db, "verificationRequests", requestId), { status: "rejected" });
-            addLog(`Rejected student verification for ${requestData.firstName || ""}.`, "warning");
-            loadStudentsForVerification(advisorySection);
-            updateDashboardStats(advisorySection);
-          } catch (err) {
-            console.error(err);
-            addLog(`Failed to reject student request: ${err.message}`, "error");
-          }
+            addLog(`Rejected student verification for ${data.firstName || ""}.`, "warning");
+            loadStudentsForVerification(section);
+            updateDashboardStats(section);
+          } catch(err){ console.error(err); addLog(`Failed to reject student request: ${err.message}`, "error"); }
         };
       });
     }
 
-    // Load Verified Students
-    async function loadVerifiedStudents(advisorySection) {
+    // --- Load Verified Students ---
+    async function loadVerifiedStudents(section) {
       verifiedTable.innerHTML = `<tr><td colspan="7" style="text-align:center;">Loading...</td></tr>`;
-      try {
-        const q = query(collection(db, "students"), where("verified", "==", true), where("section", "==", advisorySection));
+      try{
+        const q = query(collection(db, "students"), where("verified", "==", true), where("section", "==", section));
         const snapshot = await getDocs(q);
         verifiedTable.innerHTML = "";
-        if (snapshot.empty) {
+        if(snapshot.empty){
           verifiedTable.innerHTML = `<tr><td colspan="7" style="text-align:center;">No verified students yet.</td></tr>`;
           return;
         }
-        snapshot.forEach(doc => {
-          const data = doc.data();
+        snapshot.forEach(docSnap => {
+          const data = docSnap.data();
           const row = document.createElement("tr");
           row.innerHTML = `
             <td>${data.firstName || ""}</td>
@@ -1089,30 +1081,23 @@
             <td>${data.section || "N/A"}</td>`;
           verifiedTable.appendChild(row);
         });
-      } catch (err) {
-        console.error("Error fetching students:", err);
-        verifiedTable.innerHTML = `<tr><td colspan="7" style="text-align:center;">Failed to load students.</td></tr>`;
-      }
+      } catch(err){ console.error(err); verifiedTable.innerHTML = `<tr><td colspan="7" style="text-align:center;">Failed to load students.</td></tr>`;}
     }
 
-    // Auth State
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        window.location.href = "index.html";
-        return;
-      }
+    // --- Auth State ---
+    onAuthStateChanged(auth, async (user)=>{
+      if(!user) return window.location.href = "index.html";
 
       const teacherDoc = await getDoc(doc(db, "teacher", user.uid));
-
-      if (teacherDoc.exists() && teacherDoc.data().verified === true) {
-        const advisorySection = teacherDoc.data().advisorySection || "";
-
-        loadStudentsForVerification(advisorySection);
-        loadVerifiedStudents(advisorySection);
-        loadTeacherLogs();   // ⭐ NEW — load logs on login
-
+      if(teacherDoc.exists() && teacherDoc.data().verified){
+        const section = teacherDoc.data().advisorySection || "";
+        loadStudentsForVerification(section);
+        loadVerifiedStudents(section);
+        loadTeacherLogs();
+        updateDashboardStats(section);
         return;
       }
+
       window.location.href = "index.html";
     });
     </script>
