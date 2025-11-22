@@ -1632,3 +1632,63 @@ if (mascotImg && mascotTipEl) {
     setInterval(showNextTip, tipDuration);
   });
 }
+
+// --- Auth State ---
+onAuthStateChanged(auth, async (user) => {
+  if (!user) return window.location.href = "index.html";
+
+  const fullNameInput = document.getElementById("editFullName");
+  const subtitleInput = document.getElementById("editSubtitle");
+  const gradeInput = document.getElementById("editGrade");
+  const sectionInput = document.getElementById("editSection");
+
+  // Get teacher and student snapshots
+  const teacherSnap = await getDoc(doc(db, "teacher", user.uid));
+  const studentSnap = await getDoc(doc(db, "students", user.uid));
+
+  const currentPage = window.location.pathname;
+
+  // --- Teacher Page Restriction ---
+  if (currentPage.endsWith("teacher.html") && !teacherSnap.exists()) {
+    alert("Access denied! Only teachers can access this page.");
+    return window.location.href = "index.html";
+  }
+
+  // --- Student Page Restriction ---
+  if (currentPage.endsWith("student.html") && !studentSnap.exists()) {
+    return window.location.href = "index.html";
+  }
+
+  // Populate common info
+  document.getElementById("email").textContent = user.email;
+  document.getElementById("created").textContent = new Date(user.metadata.creationTime).toDateString();
+
+  // Populate teacher data
+  if (teacherSnap.exists()) {
+    const t = teacherSnap.data();
+    document.getElementById("role").textContent = "Teacher";
+    fullNameInput.value = `${t.firstName} ${t.lastName}`;
+    subtitleInput.value = "MizuTeku Teacher";
+    gradeInput.value = t.advisoryGrade;
+    sectionInput.value = t.advisorySection;
+
+    if (t.verified) {
+      const section = t.advisorySection || "";
+      loadStudentsForVerification(section);
+      loadVerifiedStudents(section);
+      loadTeacherLogs();
+      updateDashboardStats(section);
+      return;
+    }
+  }
+
+  // Populate student data
+  if (studentSnap.exists()) {
+    const s = studentSnap.data();
+    document.getElementById("role").textContent = "Student";
+    fullNameInput.value = `${s.firstName} ${s.lastName}`;
+    subtitleInput.value = "MizuTeku Student";
+    gradeInput.value = s.grade;
+    sectionInput.value = s.section;
+  }
+});

@@ -1804,13 +1804,13 @@ body {
   background: #45a049;
 }
 
-.modal-buttons .no-btn {
-  background: #f44336;
-  color: #fff;
+#confirmNoBtn {
+  background: #c43a3a;
+  color: #ffffff;
 }
 
-.modal-buttons .no-btn:hover {
-  background: #d32f2f;
+#confirmNoBtn:hover {
+  background: #f30d0d;
 }
 
 #mascot-container {

@@ -913,7 +913,7 @@ async function loadTeacherRequests() {
   const snapshot = await getDocs(q);
 
   if (snapshot.empty) {
-    verificationTable.innerHTML = `<tr><td colspan="5" style="text-align:center;">No pending verification requests!</td></tr>`;
+    verificationTable.innerHTML = `<tr><td colspan="5" style="text-align:center;">No pending verification requests!<s/td></tr>`;
     return;
   }
 

@@ -8,6 +8,7 @@
     <link rel="shortcut icon" href="attached_assets/images/logo.png" type="image/x-icon">
     <link rel="apple-touch-icon" href="attached_assets/images/logo.png">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="profile.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Chewy&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -57,15 +58,37 @@
     margin: 0 auto;
     padding: 0 20px;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     position: relative;
+    gap: 2rem;
 }
 
 .nav-right {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 1.5rem;
+}
+
+.profile-icon {
+     margin-left: auto;
+}
+
+.profile-icon img {
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+    object-fit: cover;
+    border: 2px solid #3498db;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.profile-icon img:hover {
+    transform: translateY(-2px);
 }
 
 .nav-logo img {
@@ -76,8 +99,8 @@
 
 .nav-menu {
     display: flex;
-    list-style: none;
     gap: 2rem;
+    align-items: center;
 }
 
     .nav-menu a {
@@ -250,6 +273,7 @@
 
     main {
         margin-top: 30px; /* pushes content below navbar */
+        animation: fadeInScale 0.4s ease-in-out;
     }
 
     section {
@@ -650,7 +674,7 @@
   </style>
 </head>
 
-<body data-page="teacher">
+<body>
 
   <!-- Confirm Modal -->
     <div id="confirmModal" class="modal">
@@ -690,36 +714,24 @@
                 </div>
 
                 <div class="nav-right">
-                    <ul class="nav-menu" id="nav-menu">
-                        <li><a href="#home" data-en="Home" data-tl="Tahanan">Home</a></li>
-                        <li><a href="#verification" data-en="Verification" data-tl="Pagpapatunay">Verification</a></li>
-                        <li><a href="#students" data-en="Students" data-tl="Mag-aaral">Students</a></li>
-                        <li><a href="#logs" data-en="Logs" data-tl="Mga log">Logs</a></li>
-                        <li><a href="#about" data-en="About" data-tl="Tungkol">About</a></li>
-                        <li>
-                          <a href="#settings">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
-                                viewBox="0 0 16 16" class="gear-icon">
-                              <path d="M9.405 1.05a.5.5 0 0 1 .49.598l-.273 1.638a5.518 5.518 0 0 1 1.415.82l1.302-.753a.5.5 0 0 1 .707.708l-.753 1.302a5.518 5.518 0 0 1 .82 1.415l1.638-.273a.5.5 0 0 1 .598.49v2.092a.5.5 0 0 1-.598.49l-1.638-.273a5.518 5.518 0 0 1-.82 1.415l.753 1.302a.5.5 0 0 1-.707.707l-1.302-.753a5.518 5.518 0 0 1-1.415.82l.273 1.638a.5.5 0 0 1-.49.598H6.595a.5.5 0 0 1-.49-.598l.273-1.638a5.518 5.518 0 0 1-1.415-.82l-1.302.753a.5.5 0 0 1-.707-.707l.753-1.302a5.518 5.518 0 0 1-.82-1.415l-1.638.273a.5.5 0 0 1-.598-.49V6.595a.5.5 0 0 1 .598-.49l1.638.273a5.518 5.518 0 0 1 .82-1.415L2.685 4.06a.5.5 0 0 1 .707-.708l1.302.753a5.518 5.518 0 0 1 1.415-.82L5.836 1.65A.5.5 0 0 1 6.326 1h2.078zm-1.405 4.45a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z"/>
-                            </svg>
-                          </a>
-                        </li>
-                    </ul>
+                  <ul class="nav-menu" id="nav-menu">
+                      <li><a href="#home" id="homeLink" data-en="Home" data-tl="Tahanan">Home</a></li>
+                      <li><a href="#verification" data-en="Verification" data-tl="Pagpapatunay">Verification</a></li>
+                      <li><a href="#students" data-en="Students" data-tl="Mag-aaral">Students</a></li>
+                      <li><a href="#logs" data-en="Logs" data-tl="Mga log">Logs</a></li>
+                      <li><a href="#about" data-en="About" data-tl="Tungkol">About</a></li>
+                  </ul>
+              </div>
 
-                    <!-- Right-side controls -->
-                    <div class="nav-controls">
-                        <div class="language-switcher">
-                            <button id="lang-en" class="lang-btn active">EN</button>
-                            <button id="lang-tl" class="lang-btn">TL</button>
-                            <button id="clearDataBtn" class="clear-btn">Sign Out</button>
-                        </div>
-                    </div>
-                </div>
+              <!-- Profile Icon -->
+                  <div class="profile-icon" data-page="profile">
+                      <img src="attached_assets/images/profile.png">
+                  </div>
             </div>
         </nav>
 
   <!-- HOME SECTION -->
-  <main>
+  <main data-page-content="teacher">
     <section id="home">
       <h2>Welcome to Teacher Dashboard</h2>
       <p>
@@ -737,10 +749,10 @@
             <svg viewBox="0 0 36 36">
               <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
               <path class="circle" stroke-dasharray="0,100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-              <text x="18" y="20.35" class="percentage">0%</text>
+              <text x="18" y="20.35" class="percentage" id="activeStudents">0%</text>
             </svg>
           </div>
-          <p>Active Students <br> (Past 7 days)</p>
+          <p >Active Students <br> (Past 7 days)</p>
         </div>
 
         <div class="stat-card">
@@ -809,6 +821,64 @@
         <p id="noLogs"><br>No logs available at the moment.</p>
       </div>
     </section>
+  </main>
+
+  <div class="profile-container" data-page-content="profile" style="display:none;">
+      <!-- LEFT -->
+      <div class="left">
+          <img src="attached_assets/images/profile.png" id="profileImage" class="profile-img">
+          <div style="margin-bottom: 15px;">
+              <button id="changePhotoBtn">Change Photo</button>
+              <input type="file" id="photoInput" accept="image/*">
+          </div>
+
+          <input type="text" id="editFullName" class="profile-edit name-input" readonly>
+          <input type="text" id="editSubtitle" class="profile-edit subtitle-input" readonly>
+
+          <div class="field">
+              <strong>Role:</strong>
+              <span id="role">Loading...</span>
+          </div>
+          <div class="field">
+              <strong>Status:</strong>
+              <span>Verified</span>
+          </div>
+          <div class="field">
+              <strong>Grade:</strong>
+              <input type="text" id="editGrade" class="profile-edit" readonly>
+          </div>
+          <div class="field">
+              <strong>Section:</strong>
+              <input type="text" id="editSection" class="profile-edit" readonly>
+          </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="right">
+          <div class="box">
+              <div class="box-title">Account Information</div>
+              <p><strong>Email:</strong> <span id="email">Loading...</span></p>
+              <p><strong>Created:</strong> <span id="created">Loading...</span></p>
+          </div>
+
+          <div class="box">
+              <div class="box-title">Badges Earned</div>
+              <div id="badges">No badges yet</div>
+          </div>
+
+          <div class="box">
+              <div class="box-title">Scores</div>
+              <p><strong>Total XP:</strong> <span id="xp">0</span></p>
+              <p><strong>Rank:</strong> <span id="rank">Unranked</span></p>
+              <p><strong>Games Completed:</strong> <span id="games">0</span></p>
+          </div>
+
+          <button class="btn" id="editProfileBtn">Edit Profile</button>
+          <button class="btn" id="changeEmailBtn">Change Email</button>
+          <button class="btn" id="changePasswordBtn">Change Password</button>
+          <button class="btn" id="signOutBtn" style="background:#e74c3c;">Sign Out</button>
+      </div>
+  </div>
 
     <!-- Footer -->
         <footer class="footer" id="about">
@@ -850,19 +920,28 @@
         </footer>
 
     <script type="module">
+
+    window.addEventListener("load", () => {
+      if (window.location.hash) {
+        window.scrollTo(0, 0);
+        history.replaceState(null, null, ' '); // removes the # without reloading
+      }
+    });
+
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import {
       getFirestore, collection, getDocs, getDoc, setDoc, addDoc, updateDoc,
       query, where, orderBy, doc, serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
     // --- Firebase Config ---
     const firebaseConfig = {
       apiKey: "AIzaSyDMMt2XLZMsHftcdHnls2KrIqG-b2-eY0c",
       authDomain: "mizuteku-3a441.firebaseapp.com",
       projectId: "mizuteku-3a441",
-      storageBucket: "mizuteku-3a441.firebasestorage.app",
+      storageBucket: "mizuteku-3a441.appspot.com",
       messagingSenderId: "473895456413",
       appId: "1:473895456413:web:1452ef7b9860908dd78e74",
       measurementId: "G-NTT38FCEKG"
@@ -871,6 +950,7 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+    const storage = getStorage(app);
 
     // --- DOM Elements ---
     const verificationTable = document.querySelector("#verificationTable tbody");
@@ -882,6 +962,11 @@
     const pendingStudentsEl = document.getElementById("pendingStudents");
     const rejectedStudentsEl = document.getElementById("rejectedStudents");
     const activeStudentsEl = document.getElementById("activeStudents");
+
+    const profileImage = document.getElementById("profileImage");
+    const photoInput = document.getElementById("photoInput");
+    const changePhotoBtn = document.getElementById("changePhotoBtn");
+    const editBtn = document.getElementById("editProfileBtn");
 
     // --- Logging Function ---
     async function addLog(message, type = "info") {
@@ -973,7 +1058,6 @@
         const active = activeSnap.size;
 
         totalStudentsEl.textContent = total;
-        verifiedStudentsEl.textContent = verified;
         pendingStudentsEl.textContent = pending;
         rejectedStudentsEl.textContent = rejected;
         activeStudentsEl.textContent = active;
@@ -1084,32 +1168,281 @@
       } catch(err){ console.error(err); verifiedTable.innerHTML = `<tr><td colspan="7" style="text-align:center;">Failed to load students.</td></tr>`;}
     }
 
-    // --- Auth State ---
-    onAuthStateChanged(auth, async (user)=>{
-      if(!user) return window.location.href = "index.html";
+    // --- Profile and Edit Logic ---
+    changePhotoBtn.addEventListener("click", () => photoInput.click());
 
-      const teacherDoc = await getDoc(doc(db, "teacher", user.uid));
-      if(teacherDoc.exists() && teacherDoc.data().verified){
-        const section = teacherDoc.data().advisorySection || "";
-        loadStudentsForVerification(section);
-        loadVerifiedStudents(section);
-        loadTeacherLogs();
-        updateDashboardStats(section);
-        return;
-      }
+    photoInput.addEventListener("change", async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const user = auth.currentUser;
+      if (!user) return;
 
-      window.location.href = "index.html";
+      const storageRef = ref(storage, `profilePhotos/${user.uid}`);
+      await uploadBytes(storageRef, file);
+      const photoURL = await getDownloadURL(storageRef);
+      profileImage.src = photoURL;
+
+      const teacherSnap = await getDoc(doc(db, "teacher", user.uid));
+      const studentSnap = await getDoc(doc(db, "students", user.uid));
+      if (teacherSnap.exists()) await updateDoc(doc(db, "teacher", user.uid), { photoURL });
+      if (studentSnap.exists()) await updateDoc(doc(db, "students", user.uid), { photoURL });
     });
-    </script>
-    <script type="module">
-        
-    import { initializeClearData, 
-        initializeLanguageSwitcher,
-     } from "./script.js";
 
-    const currentLanguage = "en"; // or "tl"
-    initializeClearData(currentLanguage);
-    initializeLanguageSwitcher();
-    </script>
+    editBtn.addEventListener("click", () => {
+      const fullNameInput = document.getElementById("editFullName");
+      const gradeInput = document.getElementById("editGrade");
+      const sectionInput = document.getElementById("editSection");
+
+      const editable = fullNameInput.hasAttribute("readonly");
+      if(editable){
+        [fullNameInput, gradeInput, sectionInput].forEach(input => {
+          input.removeAttribute("readonly");
+          input.classList.add("editable");
+          input.placeholder = "Click to edit";
+        });
+        fullNameInput.focus();
+        editBtn.textContent = "Save Changes";
+      } else {
+        const user = auth.currentUser;
+        if (!user) return alert("User not logged in");
+
+        const firstName = fullNameInput.value.split(" ")[0];
+        const lastName = fullNameInput.value.split(" ")[1] || "";
+
+        getDoc(doc(db, "teacher", user.uid)).then(async teacherSnap => {
+          if (teacherSnap.exists()) {
+            await updateDoc(doc(db, "teacher", user.uid), {
+              firstName, lastName,
+              advisoryGrade: gradeInput.value,
+              advisorySection: sectionInput.value
+            });
+          } else {
+            const studentSnap = await getDoc(doc(db, "students", user.uid));
+            if (studentSnap.exists()) {
+              await updateDoc(doc(db, "students", user.uid), {
+                firstName, lastName,
+                grade: gradeInput.value,
+                section: sectionInput.value
+              });
+            }
+          }
+          [fullNameInput, gradeInput, sectionInput].forEach(input => {
+            input.setAttribute("readonly", true);
+            input.classList.remove("editable");
+            input.placeholder = "";
+          });
+          editBtn.textContent = "Edit Profile";
+          alert("Profile updated successfully!");
+        });
+      }
+    });
+
+    // --- Auth State ---
+onAuthStateChanged(auth, async (user) => {
+  if (!user) return window.location.href = "index.html";
+
+  const fullNameInput = document.getElementById("editFullName");
+  const subtitleInput = document.getElementById("editSubtitle");
+  const gradeInput = document.getElementById("editGrade");
+  const sectionInput = document.getElementById("editSection");
+
+  // Get teacher and student snapshots
+  const teacherSnap = await getDoc(doc(db, "teacher", user.uid));
+  const studentSnap = await getDoc(doc(db, "students", user.uid));
+
+  // If the current page is teacher.html, only allow teachers
+  if (window.location.pathname.endsWith("teacher.html") && !teacherSnap.exists()) {
+    return window.location.href = "index.html";
+  }
+
+  // Populate common info
+  document.getElementById("email").textContent = user.email;
+  document.getElementById("created").textContent = new Date(user.metadata.creationTime).toDateString();
+
+  // Populate teacher data
+  if (teacherSnap.exists()) {
+    const t = teacherSnap.data();
+    document.getElementById("role").textContent = "Teacher";
+    fullNameInput.value = `${t.firstName} ${t.lastName}`;
+    subtitleInput.value = "MizuTeku Teacher";
+    gradeInput.value = t.advisoryGrade;
+    sectionInput.value = t.advisorySection;
+
+    if (t.verified) {
+      const section = t.advisorySection || "";
+      loadStudentsForVerification(section);
+      loadVerifiedStudents(section);
+      loadTeacherLogs();
+      updateDashboardStats(section);
+      return;
+    }
+  }
+
+  // Populate student data only if not on teacher.html
+  if (studentSnap.exists() && !window.location.pathname.endsWith("teacher.html")) {
+    const s = studentSnap.data();
+    document.getElementById("role").textContent = "Student";
+    fullNameInput.value = `${s.firstName} ${s.lastName}`;
+    subtitleInput.value = "MizuTeku Student";
+    gradeInput.value = s.grade;
+    sectionInput.value = s.section;
+  }
+});
+
+  // --- Handle navigation via data-page ---
+    document.querySelectorAll('[data-page]').forEach(el => {
+      el.addEventListener('click', async () => {
+        const page = el.getAttribute('data-page');
+        if (!page) return;
+
+        // Show the clicked page, hide others
+        document.querySelectorAll('[data-page-content]').forEach(content => {
+          const isActive = content.getAttribute('data-page-content') === page;
+          content.style.display = isActive ? 'block' : 'none';
+          content.classList.toggle('active', isActive);
+        });
+
+        // Update URL without reload
+        history.pushState(null, '', `#${page}`);
+
+        // Scroll to top if page is teacher or profile
+        if (page === "teacher" || page === "profile") {
+          const currentPage = document.querySelector(`[data-page-content="${page}"]`);
+          if (currentPage) {
+            currentPage.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        }
+
+        // Call page-specific functions
+        if (page === "profile") {
+          await loadProfile();
+        } else if (page === "dashboard") {
+          const user = auth.currentUser;
+          if (!user) return;
+          const teacherSnap = await getDoc(doc(db, "teacher", user.uid));
+          if (teacherSnap.exists()) {
+            const t = teacherSnap.data();
+            const section = t.advisorySection || "";
+            loadStudentsForVerification(section);
+            loadVerifiedStudents(section);
+            loadTeacherLogs();
+            updateDashboardStats(section);
+          }
+        }
+      });
+    });
+
+    // --- Profile logic ---
+    async function loadProfile() {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const teacherSnap = await getDoc(doc(db, "teacher", user.uid));
+      const studentSnap = await getDoc(doc(db, "students", user.uid));
+
+      const fullNameInput = document.getElementById("editFullName");
+      const subtitleInput = document.getElementById("editSubtitle");
+      const gradeInput = document.getElementById("editGrade");
+      const sectionInput = document.getElementById("editSection");
+
+      if (teacherSnap.exists()) {
+        const t = teacherSnap.data();
+        document.getElementById("role").textContent = "Teacher";
+        fullNameInput.value = `${t.firstName} ${t.lastName}`;
+        subtitleInput.value = "MizuTeku Teacher";
+        gradeInput.value = t.advisoryGrade;
+        sectionInput.value = t.advisorySection;
+      } else if (studentSnap.exists()) {
+        const s = studentSnap.data();
+        document.getElementById("role").textContent = "Student";
+        fullNameInput.value = `${s.firstName} ${s.lastName}`;
+        subtitleInput.value = "MizuTeku Student";
+        gradeInput.value = s.grade;
+        sectionInput.value = s.section;
+      }
+    }
+
+    // --- Navigation links inside teacher page ---
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+
+        const targetId = link.getAttribute('href').substring(1);
+        const targetSection = document.getElementById(targetId);
+        const teacherPage = document.querySelector('[data-page-content="teacher"]');
+
+        if (!targetSection || !teacherPage) return;
+
+        // Add scroll-margin-top for smooth positioning
+        targetSection.style.scrollMarginTop = '120px';
+
+        // Show teacher page
+        document.querySelectorAll('[data-page-content]').forEach(p => {
+          const isActive = p === teacherPage;
+          p.style.display = isActive ? 'block' : 'none';
+          p.classList.toggle('active', isActive);
+        });
+
+        // Scroll teacher page to top first to avoid jump
+        requestAnimationFrame(() => {
+          teacherPage.scrollTop = 0;
+          setTimeout(() => {
+            targetSection.scrollIntoView({ behavior: 'smooth' });
+          }, 50);
+        });
+
+        // Update URL to section
+        history.pushState(null, '', `#${targetId}`);
+      });
+    });
+
+    window.addEventListener('load', () => {
+      const hash = window.location.hash;
+      if (hash) {
+        const target = document.querySelector(hash);
+        if (target) {
+          section.style.scrollMarginTop = '120px';
+
+          // Show teacher page first if needed
+          const teacherPage = document.querySelector('[data-page-content="teacher"]');
+          document.querySelectorAll('[data-page-content]').forEach(p => {
+            const isActive = p === teacherPage;
+            p.style.display = isActive ? 'block' : 'none';
+            p.classList.toggle('active', isActive);
+          });
+
+          // Scroll smoothly after a tiny delay
+          setTimeout(() => {
+            target.scrollIntoView({ behavior: 'smooth' });
+          }, 50);
+        }
+      }
+    });
+
+    function initializeHamburgerMenu() {
+      const hamburger = document.getElementById('hamburger');
+      const navRight = document.querySelector('.nav-right');
+      const navLinks = document.querySelectorAll('.nav-menu a');
+      
+      hamburger.addEventListener('click', () => {
+          hamburger.classList.toggle('active');
+          navRight.classList.toggle('active');
+      });
+      
+      navLinks.forEach(link => {
+          link.addEventListener('click', () => {
+              hamburger.classList.remove('active');
+              navRight.classList.remove('active');
+          });
+      });
+      
+      document.addEventListener('click', (e) => {
+          if (!hamburger.contains(e.target) && !navRight.contains(e.target)) {
+              hamburger.classList.remove('active');
+              navRight.classList.remove('active');
+          }
+      });
+  }
+    </script> 
 </body>
 </html>
