@@ -1,0 +1,8 @@
+[
+  {
+    "origin": ["https://mizuteku.vercel.app", "http://localhost:3000"],
+    "method": ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"],
+    "maxAgeSeconds": 3600,
+    "responseHeader": ["Content-Type", "Authorization"]
+  }
+]

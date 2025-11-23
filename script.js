@@ -198,7 +198,7 @@ document.addEventListener("DOMContentLoaded", function () {
         initializeFactsSlider();
         initializeDirtyGlassGame();
         initializeQuiz();
-        initializePuzzleGame();
+        initializeGermGame();
         initializeMemoryGame();
         initializeNavigation();
         initializeHamburgerMenu();
@@ -748,7 +748,7 @@ export function initializeMemoryGame() {
     const scoreElement = document.getElementById('memory-score');
     const resetButton = document.getElementById('reset-memory');
     
-    const symbols = ['🧼', '💧', '🦠', '🤲', '🚿', '🧽'];
+    const symbols = ["attached_assets/images/memory1.png", "attached_assets/images/memory2.png", "attached_assets/images/memory3.png", "attached_assets/images/memory4.png", "attached_assets/images/memory5.png", "attached_assets/images/memory6.png"];
     
     function createMemoryGame() {
         memoryCards = [...symbols, ...symbols].sort(() => Math.random() - 0.5);
@@ -763,25 +763,36 @@ export function initializeMemoryGame() {
             card.className = 'memory-card';
             card.dataset.symbol = symbol;
             card.dataset.index = index;
+
+            // BACKFACE IMAGE ELEMENT (HIDDEN)
+            const img = document.createElement('img');
+            img.src = symbol;
+            img.classList.add('card-image');
+            img.style.display = "none"; // initially hidden
+
+            card.appendChild(img);
+
             card.addEventListener('click', flipCard);
             memoryGameContainer.appendChild(card);
         });
     }
+
     
     function flipCard(e) {
-        const card = e.target;
-        
+        const card = e.target.closest('.memory-card');
+        if (!card) return;
+
         if (!canFlip || card.classList.contains('flipped') || card.classList.contains('matched')) {
             return;
         }
-        
+
         card.classList.add('flipped');
-        card.textContent = card.dataset.symbol;
+        card.querySelector('img').style.display = "block"; // show image
         flippedCards.push(card);
-        
+
         if (flippedCards.length === 2) {
             canFlip = false;
-            
+
             setTimeout(() => {
                 if (flippedCards[0].dataset.symbol === flippedCards[1].dataset.symbol) {
                     flippedCards.forEach(card => {
@@ -789,25 +800,20 @@ export function initializeMemoryGame() {
                     });
                     memoryScore++;
                     scoreElement.textContent = memoryScore;
-                    
+
                     if (memoryScore === 6) {
                         setTimeout(() => {
-                            showAlertModal(
-                                currentLanguage === 'en' ? 'Amazing memory!' : 'Kamangha-manghang memorya!',
-                                currentLanguage === 'en'
-                                    ? 'You found all pairs!'
-                                    : 'Nahanap mo ang lahat ng pares!'
-                            );
+                            showAlertModal('Amazing memory!', 'You found all pairs!');
                             earnBadge('badge-memory-champ');
                         }, 500);
                     }
                 } else {
                     flippedCards.forEach(card => {
                         card.classList.remove('flipped');
-                        card.textContent = '';
+                        card.querySelector('img').style.display = "none";
                     });
                 }
-                
+
                 flippedCards = [];
                 canFlip = true;
             }, 1000);
@@ -913,41 +919,52 @@ export function resetPuzzleGame() {
     });
 }
 
-//Jingle Section
+// Germ Popping Game
+export function initializeGermGame() {
+    const gameContainer = document.getElementById('germ-game');
+    const scoreElement = document.getElementById('germ-score');
+    const resetButton = document.getElementById('reset-germ');
 
-document.addEventListener("DOMContentLoaded", () => {
-    const buttons = document.querySelectorAll(".jingle-btn");
-    const timerDisplay = document.getElementById("timer");
+    let score = 0;
+    let germsInterval;
 
-    let audio = new Audio();
-    let countdown;
+    const germTypes = ['🦠','🧫','🧼','💧']; // germ emojis
 
-    buttons.forEach(button => {
-        button.addEventListener("click", () => {
-            clearInterval(countdown);
-            audio.pause();
-            audio.currentTime = 0;
+    function spawnGerm() {
+        const germ = document.createElement('div');
+        germ.className = 'germ';
+        germ.textContent = germTypes[Math.floor(Math.random() * germTypes.length)];
 
-            const src = button.getAttribute("data-src");
-            audio = new Audio(src);
-            audio.play();
+        const x = Math.random() * (gameContainer.clientWidth - 40);
+        const y = Math.random() * (gameContainer.clientHeight - 40);
+        germ.style.left = `${x}px`;
+        germ.style.top = `${y}px`;
 
-            let timeLeft = 30;
-            timerDisplay.textContent = timeLeft;
-
-            countdown = setInterval(() => {
-                timeLeft--;
-                timerDisplay.textContent = timeLeft;
-
-                if (timeLeft <= 0) {
-                    clearInterval(countdown);
-                    audio.pause();
-                    audio.currentTime = 0;
-                }
-            }, 1000);
+        germ.addEventListener('click', () => {
+            score++;
+            scoreElement.textContent = score;
+            germ.remove();
         });
-    });
-});
+
+        gameContainer.appendChild(germ);
+
+        // Remove germ after 2 seconds if not clicked
+        setTimeout(() => germ.remove(), 2000);
+    }
+
+    function startGame() {
+        clearInterval(germsInterval);
+        score = 0;
+        scoreElement.textContent = score;
+        gameContainer.innerHTML = '';
+
+        germsInterval = setInterval(spawnGerm, 800); // spawn every 0.8s
+    }
+
+    resetButton.addEventListener('click', startGame);
+
+    startGame();
+}
 
 // Resource Functions
 export function downloadPoster() {

@@ -538,111 +538,113 @@
       }
     }
 
-    // Get elements
-    const profileImage1 = document.getElementById("profileImage1");
-    const profileImage2 = document.getElementById("profileImage2");
+    window.addEventListener("DOMContentLoaded", () => {
+      // Get elements AFTER DOM is loaded
+      const profileImage1 = document.getElementById("profileImage1");
+      const profileImage2 = document.getElementById("profileImage2");
+      const changePhotoBtn = document.getElementById("changePhotoBtn");
+      const photoInput = document.getElementById("photoInput");
 
-    // --- Change Profile Photo ---
-    changePhotoBtn.addEventListener("click", () => photoInput.click());
-
-    photoInput.addEventListener("change", async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      const user = auth.currentUser;
-      if (!user) return alert("User not logged in");
-
-      try {
-        // Upload to Firebase Storage
-        const storageRef = ref(storage, `profilePhotos/${user.uid}`);
-        await uploadBytes(storageRef, file);
-
-        // Get downloadable URL
-        const photoURL = await getDownloadURL(storageRef);
-
-        // Update both images in HTML immediately
-        profileImage1.src = photoURL;
-        profileImage2.src = photoURL;
-
-        // Update Firestore
-        const teacherSnap = await getDoc(doc(db, "teacher", user.uid));
-        const studentSnap = await getDoc(doc(db, "students", user.uid));
-
-        if (teacherSnap.exists()) {
-          await updateDoc(doc(db, "teacher", user.uid), { photoURL });
-        }
-        if (studentSnap.exists()) {
-          await updateDoc(doc(db, "students", user.uid), { photoURL });
-        }
-
-        alert("Profile photo updated successfully!");
-      } catch (err) {
-        console.error(err);
-        alert("Failed to update profile photo.");
+      // --- Load photo from localStorage ---
+      const savedPhoto = localStorage.getItem("profilePhoto");
+      if (savedPhoto) {
+        profileImage1.src = savedPhoto;
+        profileImage2.src = savedPhoto;
       }
+
+      // --- Change profile photo ---
+      changePhotoBtn.addEventListener("click", () => photoInput.click());
+
+      photoInput.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = () => {
+          const photoData = reader.result; // Base64 string
+
+          // Update images
+          profileImage1.src = photoData;
+          profileImage2.src = photoData;
+
+          // Save locally
+          localStorage.setItem("profilePhoto", photoData);
+
+          alert("Profile photo updated locally!");
+        };
+        reader.readAsDataURL(file);
+      });
     });
 
-    // --- Edit Profile Info ---
     editBtn.addEventListener("click", async () => {
-      const fullNameInput = document.getElementById("editFullName");
-      const gradeInput = document.getElementById("editGrade");
-      const sectionInput = document.getElementById("editSection");
+  const fullNameInput = document.getElementById("editFullName");
+  const gradeInput = document.getElementById("editGrade");
+  const sectionInput = document.getElementById("editSection");
 
-      const editable = fullNameInput.hasAttribute("readonly");
+  const editable = fullNameInput.hasAttribute("readonly");
 
-      if (editable) {
-        // Make fields editable
-        [fullNameInput, gradeInput, sectionInput].forEach(input => {
-          input.removeAttribute("readonly");
-          input.classList.add("editable");
-          input.placeholder = "Click to edit";
-        });
-        fullNameInput.focus();
-        editBtn.textContent = "Save Changes";
-      } else {
-        const user = auth.currentUser;
-        if (!user) return alert("User not logged in");
-
-        // Safely split name
-        const nameParts = fullNameInput.value.trim().split(" ");
-        const firstName = nameParts[0] || "";
-        const lastName = nameParts.slice(1).join(" ") || "";
-
-        try {
-          const teacherSnap = await getDoc(doc(db, "teacher", user.uid));
-          if (teacherSnap.exists()) {
-            await updateDoc(doc(db, "teacher", user.uid), {
-              firstName,
-              lastName,
-              advisoryGrade: gradeInput.value,
-              advisorySection: sectionInput.value
-            });
-          } else {
-            const studentSnap = await getDoc(doc(db, "students", user.uid));
-            if (studentSnap.exists()) {
-              await updateDoc(doc(db, "students", user.uid), {
-                firstName,
-                lastName,
-                grade: gradeInput.value,
-                section: sectionInput.value
-              });
-            }
-          }
-
-          // Make fields readonly again
-          [fullNameInput, gradeInput, sectionInput].forEach(input => {
-            input.setAttribute("readonly", true);
-            input.classList.remove("editable");
-            input.placeholder = "";
-          });
-          editBtn.textContent = "Edit Profile";
-          alert("Profile updated successfully!");
-        } catch (err) {
-          console.error(err);
-          alert("Failed to update profile info.");
-        }
-      }
+  if (editable) {
+    // Make fields editable
+    [fullNameInput, gradeInput, sectionInput].forEach(input => {
+      input.removeAttribute("readonly");
+      input.classList.add("editable");
+      input.placeholder = "Click to edit";
     });
+    fullNameInput.focus();
+    editBtn.textContent = "Save Changes";
+  } else {
+    const user = auth.currentUser;
+    if (!user) return alert("User not logged in");
+
+    // Safely split name
+    const nameParts = fullNameInput.value.trim().split(" ");
+    const firstName = nameParts[0] || "";
+    const lastName = nameParts.slice(1).join(" ") || "";
+
+    try {
+      const teacherRef = doc(db, "teacher", user.uid);
+      const studentRef = doc(db, "students", user.uid);
+
+      const teacherSnap = await getDoc(teacherRef);
+      const studentSnap = await getDoc(studentRef);
+
+      if (teacherSnap.exists()) {
+        // Rewrite all relevant fields in Firestore
+        await updateDoc(teacherRef, {
+          firstName,
+          lastName,
+          fullName: fullNameInput.value.trim(),
+          advisoryGrade: gradeInput.value,
+          advisorySection: sectionInput.value
+        });
+      } else if (studentSnap.exists()) {
+        await updateDoc(studentRef, {
+          firstName,
+          lastName,
+          fullName: fullNameInput.value.trim(),
+          grade: gradeInput.value,
+          section: sectionInput.value
+        });
+      } else {
+        return alert("User document not found in Firestore");
+      }
+
+      // Make fields readonly again
+      [fullNameInput, gradeInput, sectionInput].forEach(input => {
+        input.setAttribute("readonly", true);
+        input.classList.remove("editable");
+        input.placeholder = "";
+      });
+      editBtn.textContent = "Edit Profile";
+
+      alert("Profile updated successfully in Firestore!");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update profile info in Firestore.");
+    }
+  }
+});
+
 
     // --- Auth State ---
     onAuthStateChanged(auth, async (user) => {
@@ -852,6 +854,62 @@
             navRight.classList.remove('active');
         }
     });
+
+    function showConfirmModal(title, message, onConfirm, onCancel) {
+      const modal = document.getElementById("confirmModal");
+      const modalTitle = document.getElementById("confirmModalTitle");
+      const modalMessage = document.getElementById("confirmModalMessage");
+      const yesBtn = document.getElementById("confirmYesBtn");
+      const noBtn = document.getElementById("confirmNoBtn");
+
+      modalTitle.textContent = title;
+      modalMessage.textContent = message;
+      modal.style.display = "flex";
+
+      yesBtn.onclick = null;
+      noBtn.onclick = null;
+
+      yesBtn.onclick = () => {
+        modal.style.display = "none";
+        if (onConfirm) onConfirm();
+      };
+
+      noBtn.onclick = () => {
+        modal.style.display = "none";
+        if (onCancel) onCancel();
+      };
+    }
+
+    const signOutBtn = document.getElementById("signOutBtn");
+
+    signOutBtn.addEventListener("click", async () => {
+    console.log("✅ Sign Out clicked");
+
+    // Confirm before signing out
+      showConfirmModal(
+          "Sign Out?",
+          "Do you really want to sign out of your account?",
+          async () => {
+              try {
+                  await signOut(auth); // ✅ auth is defined
+
+                  localStorage.removeItem("rememberedEmail");
+
+                  // Redirect to login page instead of reload
+                  setTimeout(() => {
+                      window.location.href = 'index.html';
+                  }, 1000);
+
+              } catch (error) {
+                  console.error("❌ Sign out failed:", error);
+                  showAlertModal(
+                      "Error",
+                      "Failed to sign out. Please try again."
+                  );
+              }
+          }
+      );
+  });
     </script> 
 </body>
 </html>

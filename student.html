@@ -8,6 +8,8 @@
     <link rel="shortcut icon" href="attached_assets/images/logo.png" type="image/x-icon">
     <link rel="apple-touch-icon" href="attached_assets/images/logo.png">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="navbar.css">
+    <link rel="stylesheet" href="profile.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Chewy&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -16,9 +18,30 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+    <style>
+        .nav-right {
+            display: flex;
+            align-items: center;
+            margin-left: 7%;
+        }
+
+        .profile-icon {
+            margin-left: 10%;
+        }
+
+        @media (max-width: 1100px) {
+            .profile-icon {
+                margin-left: 0;
+                order: -1;
+            }
+        }
+
+        body {
+            padding-top: 90px;
+        }
+    </style>
 </head>
 <body data-page="student">
-
     <!-- Confirm Modal -->
     <div id="confirmModal" class="modal">
       <div class="modal-content">
@@ -51,10 +74,10 @@
                     <ul class="nav-menu" id="nav-menu">
                         <li><a href="#home" data-en="Home" data-tl="Tahanan">Home</a></li>
                         <li><a href="#clean-water" data-en="Why" data-tl="Bakit">Why</a></li>
-                        <li><a href="#handwashing" data-en="Handwashing" data-tl="Hugas Kamay">Handwashing</a></li>
-                        <li><a href="#games" data-en="Games" data-tl="Mga Laro">Games</a></li>
-                        <li><a href="#resources" data-en="Resources" data-tl="Mga Liham">Resources</a></li>
-                        <li><a href="#about_us" data-en="About Us" data-tl="Tungkol sa Amin">About Us</a></li>
+                        <li><a href="#handwashing" data-en="Handwashing" data-tl="Paghuhugas">Handwashing</a></li>
+                        <li><a href="#games" data-en="Games" data-tl="Laro">Games</a></li>
+                        <li><a href="#resources" data-en="Resources" data-tl="Liham">Resources</a></li>
+                        <li><a href="#about_us" data-en="About" data-tl="Tungkol">About</a></li>
                     </ul>
 
                     <!-- Right-side controls -->
@@ -62,9 +85,13 @@
                         <div class="language-switcher">
                             <button id="lang-en" class="lang-btn active">EN</button>
                             <button id="lang-tl" class="lang-btn">TL</button>
-                            <button id="clearDataBtn" class="clear-btn">Sign Out</button>
                         </div>
                     </div>
+
+                    <div class="profile-icon" data-page="profile">
+                      <img class="profileImage2" src="attached_assets/images/profile.png">
+                    </div>
+
                 </div>
             </div>
         </nav>
@@ -73,7 +100,8 @@
             <div id="mascot-tip"></div> <!-- Tip above mascot -->
             <img id="mascot-img" src="attached_assets/images/aquaneutral.png" alt="Mascot">
         </div>
-
+    
+    <div data-page-content="studentpage">
         <!-- Home Section -->
         <section id="home" class="hero-section">
             <div class="hero-content">
@@ -309,39 +337,39 @@
                     <button class="reset-btn" id="reset-quiz" data-en="Reset Quiz" data-tl="I-reset ang Quiz">Reset Quiz</button>
                 </div>
 
-                <!-- Soap Matching Puzzle -->
+                <!-- Germ Popping Game -->
                 <div class="game-container">
-                    <h3 data-en="Soap Matching Puzzle" data-tl="Soap Matching Puzzle">Soap Matching Puzzle</h3>
-                    <p data-en="Match each soap to the correct dirty hands!" data-tl="Itugma ang tamang sabon sa maruming kamay!">
-                        Match each soap to the correct dirty hands!
+                    <h3 data-en="Germ Popping Game" data-tl="Germ Popping Game">Germ Popping Game</h3>
+                    <p data-en="Click the germs before they disappear!" data-tl="Pindutin ang mga germs bago mawala!">
+                        Click the germs before they disappear!
                     </p>
 
-                    <div class="puzzle-game">
-                        <!-- Puzzle Items (Soaps) -->
-                        <div class="puzzle-items" aria-label="Soaps to drag">
-                            <div class="puzzle-item soap" draggable="true" data-type="mud" role="button">🧼💧</div>
-                            <div class="puzzle-item soap" draggable="true" data-type="germs" role="button">🧼🦠</div>
-                            <div class="puzzle-item soap" draggable="true" data-type="paint" role="button">🧼🎨</div>
-                        </div>
-
-                        <!-- Puzzle Targets (Dirty Hands) -->
-                        <div class="puzzle-targets" aria-label="Dirty hands targets">
-                            <div class="puzzle-target dirty-hands" data-type="mud">🤲🌧️</div>
-                            <div class="puzzle-target dirty-hands" data-type="germs">🤲🦠</div>
-                            <div class="puzzle-target dirty-hands" data-type="paint">🤲🎨</div>
-                        </div>
+                    <!-- Difficulty Selector -->
+                    <div class="germ-difficulty-container">
+                        <label for="germ-difficulty" data-en="Difficulty:" data-tl="Antas:">Difficulty:</label>
+                        <select id="germ-difficulty">
+                            <option value="easy">Easy</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="hard">Hard</option>
+                        </select>
                     </div>
 
-                    <!-- Puzzle Score -->
-                    <div class="puzzle-score">
-                        <span data-en="Matches:" data-tl="Tugma:">Matches:</span>
-                        <span id="puzzle-score">0</span>/3
+                    <!-- Germ Game Area -->
+                    <div class="germ-game" id="germ-game">
+                        <!-- Germs will appear here -->
+                    </div>
+
+                    <!-- Game Score -->
+                    <div class="germ-score">
+                        <span data-en="Score:" data-tl="Score:">Score:</span>
+                        <span id="germ-score">0</span>
                     </div>
 
                     <!-- Reset Button -->
-                    <button class="reset-btn" id="reset-puzzle" data-en="Reset Puzzle" data-tl="I-reset ang Puzzle">Reset Puzzle</button>
+                    <button class="reset-btn" id="reset-germ" data-en="Restart Game" data-tl="Ulitin ang Laro">
+                        Restart Game
+                    </button>
                 </div>
-
 
                 <!-- Memory Game -->
                 <div class="game-container">
@@ -370,20 +398,29 @@
                     </p>
 
                     <div class="jingle-list" id="jingle-list">
-                        <button class="jingle-btn" data-src="jingle/Balloon.mp3" data-en="🎈 I Have a Balloon" data-tl="🎈 Ako ay May Lobo">
-                            🎈 Ako ay May Lobo
+                        <button class="jingle-btn" data-src="jingle/Balloon.mp3" 
+                                style="background-image: url('attached_assets/images/balloon.png');">
+                            <span>Ako ay May Lobo</span>
                         </button>
-                        <button class="jingle-btn" data-src="jingle/Leron.mp3" data-en="🌿 Leron, Leron, My Dear" data-tl="🌿 Leron Leron Sinta">
-                            🌿 Leron Leron Sinta
+
+                        <button class="jingle-btn" data-src="jingle/Leron.mp3" 
+                                style="background-image: url('attached_assets/images/leron.png');">
+                            <span>Leron Leron Sinta</span>
                         </button>
-                        <button class="jingle-btn" data-src="jingle/Twinkle.mp3" data-en="⭐ Twinkle Twinkle Little Star" data-tl="⭐ Twinkle Twinkle Little Star">
-                            ⭐ Twinkle Twinkle Little Star
+
+                        <button class="jingle-btn" data-src="jingle/Twinkle.mp3" 
+                                style="background-image: url('attached_assets/images/star.png');">
+                            <span>Twinkle Twinkle Little Star</span>
                         </button>
-                        <button class="jingle-btn" data-src="jingle/Bahay.mp3" data-en="🏠 Little Nipa Hut" data-tl="🏠 Bahay Kubo">
-                            🏠 Bahay Kubo
+
+                        <button class="jingle-btn" data-src="jingle/Bahay.mp3" 
+                                style="background-image: url('attached_assets/images/bahay.png');">
+                            <span>Bahay Kubo</span>
                         </button>
-                        <button class="jingle-btn" data-src="jingle/Row.mp3" data-en="⛵ Row Row Row Your Boat" data-tl="⛵ Row Row Row Your Boat">
-                            ⛵ Row Row Row Your Boat
+
+                        <button class="jingle-btn" data-src="jingle/Row.mp3" 
+                                style="background-image: url('attached_assets/images/boat.png');">
+                            <span>Row Row Row Your Boat</span>
                         </button>
                     </div>
 
@@ -495,6 +532,64 @@
                 </div>
             </div>
         </section>
+    </div>
+
+    <div class="profile-container" data-page-content="profile" style="display:none;">
+      <!-- LEFT -->
+      <div class="left">
+          <img src="attached_assets/images/profile.png" id="profileImage" class="profile-img">
+          <div style="margin-bottom: 15px;">
+              <button id="changePhotoBtn">Change Photo</button>
+              <input type="file" id="photoInput" accept="image/*">
+          </div>
+
+          <input type="text" id="editFullName" class="profile-edit name-input" readonly>
+          <input type="text" id="editSubtitle" class="profile-edit subtitle-input" readonly>
+
+          <div class="field">
+              <strong>Role:</strong>
+              <span id="role">Loading...</span>
+          </div>
+          <div class="field">
+              <strong>Status:</strong>
+              <span>Verified</span>
+          </div>
+          <div class="field">
+              <strong>Grade:</strong>
+              <input type="text" id="editGrade" class="profile-edit" readonly>
+          </div>
+          <div class="field">
+              <strong>Section:</strong>
+              <input type="text" id="editSection" class="profile-edit" readonly>
+          </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="right">
+          <div class="box">
+              <div class="box-title">Account Information</div>
+              <p><strong>Email:</strong> <span id="email">Loading...</span></p>
+              <p><strong>Created:</strong> <span id="created">Loading...</span></p>
+          </div>
+
+          <div class="box">
+              <div class="box-title">Badges Earned</div>
+              <div id="badges">No badges yet</div>
+          </div>
+
+          <div class="box">
+              <div class="box-title">Scores</div>
+              <p><strong>Total XP:</strong> <span id="xp">0</span></p>
+              <p><strong>Rank:</strong> <span id="rank">Unranked</span></p>
+              <p><strong>Games Completed:</strong> <span id="games">0</span></p>
+          </div>
+
+          <button class="btn" id="editProfileBtn">Edit Profile</button>
+          <button class="btn" id="changeEmailBtn">Change Email</button>
+          <button class="btn" id="changePasswordBtn">Change Password</button>
+          <button class="btn" id="clearDataBtn" style="background:#e74c3c;">Sign Out</button>
+      </div>
+  </div>
 
         <!-- Footer -->
         <footer class="footer" id="about_us">
@@ -535,6 +630,65 @@
             </div>
         </footer>
     </body>
+
+    <script>
+    function switchToPage(targetPageContent, targetSectionId = null) {
+    // Show target page container, hide others
+    document.querySelectorAll('[data-page-content]').forEach(p => {
+        if (p.getAttribute('data-page-content') === targetPageContent) {
+            p.style.display = 'block';
+        } else {
+            p.style.display = 'none';
+        }
+    });
+
+    // If section id is provided, scroll into view
+    if (targetSectionId) {
+        const targetSection = document.getElementById(targetSectionId);
+        if (targetSection) {
+            targetSection.style.scrollMarginTop = '120px';
+            targetSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    // Update URL hash if scrolling to section
+    if (targetSectionId) {
+        history.pushState(null, '', `#${targetSectionId}`);
+    }
+}
+
+// --- Links inside studentpage ---
+document.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener('click', e => {
+        e.preventDefault();
+        const targetId = link.getAttribute('href').substring(1);
+        switchToPage('studentpage', targetId);
+    });
+});
+
+// --- Profile icon click ---
+const profileIcon = document.querySelector('.profile-icon');
+if (profileIcon) {
+    profileIcon.addEventListener('click', () => {
+        switchToPage('profile');
+    });
+}
+
+// --- Handle hash on page load ---
+window.addEventListener('load', () => {
+    const hash = window.location.hash;
+    if (hash) {
+        const target = document.querySelector(hash);
+        if (target) {
+            const parentPage = target.closest('[data-page-content]');
+            if (parentPage) {
+                const pageName = parentPage.getAttribute('data-page-content');
+                switchToPage(pageName, hash.substring(1));
+            }
+        }
+    }
+});
+    </script>
     
     <script type="module" src="script.js">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
