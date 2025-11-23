@@ -21,6 +21,10 @@
         scroll-behavior: smooth;
     }
 
+    .profile-icon {
+     margin-left: 40%;
+}
+
     /* ---------- SECTIONS ---------- */
 
     .dashboard-stats {

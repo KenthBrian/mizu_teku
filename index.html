@@ -630,6 +630,13 @@ async function handleAuth(e) {
       }
     }
 
+    const adminDoc = await getDoc(doc(db, "admin", user.uid));
+      if (adminDoc.exists()) {
+          window.location.href = "admin.html"; // Redirect to admin dashboard
+      } else {
+          alert("You are not an admin.");
+      }
+
     // not a recognized account
     passwordInput.setCustomValidity("Your account is not yet processed by admin.");
     passwordInput.reportValidity();

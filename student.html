@@ -339,36 +339,36 @@
 
                 <!-- Germ Popping Game -->
                 <div class="game-container">
+
                     <h3 data-en="Germ Popping Game" data-tl="Germ Popping Game">Germ Popping Game</h3>
                     <p data-en="Click the germs before they disappear!" data-tl="Pindutin ang mga germs bago mawala!">
                         Click the germs before they disappear!
                     </p>
 
-                    <!-- Difficulty Selector -->
-                    <div class="germ-difficulty-container">
-                        <label for="germ-difficulty" data-en="Difficulty:" data-tl="Antas:">Difficulty:</label>
-                        <select id="germ-difficulty">
-                            <option value="easy">Easy</option>
-                            <option value="medium" selected>Medium</option>
-                            <option value="hard">Hard</option>
-                        </select>
-                    </div>
+                    <!-- Game Area -->
+                    <div id="germ-game-section">
 
-                    <!-- Germ Game Area -->
-                    <div class="germ-game" id="germ-game">
-                        <!-- Germs will appear here -->
-                    </div>
+                        <!-- Difficulty Selection -->
+                        <div class="difficulty-select">
+                            <label data-en="Select Difficulty:" data-tl="Piliin ang Hirap:">Select Difficulty:</label>
+                            <select id="germ-difficulty">
+                                <option value="easy">Easy 😄</option>
+                                <option value="medium">Medium 🙂</option>
+                                <option value="hard">Hard 😤</option>
+                            </select>
+                        </div>
 
-                    <!-- Game Score -->
-                    <div class="germ-score">
-                        <span data-en="Score:" data-tl="Score:">Score:</span>
-                        <span id="germ-score">0</span>
-                    </div>
+                        <div class="germ-game" id="germ-game"></div>
 
-                    <!-- Reset Button -->
-                    <button class="reset-btn" id="reset-germ" data-en="Restart Game" data-tl="Ulitin ang Laro">
-                        Restart Game
-                    </button>
+                        <div class="germ-score">
+                            <span data-en="Score:" data-tl="Score:">Score:</span>
+                            <span id="germ-score">0</span>
+                        </div>
+
+                        <!-- Start / Restart Button -->
+                        <button class="reset-btn" id="start-restart-germ" data-en="Start Game" data-tl="Simulan ang Laro">Start Game</button>
+
+                    </div>
                 </div>
 
                 <!-- Memory Game -->

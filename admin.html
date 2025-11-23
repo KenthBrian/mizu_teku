@@ -19,6 +19,14 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+    <style>
+      @media (max-width: 1100px) {
+            .profile-icon {
+                margin-left: 0;
+                order: -1;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -273,7 +281,7 @@
     });
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import {
       getFirestore, collection, getDocs, getDoc, setDoc, addDoc, updateDoc,
       query, where, orderBy, doc, serverTimestamp
@@ -434,7 +442,7 @@
       const snapshot = await getDocs(q);
 
       if (snapshot.empty) {
-        verificationTable.innerHTML = `<tr><td colspan="5" style="text-align:center;">No pending verification requests!<s/td></tr>`;
+        verificationTable.innerHTML = `<tr><td colspan="5" style="text-align:center;">No pending verification requests!</td></tr>`;
         return;
       }
 
@@ -488,7 +496,7 @@
           alert("✅ Teacher Verified");
 
           loadTeacherRequests();
-          loadVerifiedTeachers();
+          loadVerifiedTeachersTable();
         };
       });
 
@@ -541,7 +549,7 @@
     window.addEventListener("DOMContentLoaded", () => {
       // Get elements AFTER DOM is loaded
       const profileImage1 = document.getElementById("profileImage1");
-      const profileImage2 = document.getElementById("profileImage2");
+      const profileImage2 = document.querySelector("profileImage2");
       const changePhotoBtn = document.getElementById("changePhotoBtn");
       const photoInput = document.getElementById("photoInput");
 
@@ -648,55 +656,111 @@
 
     // --- Auth State ---
     onAuthStateChanged(auth, async (user) => {
-    if (!user) return window.location.href = "index.html";
 
-    const fullNameInput = document.getElementById("editFullName");
-    const subtitleInput = document.getElementById("editSubtitle");
-    const gradeInput = document.getElementById("editGrade");
-    const sectionInput = document.getElementById("editSection");
+      if (!user) return window.location.href = "index.html";
 
-    // Get teacher and student snapshots
-    const teacherSnap = await getDoc(doc(db, "teacher", user.uid));
-    const studentSnap = await getDoc(doc(db, "students", user.uid));
+      // DOM Elements
+      const fullNameInput = document.getElementById("editFullName");
+      const subtitleInput = document.getElementById("editSubtitle");
+      const gradeInput = document.getElementById("editGrade");
+      const sectionInput = document.getElementById("editSection");
 
-    // If the current page is teacher.html, only allow teachers
-    if (window.location.pathname.endsWith("teacher.html") && !teacherSnap.exists()) {
-      return window.location.href = "index.html";
-    }
+      // Get Firestore docs
+      const adminSnap   = await getDoc(doc(db, "admin", user.uid));
+      const teacherSnap = await getDoc(doc(db, "teacher", user.uid));
+      const studentSnap = await getDoc(doc(db, "students", user.uid));
 
-    // Populate common info
-    document.getElementById("email").textContent = user.email;
-    document.getElementById("created").textContent = new Date(user.metadata.creationTime).toDateString();
+      // ======================================================
+      // 🔐 PAGE ACCESS CONTROL
+      // ======================================================
 
-    // Populate teacher data
-    if (teacherSnap.exists()) {
-      const t = teacherSnap.data();
-      document.getElementById("role").textContent = "Teacher";
-      fullNameInput.value = `${t.firstName} ${t.lastName}`;
-      subtitleInput.value = "MizuTeku Teacher";
-      gradeInput.value = t.advisoryGrade;
-      sectionInput.value = t.advisorySection;
+      const page = window.location.pathname;
 
-      if (t.verified) {
-        const section = t.advisorySection || "";
+      // ADMIN PAGE → Only admin allowed
+      if (page.endsWith("admin.html") && !adminSnap.exists()) {
+        return window.location.href = "index.html";
+      }
+
+      // TEACHER PAGE → Only verified teacher allowed
+      if (page.endsWith("teacher.html")) {
+        if (!teacherSnap.exists()) return window.location.href = "index.html";
+        if (!teacherSnap.data().verified) return window.location.href = "index.html";
+      }
+
+      // STUDENT PAGE → Only students allowed
+      if (page.endsWith("student.html") && !studentSnap.exists()) {
+        return window.location.href = "index.html";
+      }
+
+      // ======================================================
+      // 🧩 GENERAL PROFILE (All roles)
+      // ======================================================
+
+      document.getElementById("email").textContent = user.email;
+      document.getElementById("created").textContent = new Date(user.metadata.creationTime).toDateString();
+
+
+      // ======================================================
+      // 👑 ADMIN LOGIC
+      // ======================================================
+      if (adminSnap.exists()) {
+        const a = adminSnap.data();
+
+        document.getElementById("role").textContent = "Admin";
+        fullNameInput.value = a.fullName || "Administrator";
+        subtitleInput.value = "MizuTeku Administrator";
+        gradeInput.value = "N/A";
+        sectionInput.value = "N/A";
+
+        // Load admin features
         loadTeacherRequests();
         loadVerifiedTeachersTable();
         loadAdminLogs();
         updateDashboardStats();
+
         return;
       }
-    }
 
-    // Populate student data only if not on teacher.html
-    if (studentSnap.exists() && !window.location.pathname.endsWith("teacher.html")) {
-      const s = studentSnap.data();
-      document.getElementById("role").textContent = "Student";
-      fullNameInput.value = `${s.firstName} ${s.lastName}`;
-      subtitleInput.value = "MizuTeku Student";
-      gradeInput.value = s.grade;
-      sectionInput.value = s.section;
-    }
-  });
+
+      // ======================================================
+      // 👨‍🏫 TEACHER LOGIC
+      // ======================================================
+      if (teacherSnap.exists()) {
+        const t = teacherSnap.data();
+
+        document.getElementById("role").textContent = "Teacher";
+        fullNameInput.value = `${t.firstName} ${t.lastName}`;
+        subtitleInput.value = "MizuTeku Teacher";
+        gradeInput.value = t.advisoryGrade;
+        sectionInput.value = t.advisorySection;
+
+        // Load teacher features (only if verified)
+        if (t.verified) {
+          loadTeacherRequests();
+          loadVerifiedTeachersTable();
+          updateDashboardStats(t.advisorySection);
+        }
+
+        return;
+      }
+
+
+      // ======================================================
+      // 🧒 STUDENT LOGIC
+      // ======================================================
+      if (studentSnap.exists()) {
+        const s = studentSnap.data();
+
+        document.getElementById("role").textContent = "Student";
+        fullNameInput.value = `${s.firstName} ${s.lastName}`;
+        subtitleInput.value = "MizuTeku Student";
+        gradeInput.value = s.grade;
+        sectionInput.value = s.section;
+
+        return;
+      }
+      
+    });
 
   // --- Handle navigation via data-page ---
     document.querySelectorAll('[data-page]').forEach(el => {
@@ -751,26 +815,69 @@
 
       const teacherSnap = await getDoc(doc(db, "teacher", user.uid));
       const studentSnap = await getDoc(doc(db, "students", user.uid));
+      const adminSnap = await getDoc(doc(db, "admin", user.uid));
 
       const fullNameInput = document.getElementById("editFullName");
       const subtitleInput = document.getElementById("editSubtitle");
       const gradeInput = document.getElementById("editGrade");
       const sectionInput = document.getElementById("editSection");
 
+      // -------------------------
+      // ADMIN PROFILE (Principal)
+      // -------------------------
+      if (adminSnap.exists()) {
+        const a = adminSnap.data();
+
+        document.getElementById("role").textContent = "Admin";
+        fullNameInput.value = `${a.name}`;
+        subtitleInput.value = "MizuTeku Administrator";
+
+        // Admins don't have grade/section, so disable them
+        gradeInput.value = "—";
+        sectionInput.value = "—";
+
+        gradeInput.disabled = true;
+        sectionInput.disabled = true;
+
+        return;
+      }
+
+      // -------------------------
+      // TEACHER PROFILE
+      // -------------------------
       if (teacherSnap.exists()) {
         const t = teacherSnap.data();
+
         document.getElementById("role").textContent = "Teacher";
         fullNameInput.value = `${t.firstName} ${t.lastName}`;
         subtitleInput.value = "MizuTeku Teacher";
-        gradeInput.value = t.advisoryGrade;
-        sectionInput.value = t.advisorySection;
-      } else if (studentSnap.exists()) {
+
+        gradeInput.value = t.advisoryGrade || "";
+        sectionInput.value = t.advisorySection || "";
+
+        gradeInput.disabled = true;
+        sectionInput.disabled = true;
+
+        return;
+      }
+
+      // -------------------------
+      // STUDENT PROFILE
+      // -------------------------
+      if (studentSnap.exists()) {
         const s = studentSnap.data();
+
         document.getElementById("role").textContent = "Student";
         fullNameInput.value = `${s.firstName} ${s.lastName}`;
         subtitleInput.value = "MizuTeku Student";
-        gradeInput.value = s.grade;
-        sectionInput.value = s.section;
+
+        gradeInput.value = s.grade || "";
+        sectionInput.value = s.section || "";
+
+        gradeInput.disabled = true;
+        sectionInput.disabled = true;
+
+        return;
       }
     }
 

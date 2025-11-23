@@ -868,7 +868,6 @@ export function initializeGameResets() {
     
     document.getElementById('reset-quiz').addEventListener('click', resetQuizGame);
     
-    document.getElementById('reset-puzzle').addEventListener('click', resetPuzzleGame);
 }
 
 
@@ -919,18 +918,39 @@ export function resetPuzzleGame() {
     });
 }
 
-// Germ Popping Game
 export function initializeGermGame() {
     const gameContainer = document.getElementById('germ-game');
     const scoreElement = document.getElementById('germ-score');
-    const resetButton = document.getElementById('reset-germ');
+    const startButton = document.getElementById('start-restart-germ');
+    const difficultySelect = document.getElementById('germ-difficulty');
 
     let score = 0;
     let germsInterval;
+    const maxScore = 20;
+    const maxGermsOnScreen = 10;
+    const germTypes = ['🦠', '🧫', '🧼', '💧'];
 
-    const germTypes = ['🦠','🧫','🧼','💧']; // germ emojis
+    // Game stage: controls which difficulties are unlocked
+    let stage = 'easy'; // 'easy' → 'medium' → 'all'
+
+    // Initially lock medium and hard
+    difficultySelect.querySelectorAll('option').forEach(opt => {
+        if (opt.value !== 'easy') opt.disabled = true;
+    });
+
+    function getSpawnInterval() {
+        switch (difficultySelect.value) {
+            case 'easy': return 1000;
+            case 'medium': return 700;
+            case 'hard': return 400;
+            default: return 800;
+        }
+    }
 
     function spawnGerm() {
+        if (score >= maxScore) return;
+        if (gameContainer.childElementCount >= maxGermsOnScreen) return;
+
         const germ = document.createElement('div');
         germ.className = 'germ';
         germ.textContent = germTypes[Math.floor(Math.random() * germTypes.length)];
@@ -944,11 +964,12 @@ export function initializeGermGame() {
             score++;
             scoreElement.textContent = score;
             germ.remove();
+
+            if (score >= maxScore) endGame(true);
         });
 
         gameContainer.appendChild(germ);
 
-        // Remove germ after 2 seconds if not clicked
         setTimeout(() => germ.remove(), 2000);
     }
 
@@ -958,13 +979,48 @@ export function initializeGermGame() {
         scoreElement.textContent = score;
         gameContainer.innerHTML = '';
 
-        germsInterval = setInterval(spawnGerm, 800); // spawn every 0.8s
+        germsInterval = setInterval(spawnGerm, getSpawnInterval());
+
+        startButton.textContent = "Restart Game";
     }
 
-    resetButton.addEventListener('click', startGame);
+    function endGame(passed) {
+        clearInterval(germsInterval);
+        germsInterval = null;
 
-    startGame();
+        if (passed) {
+            showAlertModal("You Win!", `You popped all germs on ${difficultySelect.value}!`);
+
+            if (stage === 'easy') {
+                // Unlock Medium (Easy stays unlocked)
+                stage = 'medium';
+                difficultySelect.querySelectorAll('option').forEach(opt => {
+                    if (opt.value === 'medium') opt.disabled = false;
+                    if (opt.value === 'hard') opt.disabled = true;
+                });
+            } else if (stage === 'medium') {
+                // Unlock all
+                stage = 'all';
+                difficultySelect.querySelectorAll('option').forEach(opt => opt.disabled = false);
+            } else if (difficultySelect.value === 'hard') {
+                // Hard beaten → award badge
+                earnBadge('badge-soap-saver');
+                showAlertModal("🏆 Badge Earned!", "You completed the hardest level!");
+            }
+        } else {
+            showAlertModal("Game Over", `You didn’t pop all germs on ${difficultySelect.value}. Try again!`);
+        }
+    }
+
+    // Start / restart game button
+    startButton.addEventListener('click', startGame);
+
+    // Restart game if difficulty is changed
+    difficultySelect.addEventListener('change', () => {
+        if (germsInterval) startGame();
+    });
 }
+
 
 // Resource Functions
 export function downloadPoster() {
