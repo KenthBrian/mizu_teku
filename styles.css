@@ -66,8 +66,6 @@ body {
     height: 40px;
 }
 
-
-
 .nav-menu {
     display: flex;
     list-style: none;
@@ -1858,4 +1856,26 @@ body {
 
 .pop-float {
   animation: popIn 0.4s ease-out, floatUp 2s ease-in-out infinite;
+}
+
+.profile-icon {
+     margin-left: 35%;
+}
+
+.profile-icon img {
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+    object-fit: cover;
+    border: 2px solid #3498db;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.profile-icon img:hover {
+    transform: translateY(-2px);
+}
+
+.nav-logo img {
+    height: 40px;
 }
