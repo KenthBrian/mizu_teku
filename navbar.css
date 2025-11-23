@@ -130,12 +130,13 @@
 /* -------------------------------------------------- */
 @media (max-width: 1100px) {
 
-    .profile-icon {
-        display: none;
-    }
-
     .hamburger {
         display: flex;
+    }
+
+    .profile-icon {
+        margin-left: 0;
+        order: -1;
     }
 
     /* Hidden until hamburger is pressed */
@@ -151,18 +152,16 @@
         justify-content: center;
         align-items: center;
         gap: 3rem;
-
         opacity: 0;
         pointer-events: none;
-        transform: translateY(-20px);
-        transition: opacity 0.3s ease, transform 0.3s ease;
+        transform: translateX(100%);
     }
 
     /* Visible when active */
     .nav-right.active {
         opacity: 1;
         pointer-events: auto;
-        transform: translateY(0);
+        transform: translateX(0);
     }
 
     .nav-menu {

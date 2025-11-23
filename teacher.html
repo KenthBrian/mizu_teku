@@ -642,6 +642,9 @@ onAuthStateChanged(auth, async (user) => {
         const page = el.getAttribute('data-page');
         if (!page) return;
 
+        hamburger.classList.remove('active');
+        navRight.classList.remove('active');
+
         // Show the clicked page, hide others
         document.querySelectorAll('[data-page-content]').forEach(content => {
           const isActive = content.getAttribute('data-page-content') === page;
@@ -767,13 +770,27 @@ onAuthStateChanged(auth, async (user) => {
     });
 
     // --- HAMBURGER MENU TOGGLE --- //
-    const hamburger = document.getElementById("hamburger");
-    const navRight = document.querySelector(".nav-right");
-
-    hamburger.addEventListener("click", () => {
-        hamburger.classList.toggle("active");
-
-        navRight.classList.toggle("active");
+    const hamburger = document.getElementById('hamburger');
+    const navRight = document.querySelector('.nav-right');
+    const navLinks = document.querySelectorAll('.nav-menu a');
+    
+    hamburger.addEventListener('click', () => {
+        hamburger.classList.toggle('active');
+        navRight.classList.toggle('active');
+    });
+    
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            hamburger.classList.remove('active');
+            navRight.classList.remove('active');
+        });
+    });
+    
+    document.addEventListener('click', (e) => {
+        if (!hamburger.contains(e.target) && !navRight.contains(e.target)) {
+            hamburger.classList.remove('active');
+            navRight.classList.remove('active');
+        }
     });
     </script> 
 </body>
