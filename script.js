@@ -1765,3 +1765,52 @@ onAuthStateChanged(auth, async (user) => {
     sectionInput.value = s.section;
   }
 });
+
+// JINGLE PLAYER LOGIC
+const jingleButtons = document.querySelectorAll(".jingle-btn");
+const timerDisplay = document.getElementById("timer");
+
+let currentAudio = null;
+let countdown = null;
+
+// Reset timer + stop audio
+function resetJingle() {
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+        currentAudio = null;
+    }
+
+    clearInterval(countdown);
+    timerDisplay.textContent = "30";
+}
+
+// Start timer countdown
+function startTimer() {
+    let timeLeft = 30;
+    timerDisplay.textContent = timeLeft;
+
+    countdown = setInterval(() => {
+        timeLeft--;
+        timerDisplay.textContent = timeLeft;
+
+        if (timeLeft <= 0) {
+            clearInterval(countdown);
+            if (currentAudio) currentAudio.pause();
+        }
+    }, 1000);
+}
+
+// Play selected jingle
+jingleButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+        const src = btn.getAttribute("data-src");
+
+        resetJingle(); // stop any jingle playing
+
+        currentAudio = new Audio(src);
+        currentAudio.play();
+
+        startTimer();
+    });
+});
