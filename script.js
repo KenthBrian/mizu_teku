@@ -1766,26 +1766,32 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
-// JINGLE PLAYER LOGIC
+// --- JINGLE PLAYER LOGIC ---
 const jingleButtons = document.querySelectorAll(".jingle-btn");
 const timerDisplay = document.getElementById("timer");
 
 let currentAudio = null;
 let countdown = null;
+let currentSrc = null; // track the currently playing jingle
 
-// Reset timer + stop audio
+// Reset timer + stop current audio
 function resetJingle() {
     if (currentAudio) {
         currentAudio.pause();
         currentAudio.currentTime = 0;
         currentAudio = null;
+        currentSrc = null;
     }
 
-    clearInterval(countdown);
-    timerDisplay.textContent = "30";
+    if (countdown) {
+        clearInterval(countdown);
+        countdown = null;
+    }
+
+    timerDisplay.textContent = "30"; // reset display
 }
 
-// Start timer countdown
+// Start 30-second countdown
 function startTimer() {
     let timeLeft = 30;
     timerDisplay.textContent = timeLeft;
@@ -1796,20 +1802,30 @@ function startTimer() {
 
         if (timeLeft <= 0) {
             clearInterval(countdown);
+            countdown = null;
             if (currentAudio) currentAudio.pause();
+            currentAudio = null;
+            currentSrc = null;
         }
     }, 1000);
 }
 
-// Play selected jingle
+// Play or stop selected jingle
 jingleButtons.forEach(btn => {
     btn.addEventListener("click", () => {
         const src = btn.getAttribute("data-src");
 
-        resetJingle(); // stop any jingle playing
+        // If the same jingle is clicked again, stop it
+        if (currentSrc === src) {
+            resetJingle();
+            return;
+        }
 
+        // Otherwise, play new jingle
+        resetJingle();
         currentAudio = new Audio(src);
         currentAudio.play();
+        currentSrc = src;
 
         startTimer();
     });
