@@ -141,6 +141,26 @@
       </table>
     </section>
 
+    <!-- VERIFICATION SECTION -->
+    <section id="verification2">
+      <h2>Students for Verification</h2>
+      <table id="studentverificationTable" class="student-list">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Student No.</th>
+            <th>Grade</th>
+            <th>Section</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="6" style="text-align:center;">Loading students...</td></tr>
+        </tbody>
+      </table>
+    </section>
+
     <!-- VERIFIED TEACHERS -->
     <section id="teachers">
       <h2>Verified Teachers</h2>
@@ -156,6 +176,27 @@
         </thead>
         <tbody>
           <tr><td colspan="6" style="text-align:center;">Loading...</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- STUDENTS SECTION -->
+    <section id="students">
+      <h2>Verified Students</h2>
+      <table id="studentsverifiedTable" border="1" style="border-collapse: collapse; width: 100%;">
+        <thead>
+          <tr>
+            <th>First Name</th>
+            <th>Middle Initial</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>Student No.</th>
+            <th>Grade</th>
+            <th>Section</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="7" style="text-align:center;">Loading...</td></tr>
         </tbody>
       </table>
     </section>
@@ -305,16 +346,20 @@
     const storage = getStorage(app);
 
     // --- DOM Elements ---
-    const verificationTable = document.querySelector("#verificationTable tbody");
-    const verifiedTable = document.querySelector("#verifiedTable tbody");
-    const logContainer = document.querySelector("#logContainer");
+    const studentverificationTable = document.getElementById("studentverificationTable").querySelector("tbody");
+    const studentsverifiedTable = document.getElementById("studentsverifiedTable").querySelector("tbody");
 
+    // Optional dashboard stats elements
     const totalStudentsEl = document.getElementById("totalStudents");
     const verifiedStudentsEl = document.getElementById("verifiedStudents");
     const pendingStudentsEl = document.getElementById("pendingStudents");
     const rejectedStudentsEl = document.getElementById("rejectedStudents");
     const activeStudentsEl = document.getElementById("activeStudents");
 
+    // Log container (for admin actions)
+    const logContainer = document.getElementById("logContainer");
+
+    // Optional profile elements
     const profileImage = document.getElementById("profileImage");
     const photoInput = document.getElementById("photoInput");
     const changePhotoBtn = document.getElementById("changePhotoBtn");
@@ -546,6 +591,150 @@
       }
     }
 
+    // --- Load Pending Students for Verification ---
+    async function loadStudentsForVerification() {
+      studentverificationTable.innerHTML = `<tr><td colspan="6" style="text-align:center;">Loading students...</td></tr>`;
+
+      try {
+        const q = query(
+          collection(db, "verificationRequests"),
+          where("status", "==", "pending")
+        );
+        const snapshot = await getDocs(q);
+
+        if (snapshot.empty) {
+          studentverificationTable.innerHTML = `<tr><td colspan="6" style="text-align:center;">No pending verification requests!</td></tr>`;
+          return;
+        }
+
+        studentverificationTable.innerHTML = "";
+        snapshot.forEach(docSnap => {
+          const data = docSnap.data();
+
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${data.firstName} ${data.middleInitial || ""}. ${data.lastName}</td>
+            <td>${data.studentnum || "N/A"}</td>
+            <td>${data.grade || "N/A"}</td>
+            <td>${data.section || "N/A"}</td>
+            <td class="status">Pending</td>
+            <td>
+              <button class="verify-btn" data-id="${data.studentId}" data-req="${docSnap.id}">Verify</button>
+              <button class="reject-btn" data-id="${data.studentId}" data-req="${docSnap.id}">Reject</button>
+            </td>
+          `;
+          studentverificationTable.appendChild(row);
+        });
+
+        // --- Verify Button ---
+        document.querySelectorAll(".verify-btn").forEach(btn => {
+          btn.onclick = async () => {
+            const studentId = btn.dataset.id;
+            const requestId = btn.dataset.req;
+
+            try {
+              const requestSnap = await getDoc(doc(db, "verificationRequests", requestId));
+              if (!requestSnap.exists()) return;
+
+              const data = requestSnap.data();
+
+              // Add to students collection as verified
+              await setDoc(doc(db, "students", studentId), {
+                studentId,
+                firstName: data.firstName,
+                middleInitial: data.middleInitial || "",
+                lastName: data.lastName,
+                email: data.email,
+                studentnum: data.studentnum || "",
+                grade: data.grade || "",
+                section: data.section || "",
+                verified: true,
+                createdAt: data.requestedAt || serverTimestamp(),
+                verifiedAt: serverTimestamp()
+              });
+
+              // Update verification request status
+              await updateDoc(doc(db, "verificationRequests", requestId), { status: "approved" });
+
+              addLog(`Student ${data.firstName} verified successfully.`, "success");
+
+              // Refresh tables
+              loadStudentsForVerification();
+              loadVerifiedStudents();
+
+            } catch (err) {
+              console.error(err);
+              addLog(`Failed to verify student: ${err.message}`, "error");
+            }
+          };
+        });
+
+        // --- Reject Button ---
+        document.querySelectorAll(".reject-btn").forEach(btn => {
+          btn.onclick = async () => {
+            const requestId = btn.dataset.req;
+            try {
+              const requestSnap = await getDoc(doc(db, "verificationRequests", requestId));
+              const data = requestSnap.exists() ? requestSnap.data() : {};
+
+              await updateDoc(doc(db, "verificationRequests", requestId), { status: "rejected" });
+
+              addLog(`Rejected student verification for ${data.firstName || ""}.`, "warning");
+
+              // Refresh table
+              loadStudentsForVerification();
+
+            } catch (err) {
+              console.error(err);
+              addLog(`Failed to reject student request: ${err.message}`, "error");
+            }
+          };
+        });
+
+      } catch (err) {
+        console.error(err);
+        studentverificationTable.innerHTML = `<tr><td colspan="6" style="text-align:center;">Failed to load students.</td></tr>`;
+      }
+    }
+
+    // --- Load Verified Students ---
+    async function loadVerifiedStudents() {
+      studentsverifiedTable.innerHTML = `<tr><td colspan="7" style="text-align:center;">Loading...</td></tr>`;
+
+      try {
+        const q = query(
+          collection(db, "students"),
+          where("verified", "==", true)
+        );
+        const snapshot = await getDocs(q);
+
+        if (snapshot.empty) {
+          studentsverifiedTable.innerHTML = `<tr><td colspan="7" style="text-align:center;">No verified students yet.</td></tr>`;
+          return;
+        }
+
+        studentsverifiedTable.innerHTML = "";
+        snapshot.forEach(docSnap => {
+          const data = docSnap.data();
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${data.firstName || ""}</td>
+            <td>${data.middleInitial || ""}</td>
+            <td>${data.lastName || ""}</td>
+            <td>${data.email || ""}</td>
+            <td>${data.studentnum || "N/A"}</td>
+            <td>${data.grade || "N/A"}</td>
+            <td>${data.section || "N/A"}</td>
+          `;
+          studentsverifiedTable.appendChild(row);
+        });
+
+      } catch (err) {
+        console.error(err);
+        studentsverifiedTable.innerHTML = `<tr><td colspan="7" style="text-align:center;">Failed to load students.</td></tr>`;
+      }
+    }
+
     window.addEventListener("DOMContentLoaded", () => {
       // Get elements AFTER DOM is loaded
       const profileImage1 = document.getElementById("profileImage1");
@@ -715,6 +904,8 @@
         // Load admin features
         loadTeacherRequests();
         loadVerifiedTeachersTable();
+        loadVerifiedStudents();
+        loadStudentsForVerification();
         loadAdminLogs();
         updateDashboardStats();
 
@@ -799,10 +990,10 @@
           if (teacherSnap.exists()) {
             const t = teacherSnap.data();
             const section = t.advisorySection || "";
-            loadStudentsForVerification(section);
-            loadVerifiedStudents(section);
+            loadStudentsForVerification();
+            loadVerifiedStudents();
             loadTeacherLogs();
-            updateDashboardStats(section);
+            updateDashboardStats();
           }
         }
       });

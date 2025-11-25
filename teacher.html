@@ -620,6 +620,7 @@
     });
 
     // --- Auth State ---
+// --- Auth State ---
 onAuthStateChanged(auth, async (user) => {
   if (!user) return window.location.href = "index.html";
 
@@ -628,18 +629,24 @@ onAuthStateChanged(auth, async (user) => {
   const gradeInput = document.getElementById("editGrade");
   const sectionInput = document.getElementById("editSection");
 
-  // Get teacher and student snapshots
+  // Get teacher, admin, and student snapshots
   const teacherSnap = await getDoc(doc(db, "teacher", user.uid));
+  const adminSnap = await getDoc(doc(db, "admin", user.uid));
   const studentSnap = await getDoc(doc(db, "students", user.uid));
 
-  // If the current page is teacher.html, only allow teachers
-  if (window.location.pathname.endsWith("teacher.html") && !teacherSnap.exists()) {
+  // Allow ONLY teachers or admins into teacher.html
+  if (
+    window.location.pathname.endsWith("teacher.html") &&
+    !teacherSnap.exists() &&
+    !adminSnap.exists()
+  ) {
     return window.location.href = "index.html";
   }
 
   // Populate common info
   document.getElementById("email").textContent = user.email;
-  document.getElementById("created").textContent = new Date(user.metadata.creationTime).toDateString();
+  document.getElementById("created").textContent =
+    new Date(user.metadata.creationTime).toDateString();
 
   // Populate teacher data
   if (teacherSnap.exists()) {

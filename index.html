@@ -392,7 +392,7 @@ const lastnameInput = document.getElementById("lastnameInput");
 const firstnameInput = document.getElementById("firstnameInput");
 const middleinitialInput = document.getElementById("middleinitialInput");
 const gradeSelect = document.getElementById("gradeSelect");
-const sectionInput = document.getElementById("sectionInput");
+const sectionInput = document.getElementById("sectionSelect");
 
 const verifyModal = document.getElementById("verifyModal");
 const closeVerifyModalBtn = document.getElementById("closeVerifyModal");
@@ -553,6 +553,11 @@ async function handleAuth(e) {
         return;
       }
 
+      if (!lastnameInput?.value || !firstnameInput?.value || !gradeSelect?.value || !sectionInput?.value) {
+          alert("Please fill all student information.");
+          return;
+        }
+
       if (!confirmPasswordInput) return alert("Confirm password field missing.");
       if (passwordInput.value !== confirmPasswordInput.value) {
         confirmPasswordInput.setCustomValidity("Passwords do not match.");
@@ -576,7 +581,6 @@ async function handleAuth(e) {
         requestedAt: serverTimestamp()
       });
 
-      // create initial student doc (unverified) and track lastLogin
       await setDoc(doc(db, "students", userCredential.user.uid), {
         studentId: userCredential.user.uid,
         studentnum: lrnInput.value.trim(),
@@ -668,8 +672,8 @@ togglePassword.addEventListener("click", () => {
 });
 
 toggleConfirm.addEventListener("click", () => {
-  const isHidden = passwordInput.type === "password";
-  passwordInput.type = isHidden ? "text" : "password";
+  const isHidden = confirmPasswordInput.type === "password";
+  confirmPasswordInput.type = isHidden ? "text" : "password";
 
   // Toggle eye icon
   toggleConfirm.innerHTML = isHidden
@@ -719,7 +723,7 @@ function evaluatePasswordStrength(password) {
 }
 
 passwordInput.addEventListener("input", () => {
-  passwordInput.value = passwordInput.value.slice(0, 16);
+  passwordInput.value = passwordInput.value.slice(0, 20);
   evaluatePasswordStrength(passwordInput.value);
 });
 
