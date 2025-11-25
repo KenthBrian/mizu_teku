@@ -471,8 +471,8 @@
                         <select id="posterSelect">
                             <option value="">-- Choose a poster --</option>
                             <option value="cleanwater.pdf">Clean Water vs Unclean Water</option>
-                            <option value="watersaver.pdf">Water Savers Unite!</option>
-                            <option value="safevsunsafe.pdf">Safe Water vs Unsafe Water</option>
+                            <option value="improvements.pdf">How did I improve?</option>
+                            <option value="whyhand.pdf">Why Handwashing is Important</option>
                             <option value="handwashing1.pdf">Steps for Handwashing</option>
                             <option value="whentowash.pdf">When to Wash Hands</option>
                         </select>
@@ -490,7 +490,6 @@
                             <option value="">-- Choose a worksheet --</option>
                             <option value="worksheet1.pdf">When I Wash my Hands</option>
                             <option value="worksheet2.pdf">Handwashing Sequence Quiz</option>
-                            <option value="WORKSHEET_ACTIVITIES.pdf">Simple Activity</option>
                         </select>
                         <button class="download-btn" onclick="downloadWorksheet()" data-en="Download" data-tl="I-download">Download</button>
                     </div>
@@ -510,7 +509,12 @@
                         <span class="close-btn" onclick="closeHomeTips()">&times;</span>
                         <h2 id="tipsTitle"></h2>
                         <div class="tips-body">
-                            <ul id="tipsList"></ul>
+                            <img id="tipImage" src="" alt="Tip Image" style="width:150px; height:150px; display:block; margin: 0 auto 15px;" />
+                            <p id="tipText"></p>
+                        </div>
+                        <div class="modal-buttons">
+                            <button class="btn" id="prevTip" style="margin-right:10px;">Previous</button>
+                            <button class="btn" id="nextTip">Next</button>
                         </div>
                     </div>
                 </div>

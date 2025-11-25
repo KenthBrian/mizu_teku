@@ -409,7 +409,7 @@ export function initializeDirtyGlassGame() {
             // Set background color
             if (isDirty) {
                 glass.style.background =
-                    'linear-gradient(180deg, rgba(139,69,19,0.7) 0%, rgba(160,82,45,0.7) 50%, rgba(139,69,19,0.7) 100%)';
+                    'linear-gradient(180deg, #87CEEB 0%, #B0E0E6 50%, #87CEFA 100%)';
             } else {
                 glass.style.background =
                     'linear-gradient(180deg, #87CEEB 0%, #B0E0E6 50%, #87CEFA 100%)';
@@ -420,9 +420,22 @@ export function initializeDirtyGlassGame() {
                 for (let j = 0; j < germsPerGlass; j++) {
                     const germ = document.createElement('div');
                     germ.classList.add('germ');
-                    germ.textContent = '🦠';
+
+                    // Create image element
+                    const germImg = document.createElement('img');
+                    germImg.src = "attached_assets/images/bacteria.png";
+                    germImg.style.width = "20px";   // adjust size
+                    germImg.style.height = "20px";
+                    germImg.style.position = "absolute";
+                    germImg.style.pointerEvents = "none"; // so clicks register on glass
+
+                    germ.appendChild(germImg);
+
+                    // Random position inside the glass
+                    germ.style.position = "absolute";
                     germ.style.left = Math.random() * 80 + 10 + '%';
                     germ.style.top = Math.random() * 70 + 20 + '%';
+
                     glass.appendChild(germ);
                 }
             }
@@ -926,9 +939,9 @@ export function initializeGermGame() {
 
     let score = 0;
     let germsInterval;
-    const maxScore = 20;
+    const maxScore = 1;
     const maxGermsOnScreen = 10;
-    const germTypes = ['🦠', '🧫', '🧼', '💧'];
+    const germTypes = ["attached_assets/images/memory3.png", "attached_assets/images/bacteria.png"];
 
     // Game stage: controls which difficulties are unlocked
     let stage = 'easy'; // 'easy' → 'medium' → 'all'
@@ -953,7 +966,15 @@ export function initializeGermGame() {
 
         const germ = document.createElement('div');
         germ.className = 'germ';
-        germ.textContent = germTypes[Math.floor(Math.random() * germTypes.length)];
+        
+        // Create image element
+        const germImg = document.createElement('img');
+        germImg.src = germTypes[Math.floor(Math.random() * germTypes.length)];
+        germImg.style.width = '40px';  // make it smaller
+        germImg.style.height = '40px';
+        germImg.style.pointerEvents = 'none'; // so clicks register on parent div
+
+        germ.appendChild(germImg);
 
         const x = Math.random() * (gameContainer.clientWidth - 40);
         const y = Math.random() * (gameContainer.clientHeight - 40);
@@ -1084,8 +1105,7 @@ const tipsTL = [
   "Gawing masaya gamit ang mga espesyal na handwashing songs",
   "Maging halimbawa - regular na hugasan ang inyong kamay",
   "Paalalahanan ang mga bata bago kumain at pagkatapos maglaro",
-  "Gumamit ng masasayang tuwalya na may mga paboritong character nila",
-  "Purihin ang mga magagandang ugali sa paghuhugas ng kamay"
+  "Gumamit ng masasayang tuwalya na may mga paboritong character nila"
 ];
 
 const tipsData = {
@@ -1096,8 +1116,7 @@ const tipsData = {
             "Clean surroundings make daily life more comfortable and healthy.",
             "Regular cleaning prevents pests like mosquitoes and cockroaches.",
             "Sanitized surfaces reduce the chances of spreading colds and flu.",
-            "Proper waste disposal prevents unpleasant odors and infections.",
-            "Organized spaces reduce stress and promote well-being."
+            "Proper waste disposal prevents unpleasant odors and infections."
         ],
         tl: [
             "Ang malinis na bahay ay nagpoprotekta sa pamilya laban sa mikrobyo at sakit.",
@@ -1105,10 +1124,17 @@ const tipsData = {
             "Ang malinis na kapaligiran ay nagbibigay ng mas maayos at malusog na pamumuhay.",
             "Ang regular na paglilinis ay nakakaiwas sa peste tulad ng lamok at ipis.",
             "Ang disimpektadong mga ibabaw ay nagpapababa ng tsansa ng sipon at trangkaso.",
-            "Ang maayos na pagtatapon ng basura ay pumipigil sa masamang amoy at impeksyon.",
-            "Ang organisadong lugar ay nagpapababa ng stress at nagpapasigla ng kalusugan."
+            "Ang maayos na pagtatapon ng basura ay pumipigil sa masamang amoy at impeksyon."
         ],
-        title: { en: "🏠 Home Hygiene", tl: "🏠 Kalinisan sa Bahay" }
+        title: { en: "🏠 Home Hygiene", tl: "🏠 Kalinisan sa Bahay" },
+        images: [
+            "attached_assets/images/home1.png",
+            "attached_assets/images/home2.png",
+            "attached_assets/images/home3.png",
+            "attached_assets/images/home4.png",
+            "attached_assets/images/home5.png",
+            "attached_assets/images/home6.png"
+        ]
     },
 
     disease: {
@@ -1118,8 +1144,7 @@ const tipsData = {
             "Preventing illness keeps people strong and avoids costly medical care.",
             "Regular handwashing stops germs from spreading to family and friends.",
             "Staying clean helps the immune system focus on fighting serious infections.",
-            "Teaching children good hygiene builds lifelong healthy habits.",
-            "Avoiding sickness means more energy for school, work, and play."
+            "Teaching children good hygiene builds lifelong healthy habits."
         ],
         tl: [
             "Ang tamang kalinisan ay nagpapababa ng pagkalat ng bacteria at virus.",
@@ -1127,13 +1152,20 @@ const tipsData = {
             "Ang pag-iwas sa sakit ay nagpapanatiling malakas at nakakaiwas sa magastos na gamutan.",
             "Ang regular na paghuhugas ng kamay ay pumipigil sa pagkalat ng mikrobyo sa pamilya at kaibigan.",
             "Ang pagiging malinis ay nakakatulong sa immune system na labanan ang malubhang impeksyon.",
-            "Ang pagtuturo sa mga bata ng mabuting kalinisan ay nagtatatag ng panghabambuhay na healthy habits.",
-            "Ang pag-iwas sa sakit ay nagbibigay ng mas maraming enerhiya para sa paaralan, trabaho, at laro."
+            "Ang pagtuturo sa mga bata ng mabuting kalinisan ay nagtatatag ng panghabambuhay na healthy habits."
         ],
         title: {
             en: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/hospital.png' /> Prevents Disease",
             tl: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/hospital.png' /> Nagiging Hadlang sa Sakit"
-        }
+        },
+        images: [
+            "attached_assets/images/disease1.png",
+            "attached_assets/images/disease2.png",
+            "attached_assets/images/disease3.png",
+            "attached_assets/images/disease4.png",
+            "attached_assets/images/disease5.png",
+            "attached_assets/images/disease6.png"
+        ]
     },
 
     strong: {
@@ -1143,8 +1175,7 @@ const tipsData = {
             "Good hygiene builds strong bodies ready for work and play.",
             "Eating safely prepared food strengthens immunity.",
             "Regular hygiene prevents frequent illnesses that weaken the body.",
-            "Healthy habits from clean water improve growth and development.",
-            "Staying clean and healthy allows people to enjoy daily activities fully."
+            "Healthy habits from clean water improve growth and development."
         ],
         tl: [
             "Ang malinis na tubig ay nagpapanatiling hydrated at puno ng enerhiya ang katawan.",
@@ -1152,13 +1183,20 @@ const tipsData = {
             "Ang mabuting kalinisan ay nagpapatibay ng katawan para sa trabaho at laro.",
             "Ang ligtas na pagkain ay nagpapalakas ng immune system.",
             "Ang regular na kalinisan ay pumipigil sa madalas na sakit na nagpapahina sa katawan.",
-            "Ang malusog na gawi mula sa malinis na tubig ay nagpapabuti ng paglaki at development.",
-            "Ang pagiging malinis at malusog ay nagbibigay kakayahang masulit ang pang-araw-araw na gawain."
+            "Ang malusog na gawi mula sa malinis na tubig ay nagpapabuti ng paglaki at development."
         ],
         title: {
             en: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/strong.png' /> Keeps Us Strong",
             tl: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/strong.png' /> Nagiging Malakas Tayo"
-        }
+        },
+        images: [   
+            "attached_assets/images/strong1.png",
+            "attached_assets/images/strong2.png",
+            "attached_assets/images/strong3.png",
+            "attached_assets/images/strong4.png",
+            "attached_assets/images/strong5.png",
+            "attached_assets/images/strong6.png",
+        ]
     },
 
     community: {
@@ -1168,8 +1206,7 @@ const tipsData = {
             "Healthy communities are stronger and more productive together.",
             "Educating neighbors about hygiene creates long-term benefits.",
             "Clean water helps prevent outbreaks that affect entire villages.",
-            "Community well-being improves when everyone follows safe hygiene.",
-            "Supporting each other in hygiene practices strengthens bonds and trust."
+            "Community well-being improves when everyone follows safe hygiene."
         ],
         tl: [
             "Pinagbubuklod ng malinis na tubig ang komunidad dahil ito’y para sa kaligtasan ng lahat.",
@@ -1177,13 +1214,20 @@ const tipsData = {
             "Ang malulusog na komunidad ay mas malakas at mas produktibo nang magkakasama.",
             "Ang pagtuturo sa kapitbahay tungkol sa kalinisan ay nagdudulot ng pangmatagalang benepisyo.",
             "Ang malinis na tubig ay nakakaiwas sa outbreak na nakakaapekto sa buong baryo.",
-            "Ang kabutihang panlipunan ay tumataas kapag lahat ay sumusunod sa ligtas na kalinisan.",
-            "Ang pagtutulungan sa kalinisan ay nagpapatibay ng ugnayan at tiwala sa isa’t isa."
+            "Ang kabutihang panlipunan ay tumataas kapag lahat ay sumusunod sa ligtas na kalinisan."
         ],
         title: {
             en: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/world.png' /> Helps Communities",
-            tl: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/wrodl.png' /> Tumutulong sa mga Komunidad"
-        }
+            tl: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/world.png' /> Tumutulong sa mga Komunidad"
+        },
+        images: [
+            "attached_assets/images/community1.png",
+            "attached_assets/images/community2.png",
+            "attached_assets/images/community3.png",
+            "attached_assets/images/community4.png",
+            "attached_assets/images/community5.png",
+            "attached_assets/images/community6.png"
+        ]
     },
 
     environment: {
@@ -1193,8 +1237,7 @@ const tipsData = {
             "Caring for the environment secures clean water for future generations.",
             "Proper waste disposal reduces harmful chemicals reaching water bodies.",
             "Planting trees and greenery filters water naturally and prevents soil erosion.",
-            "Reducing litter ensures aquatic life remains healthy and sustainable.",
-            "Communities with clean environments enjoy better overall health."
+            "Reducing litter ensures aquatic life remains healthy and sustainable."
         ],
         tl: [
             "Nakasalalay sa pangangalaga ng ilog, lawa, at kagubatan ang malinis na tubig.",
@@ -1202,13 +1245,20 @@ const tipsData = {
             "Ang pag-aalaga sa kalikasan ay nagsisiguro ng malinis na tubig para sa susunod na henerasyon.",
             "Ang wastong pagtatapon ng basura ay nagpapababa ng nakalalasong kemikal sa mga tubig.",
             "Ang pagtatanim ng puno at halaman ay natural na nagfi-filter ng tubig at pumipigil sa soil erosion.",
-            "Ang pagbabawas ng basura ay nakakatulong sa malusog at sustainable na buhay ng mga hayop sa tubig.",
-            "Ang komunidad na may malinis na kapaligiran ay mas malusog ang kabuuang pamumuhay."
+            "Ang pagbabawas ng basura ay nakakatulong sa malusog at sustainable na buhay ng mga hayop sa tubig."
         ],
         title: {
             en: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/plant.png' /> Protects the Environment",
             tl: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/plant.png' /> Pinoprotektahan ang Kapaligiran"
-        }
+        },
+        images: [
+            "attached_assets/images/environment1.png",
+            "attached_assets/images/environment2.png",
+            "attached_assets/images/environment3.png",
+            "attached_assets/images/environment4.png",
+            "attached_assets/images/environment5.png",
+            "attached_assets/images/environment6.png"
+        ]
     },
 
     happiness: {
@@ -1218,8 +1268,7 @@ const tipsData = {
             "Healthy bodies lead to joyful play, meals, and togetherness.",
             "Hygienic habits reduce stress from illness and discomfort.",
             "Children enjoy outdoor activities more when surroundings are clean.",
-            "Feeling safe and clean enhances overall mood and positivity.",
-            "Hygiene allows families to celebrate life with fewer interruptions from sickness."
+            "Feeling safe and clean enhances overall mood and positivity."
         ],
         tl: [
             "Nagbibigay ng ginhawa sa araw-araw at sa pamilya ang malinis na tubig.",
@@ -1227,13 +1276,20 @@ const tipsData = {
             "Ang malusog na katawan ay nagdudulot ng masayang laro, pagkain, at samahan.",
             "Ang malinis na gawi ay nagpapababa ng stress mula sa sakit at kakulangan sa ginhawa.",
             "Mas nag-eenjoy ang mga bata sa paglalaro sa labas kapag malinis ang kapaligiran.",
-            "Ang pakiramdam ng kaligtasan at kalinisan ay nagpapataas ng magandang mood at positibong pananaw.",
-            "Pinapayagan ng kalinisan ang pamilya na magsaya nang hindi madalas maistorbo ng sakit."
+            "Ang pakiramdam ng kaligtasan at kalinisan ay nagpapataas ng magandang mood at positibong pananaw."
         ],
         title: {
             en: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/happy.png'/>  Boosts Happiness",
             tl: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/happy.png'/> Nagpapasaya"
-        }
+        },
+        images: [
+            "attached_assets/images/happy1.png",
+            "attached_assets/images/happy2.png",
+            "attached_assets/images/happy3.png",
+            "attached_assets/images/happy4.png",
+            "attached_assets/images/happy5.png",
+            "attached_assets/images/happy6.png"
+        ]
     },
 
     learning: {
@@ -1243,8 +1299,7 @@ const tipsData = {
             "Children with good hygiene grow into smarter, healthier adults.",
             "Frequent illness can slow learning and cognitive development.",
             "Staying clean prevents distractions caused by discomfort or sickness.",
-            "Teaching hygiene habits early helps students develop lifelong routines.",
-            "A safe, healthy environment supports curiosity, creativity, and participation."
+            "Teaching hygiene habits early helps students develop lifelong routines."
         ],
         tl: [
             "Ang malulusog na mag-aaral ay bihirang lumiban at mas natututo.",
@@ -1252,35 +1307,79 @@ const tipsData = {
             "Ang mga batang may mabuting kalinisan ay lumalaking mas matalino at mas malusog.",
             "Ang madalas na sakit ay nakakapagpabagal sa pagkatuto at cognitive development.",
             "Ang pagiging malinis ay pumipigil sa mga abala dulot ng kakulangan sa ginhawa o sakit.",
-            "Ang pagtuturo ng gawi sa kalinisan nang maaga ay tumutulong sa panghabambuhay na routine ng mag-aaral.",
-            "Ang ligtas at malusog na kapaligiran ay sumusuporta sa curiosity, creativity, at participation."
+            "Ang pagtuturo ng gawi sa kalinisan nang maaga ay tumutulong sa panghabambuhay na routine ng mag-aaral."
         ],
         title: {
             en: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/grad.png' /> Supports Learning",
             tl: "<img style='width:50px; height:50px; vertical-align:middle;' src='attached_assets/images/grad.png' /> Sumusuporta sa Pag-aaral"
-        }
+        },
+        images: [
+            "attached_assets/images/learning1.png",
+            "attached_assets/images/learning2.png",
+            "attached_assets/images/learning3.png",
+            "attached_assets/images/learning4.png",
+            "attached_assets/images/learning5.png",
+            "attached_assets/images/learning6.png"
+        ]
     }
 };
 
 document.addEventListener("DOMContentLoaded", () => {
+    let currentTipIndex = 0;
+    let currentTips = [];
+    let currentImages = []; // optional images array
+    let currentTitle = "";
+
     function showHomeTips(type = "home") {
         const lang = (typeof currentLanguage !== "undefined" && currentLanguage === "tl") ? "tl" : "en";
         if (!tipsData[type]) return;
 
-        const tips = tipsData[type][lang];
-        const title = tipsData[type].title[lang];
+        currentTips = tipsData[type][lang]; // array of tip texts
+        currentTitle = tipsData[type].title[lang]; // can be HTML including icon
 
-        document.getElementById("tipsTitle").innerHTML = title;
+        // Example: optional images for each tip
+        currentImages = tipsData[type].images || []; // fallback if undefined
 
-        const tipsList = document.getElementById("tipsList");
-        tipsList.innerHTML = "";
-        tips.forEach(item => {
-            const li = document.createElement("li");
-            li.textContent = item;
-            tipsList.appendChild(li);
-        });
+        currentTipIndex = 0;
+
+        document.getElementById("tipsTitle").innerHTML = currentTitle;
+
+        showTip(currentTipIndex);
 
         document.getElementById("homeTipsModal").classList.remove("hidden");
+    }
+
+    function showTip(index) {
+        const tipTextEl = document.getElementById("tipText");
+        const tipImageEl = document.getElementById("tipImage");
+
+        tipTextEl.textContent = currentTips[index] || "";
+
+        // Show corresponding image or hide if not defined
+        if (currentImages[index]) {
+            tipImageEl.src = currentImages[index];
+            tipImageEl.style.display = "block";
+        } else {
+            tipImageEl.style.display = "none";
+        }
+
+        // Disable prev button on first tip, next button on last tip
+        document.getElementById("prevTip").disabled = index === 0;
+        document.getElementById("nextTip").disabled = index === currentTips.length - 1;
+    }
+
+    function nextTip() {
+        if (currentTipIndex < currentTips.length - 1) {
+            currentTipIndex++;
+            showTip(currentTipIndex);
+        }
+    }
+
+    function prevTip() {
+        if (currentTipIndex > 0) {
+            currentTipIndex--;
+            showTip(currentTipIndex);
+        }
     }
 
     function closeHomeTips() {
@@ -1290,15 +1389,17 @@ document.addEventListener("DOMContentLoaded", () => {
     window.showHomeTips = showHomeTips;
     window.closeHomeTips = closeHomeTips;
 
+    document.getElementById("nextTip").addEventListener("click", nextTip);
+    document.getElementById("prevTip").addEventListener("click", prevTip);
+
     const modal = document.getElementById("homeTipsModal");
     if (modal) {
         modal.addEventListener("click", function (event) {
-            if (event.target === modal) {
-                closeHomeTips();
-            }
+            if (event.target === modal) closeHomeTips();
         });
     }
 });
+
 
 const handwashingVideos = {
     step1: { 
@@ -1715,26 +1816,24 @@ onAuthStateChanged(auth, async (user) => {
   const gradeInput = document.getElementById("editGrade");
   const sectionInput = document.getElementById("editSection");
 
-  // Get teacher and student snapshots
+  // Get teacher, admin, and student snapshots
   const teacherSnap = await getDoc(doc(db, "teacher", user.uid));
+  const adminSnap = await getDoc(doc(db, "admin", user.uid));
   const studentSnap = await getDoc(doc(db, "students", user.uid));
 
-  const currentPage = window.location.pathname;
-
-  // --- Teacher Page Restriction ---
-  if (currentPage.endsWith("teacher.html") && !teacherSnap.exists()) {
-    alert("Access denied! Only teachers can access this page.");
-    return window.location.href = "index.html";
-  }
-
-  // --- Student Page Restriction ---
-  if (currentPage.endsWith("student.html") && !studentSnap.exists()) {
+  // Allow ONLY teachers or admins into teacher.html
+  if (
+    window.location.pathname.endsWith("teacher.html") &&
+    !teacherSnap.exists() &&
+    !adminSnap.exists()
+  ) {
     return window.location.href = "index.html";
   }
 
   // Populate common info
   document.getElementById("email").textContent = user.email;
-  document.getElementById("created").textContent = new Date(user.metadata.creationTime).toDateString();
+  document.getElementById("created").textContent =
+    new Date(user.metadata.creationTime).toDateString();
 
   // Populate teacher data
   if (teacherSnap.exists()) {
@@ -1755,8 +1854,8 @@ onAuthStateChanged(auth, async (user) => {
     }
   }
 
-  // Populate student data
-  if (studentSnap.exists()) {
+  // Populate student data only if not on teacher.html
+  if (studentSnap.exists() && !window.location.pathname.endsWith("teacher.html")) {
     const s = studentSnap.data();
     document.getElementById("role").textContent = "Student";
     fullNameInput.value = `${s.firstName} ${s.lastName}`;
@@ -1830,3 +1929,4 @@ jingleButtons.forEach(btn => {
         startTimer();
     });
 });
+
