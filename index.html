@@ -281,7 +281,7 @@
     </div>
 
     <div class="row" id="lrnRow" style="display: none;">
-      <input type="text" id="lrnInput" placeholder="LRN (12 digits)">
+      <input type="text" id="lrnInput" placeholder="Student No. (12 digits)">
     </div>
 
     <div class="row" id="nameRow" style="display: none;">
@@ -292,12 +292,14 @@
 
     <div class="row" id="gradeRow" style="display: none;">
       <select id="gradeSelect">
-        <option value="" disabled selected>Grade</option>
-        <option value="1">Grade 1</option>
-        <option value="2">Grade 2</option>
-        <option value="3">Grade 3</option>
+          <option value="" disabled selected>Grade</option>
+          <option value="11">Grade 11</option>
+          <option value="12">Grade 12</option>
       </select>
-      <input type="text" id="sectionInput" placeholder="Section (Ex. Diamond)">
+
+      <select id="sectionSelect">
+          <option value="" disabled selected>Select Section</option>
+      </select>
     </div>
 
     <input type="email" id="emailInput" placeholder="Enter your email">
@@ -541,12 +543,12 @@ async function handleAuth(e) {
       }
 
       // --- STUDENT SIGN UP ---
-      if (!/^[0-9]{12}$/.test(lrnInput?.value || "")) {
+      if (!/^[0-9]{11}$/.test(lrnInput?.value || "")) {
         if (lrnInput) {
-          lrnInput.setCustomValidity("LRN must be exactly 12 digits.");
+          lrnInput.setCustomValidity("Student no. must be exactly 11 digits.");
           lrnInput.reportValidity();
         } else {
-          alert("LRN input missing.");
+          alert("Student no. input missing.");
         }
         return;
       }
@@ -563,7 +565,7 @@ async function handleAuth(e) {
       // add verification request
       await addDoc(collection(db, "verificationRequests"), {
         studentId: userCredential.user.uid,
-        lrn: lrnInput.value.trim(),
+        studentnum: lrnInput.value.trim(),
         lastName: lastnameInput?.value?.trim() || "",
         firstName: firstnameInput?.value?.trim() || "",
         middleInitial: middleinitialInput?.value?.trim() || "",
@@ -577,7 +579,7 @@ async function handleAuth(e) {
       // create initial student doc (unverified) and track lastLogin
       await setDoc(doc(db, "students", userCredential.user.uid), {
         studentId: userCredential.user.uid,
-        lrn: lrnInput.value.trim(),
+        studentnum: lrnInput.value.trim(),
         lastName: lastnameInput?.value?.trim() || "",
         firstName: firstnameInput?.value?.trim() || "",
         middleInitial: middleinitialInput?.value?.trim() || "",
@@ -716,7 +718,8 @@ function evaluatePasswordStrength(password) {
   }
 }
 
-passwordInput.addEventListener("input", (e) => {
+passwordInput.addEventListener("input", () => {
+  passwordInput.value = passwordInput.value.slice(0, 16);
   evaluatePasswordStrength(passwordInput.value);
 });
 
@@ -726,6 +729,43 @@ document.addEventListener("keydown", (e) => {
     e.preventDefault();
     handleAuth();
   }
+});
+
+const grade11Sections = [
+  "ABM101", "ABM102", "CULART101",
+  "HUMSS101", "HUMSS102",
+  "IT101", "IT102",
+  "STEM101", "STEM102", "STEM103", "STEM104",
+  "TOP101"
+];
+
+const grade12Sections = [
+  "ABM201", "ABM202", "ABM203",
+  "CULART201", "CULART202",
+  "DIGI201",
+  "HUMSS201", "HUMSS202", "HUMSS203",
+  "IT201", "IT202", "IT203",
+  "STEM201", "STEM202", "STEM203", "STEM204", "STEM205", "STEM206", "STEM207", "STEM208",
+  "TOP201"
+];
+
+gradeSelect.addEventListener("change", function () {
+    sectionSelect.innerHTML = `<option value="" disabled selected>Select Section</option>`;
+
+    let sections = [];
+
+    if (this.value === "11") {
+        sections = grade11Sections;
+    } else if (this.value === "12") {
+        sections = grade12Sections;
+    }
+
+    sections.forEach(sec => {
+        const option = document.createElement("option");
+        option.value = sec;
+        option.textContent = sec;
+        sectionSelect.appendChild(option);
+    });
 });
 
 </script>
